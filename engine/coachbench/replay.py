@@ -25,6 +25,7 @@ def build_replay(
     agent_garage_config: Dict[str, Any],
     play_results: List[Dict[str, Any]],
     final_points: int,
+    invalid_action_count: int,
     touchdown_points: int,
     field_goal_points: int,
     legal_sets: Dict[str, List[str]],
@@ -55,6 +56,7 @@ def build_replay(
         "score": {
             "points": final_points,
             "result": "touchdown" if final_points >= touchdown_points else "field_goal" if final_points == field_goal_points else "stopped",
+            "invalid_action_count": invalid_action_count,
         },
         "film_room": film_room,
     }

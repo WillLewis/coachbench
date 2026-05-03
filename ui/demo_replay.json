@@ -121,12 +121,44 @@
           "terminal_reason": null
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
           },
           "offense_cost": {
             "protection": 1,
@@ -135,16 +167,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 2,
@@ -153,15 +191,26 @@
             "disguise": 0
           },
           "defense_remaining": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 0,
-            "disguise": 3
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       },
       "offense_observed": {
@@ -346,12 +395,44 @@
           "screen_trap_risk": 0.25
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
           },
           "offense_cost": {
             "protection": 1,
@@ -360,16 +441,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 2,
@@ -378,15 +465,26 @@
             "disguise": 0
           },
           "defense_remaining": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 0,
-            "disguise": 3
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       }
     },
@@ -447,12 +545,44 @@
           "terminal_reason": null
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
           },
           "offense_cost": {
             "protection": 2,
@@ -461,16 +591,22 @@
             "volatility": 2
           },
           "offense_remaining": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 0,
-            "volatility": 1
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 2,
@@ -479,15 +615,26 @@
             "disguise": 0
           },
           "defense_remaining": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 0,
-            "disguise": 3
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       },
       "offense_observed": {
@@ -672,12 +819,44 @@
           "screen_trap_risk": 0.25
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
           },
           "offense_cost": {
             "protection": 2,
@@ -686,16 +865,22 @@
             "volatility": 2
           },
           "offense_remaining": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 0,
-            "volatility": 1
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 2,
@@ -704,15 +889,26 @@
             "disguise": 0
           },
           "defense_remaining": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 0,
-            "disguise": 3
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       }
     },
@@ -773,12 +969,44 @@
           "terminal_reason": null
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
           },
           "offense_cost": {
             "protection": 2,
@@ -787,16 +1015,22 @@
             "volatility": 2
           },
           "offense_remaining": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 0,
-            "volatility": 1
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 2,
@@ -805,15 +1039,26 @@
             "disguise": 0
           },
           "defense_remaining": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 0,
-            "disguise": 3
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       },
       "offense_observed": {
@@ -998,12 +1243,44 @@
           "screen_trap_risk": 0.25
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
           },
           "offense_cost": {
             "protection": 2,
@@ -1012,16 +1289,22 @@
             "volatility": 2
           },
           "offense_remaining": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 0,
-            "volatility": 1
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 2,
@@ -1030,15 +1313,26 @@
             "disguise": 0
           },
           "defense_remaining": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 0,
-            "disguise": 3
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       }
     },
@@ -1098,12 +1392,44 @@
           "terminal_reason": null
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
           },
           "offense_cost": {
             "protection": 1,
@@ -1112,16 +1438,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 1,
-            "deception": 3,
-            "volatility": 2
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 1,
@@ -1130,15 +1462,26 @@
             "disguise": 2
           },
           "defense_remaining": {
-            "rush": 2,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
+            "rush": 9,
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       },
       "offense_observed": {
@@ -1294,12 +1637,44 @@
           "screen_trap_risk": 0.25
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
           },
           "offense_cost": {
             "protection": 1,
@@ -1308,16 +1683,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 1,
-            "deception": 3,
-            "volatility": 2
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
           },
           "defense_cost": {
             "rush": 1,
@@ -1326,15 +1707,26 @@
             "disguise": 2
           },
           "defense_remaining": {
-            "rush": 2,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
+            "rush": 9,
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       }
     },
@@ -1394,12 +1786,44 @@
           "terminal_reason": null
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
           },
           "offense_cost": {
             "protection": 1,
@@ -1408,16 +1832,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 1,
-            "deception": 3,
-            "volatility": 2
+            "protection": 7,
+            "spacing": 9,
+            "deception": 7,
+            "volatility": 7
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 9,
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
           },
           "defense_cost": {
             "rush": 1,
@@ -1426,15 +1856,26 @@
             "disguise": 2
           },
           "defense_remaining": {
-            "rush": 2,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
+            "rush": 8,
+            "coverage": 11,
+            "box": 5,
+            "disguise": 10
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       },
       "offense_observed": {
@@ -1590,12 +2031,44 @@
           "screen_trap_risk": 0.25
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
           },
           "offense_cost": {
             "protection": 1,
@@ -1604,16 +2077,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 1,
-            "deception": 3,
-            "volatility": 2
+            "protection": 7,
+            "spacing": 9,
+            "deception": 7,
+            "volatility": 7
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 9,
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
           },
           "defense_cost": {
             "rush": 1,
@@ -1622,15 +2101,26 @@
             "disguise": 2
           },
           "defense_remaining": {
-            "rush": 2,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
+            "rush": 8,
+            "coverage": 11,
+            "box": 5,
+            "disguise": 10
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       }
     },
@@ -1690,12 +2180,44 @@
           "terminal_reason": "touchdown"
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 7,
+            "spacing": 9,
+            "deception": 7,
+            "volatility": 7
           },
           "offense_cost": {
             "protection": 1,
@@ -1704,16 +2226,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 1,
-            "deception": 3,
-            "volatility": 2
+            "protection": 6,
+            "spacing": 7,
+            "deception": 7,
+            "volatility": 6
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 8,
+            "coverage": 11,
+            "box": 5,
+            "disguise": 10
           },
           "defense_cost": {
             "rush": 1,
@@ -1722,15 +2250,26 @@
             "disguise": 2
           },
           "defense_remaining": {
-            "rush": 2,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
+            "rush": 7,
+            "coverage": 8,
+            "box": 4,
+            "disguise": 8
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       },
       "offense_observed": {
@@ -1886,12 +2425,44 @@
           "screen_trap_risk": 0.25
         },
         "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
         "resource_budget_snapshot": {
-          "offense_budget": {
-            "protection": 3,
-            "spacing": 3,
-            "deception": 3,
-            "volatility": 3
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 7,
+            "spacing": 9,
+            "deception": 7,
+            "volatility": 7
           },
           "offense_cost": {
             "protection": 1,
@@ -1900,16 +2471,22 @@
             "volatility": 1
           },
           "offense_remaining": {
-            "protection": 2,
-            "spacing": 1,
-            "deception": 3,
-            "volatility": 2
+            "protection": 6,
+            "spacing": 7,
+            "deception": 7,
+            "volatility": 6
           },
-          "defense_budget": {
-            "rush": 3,
-            "coverage": 3,
-            "box": 3,
-            "disguise": 3
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 8,
+            "coverage": 11,
+            "box": 5,
+            "disguise": 10
           },
           "defense_cost": {
             "rush": 1,
@@ -1918,22 +2495,34 @@
             "disguise": 2
           },
           "defense_remaining": {
-            "rush": 2,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
+            "rush": 7,
+            "coverage": 8,
+            "box": 4,
+            "disguise": 8
           }
         },
         "validation_result": {
-          "offense": "valid",
-          "defense": "valid"
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
         }
       }
     }
   ],
   "score": {
     "points": 7,
-    "result": "touchdown"
+    "result": "touchdown",
+    "invalid_action_count": 0
   },
   "film_room": {
     "headline": "Touchdown drive",

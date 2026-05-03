@@ -5,19 +5,29 @@ from typing import Any, Dict, List
 from .schema import GameState, PlayResolution
 
 
-def offense_observation_before_play(state: GameState, legal_concepts: List[str]) -> Dict[str, Any]:
+def offense_observation_before_play(
+    state: GameState,
+    legal_concepts: List[str],
+    resource_remaining: Dict[str, int],
+) -> Dict[str, Any]:
     return {
         "side": "offense",
         "game_state": state.to_public_dict(),
         "legal_concepts": list(legal_concepts),
+        "own_resource_remaining": dict(resource_remaining),
     }
 
 
-def defense_observation_before_play(state: GameState, legal_calls: List[str]) -> Dict[str, Any]:
+def defense_observation_before_play(
+    state: GameState,
+    legal_calls: List[str],
+    resource_remaining: Dict[str, int],
+) -> Dict[str, Any]:
     return {
         "side": "defense",
         "game_state": state.to_public_dict(),
         "legal_calls": list(legal_calls),
+        "own_resource_remaining": dict(resource_remaining),
     }
 
 

@@ -140,6 +140,8 @@ Layer 4 — Execution boundary
 
 Invalid actions should not become football penalties or odd simulated outcomes. Invalid-action rate can exist as a developer-quality metric, but not as a football scoring mechanic.
 
+For local third-party agents, invalid submissions are rejected before resolution, logged in `validation_result`, counted in `invalid_action_count`, and replaced by a deterministic validator-owned safe fallback from the current legal action set. The fallback is not treated as the agent's tactical truth; it is validation handling so the replay and metrics remain inspectable.
+
 ### 2.4 Resource constraints are non-negotiable
 
 No call can have every advantage at once.

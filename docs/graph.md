@@ -21,5 +21,8 @@ every strong tactic has a counter
 every interaction has documented limitations
 modifiers remain within safe bounds
 resource-heavy calls spend constrained resources
+drive-level resource budgets reduce legal action sets over a drive
+action fields are declared on concept cards
+belief and resolution tuning live in graph model files
 no real teams, players, logos, or official ratings
 ```

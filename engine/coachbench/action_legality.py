@@ -7,7 +7,9 @@ from .schema import DefenseAction, OffenseAction
 
 
 class ActionValidationError(ValueError):
-    pass
+    def __init__(self, reasons: List[str]) -> None:
+        self.reasons = list(reasons)
+        super().__init__("; ".join(self.reasons))
 
 
 def _within_budget(costs: Dict[str, int], budget: Dict[str, int]) -> bool:
@@ -43,57 +45,150 @@ class LegalActionEnumerator:
     def __init__(self, graph: StrategyGraph) -> None:
         self.graph = graph
 
-    def legal_offense_concepts(self) -> List[str]:
-        budget = self.graph.constraints["budgets"]["offense"]
+    def legal_offense_concepts(self, remaining_budget: Dict[str, int] | None = None) -> List[str]:
+        per_call_budget = self.graph.constraints["budgets"]["offense"]
+        budget = remaining_budget or self.graph.constraints["drive_budgets"]["offense"]
         costs = self.graph.constraints["offense_costs"]
-        return [concept for concept, cost in costs.items() if _within_budget(cost, budget)]
+        return [
+            concept
+            for concept, cost in costs.items()
+            if _within_budget(cost, per_call_budget) and _within_budget(cost, budget)
+        ]
 
-    def legal_defense_calls(self) -> List[str]:
-        budget = self.graph.constraints["budgets"]["defense"]
+    def legal_defense_calls(self, remaining_budget: Dict[str, int] | None = None) -> List[str]:
+        per_call_budget = self.graph.constraints["budgets"]["defense"]
+        budget = remaining_budget or self.graph.constraints["drive_budgets"]["defense"]
         costs = self.graph.constraints["defense_costs"]
-        return [call for call, cost in costs.items() if _within_budget(cost, budget)]
+        return [
+            call
+            for call, cost in costs.items()
+            if _within_budget(cost, per_call_budget) and _within_budget(cost, budget)
+        ]
 
-    def build_offense_action(self, concept: str, risk_level: str = "balanced") -> OffenseAction:
-        if concept not in self.legal_offense_concepts():
-            raise ActionValidationError(f"Illegal or resource-impossible offense concept: {concept}")
+    def build_offense_action(
+        self,
+        concept: str,
+        risk_level: str = "balanced",
+        remaining_budget: Dict[str, int] | None = None,
+    ) -> OffenseAction:
+        if concept not in self.legal_offense_concepts(remaining_budget):
+            raise ActionValidationError([f"Illegal or resource-impossible offense concept: {concept}"])
         fields = self.graph.offense_concept(concept)["action_fields"]
         return _make_offense_action(concept, risk_level, fields)
 
-    def build_defense_action(self, call: str, risk_level: str = "balanced") -> DefenseAction:
-        if call not in self.legal_defense_calls():
-            raise ActionValidationError(f"Illegal or resource-impossible defense call: {call}")
+    def build_defense_action(
+        self,
+        call: str,
+        risk_level: str = "balanced",
+        remaining_budget: Dict[str, int] | None = None,
+    ) -> DefenseAction:
+        if call not in self.legal_defense_calls(remaining_budget):
+            raise ActionValidationError([f"Illegal or resource-impossible defense call: {call}"])
         fields = self.graph.defense_call(call)["action_fields"]
         return _make_defense_action(call, risk_level, fields)
 
-    def validate_offense_action(self, action: OffenseAction) -> None:
+    def validate_offense_action(self, action: OffenseAction, remaining_budget: Dict[str, int] | None = None) -> None:
+        reasons = self.validate_offense_action_reasons(action, remaining_budget)
+        if reasons:
+            raise ActionValidationError(reasons)
+
+    def validate_offense_action_reasons(
+        self,
+        action: OffenseAction,
+        remaining_budget: Dict[str, int] | None = None,
+    ) -> List[str]:
+        reasons: List[str] = []
         concept = action.concept_family
-        if concept not in self.legal_offense_concepts():
-            raise ActionValidationError(f"Invalid offense concept: {concept}")
+        if concept not in self.legal_offense_concepts(remaining_budget):
+            reasons.append(f"Invalid or resource-impossible offense concept: {concept}")
+            return reasons
 
-    def validate_defense_action(self, action: DefenseAction) -> None:
+        allowed_risks = set(self.graph.resolution_model["risk_levels"])
+        if action.risk_level not in allowed_risks:
+            reasons.append(f"Invalid offense risk level: {action.risk_level}")
+
+        expected = self.graph.offense_concept(concept)["action_fields"]
+        actual = action.to_dict()
+        for key, value in expected.items():
+            if actual.get(key) != value:
+                reasons.append(f"Invalid offense {key}: {actual.get(key)}")
+        if action.constraint_tag != f"legal:{concept}":
+            reasons.append(f"Invalid offense constraint_tag: {action.constraint_tag}")
+        return reasons
+
+    def validate_defense_action(self, action: DefenseAction, remaining_budget: Dict[str, int] | None = None) -> None:
+        reasons = self.validate_defense_action_reasons(action, remaining_budget)
+        if reasons:
+            raise ActionValidationError(reasons)
+
+    def validate_defense_action_reasons(
+        self,
+        action: DefenseAction,
+        remaining_budget: Dict[str, int] | None = None,
+    ) -> List[str]:
+        reasons: List[str] = []
         call = action.coverage_family
-        if call not in self.legal_defense_calls():
-            raise ActionValidationError(f"Invalid defense call: {call}")
+        if call not in self.legal_defense_calls(remaining_budget):
+            reasons.append(f"Invalid or resource-impossible defense call: {call}")
+            return reasons
 
-    def public_legal_sets(self) -> Dict[str, List[str]]:
+        allowed_risks = set(self.graph.resolution_model["risk_levels"])
+        if action.risk_level not in allowed_risks:
+            reasons.append(f"Invalid defense risk level: {action.risk_level}")
+
+        expected = self.graph.defense_call(call)["action_fields"]
+        actual = action.to_dict()
+        for key, value in expected.items():
+            if actual.get(key) != value:
+                reasons.append(f"Invalid defense {key}: {actual.get(key)}")
+        if action.constraint_tag != f"legal:{call}":
+            reasons.append(f"Invalid defense constraint_tag: {action.constraint_tag}")
+        return reasons
+
+    def public_legal_sets(
+        self,
+        offense_remaining: Dict[str, int] | None = None,
+        defense_remaining: Dict[str, int] | None = None,
+    ) -> Dict[str, List[str]]:
         return {
-            "offense": self.legal_offense_concepts(),
-            "defense": self.legal_defense_calls(),
+            "offense": self.legal_offense_concepts(offense_remaining),
+            "defense": self.legal_defense_calls(defense_remaining),
         }
 
-    def restricted_api(self) -> "LegalActionFacade":
+    def restricted_api(
+        self,
+        offense_remaining: Dict[str, int] | None = None,
+        defense_remaining: Dict[str, int] | None = None,
+    ) -> "LegalActionFacade":
+        offense_concepts = self.legal_offense_concepts(offense_remaining)
+        defense_calls = self.legal_defense_calls(defense_remaining)
         return LegalActionFacade(
-            offense_concepts=self.legal_offense_concepts(),
-            defense_calls=self.legal_defense_calls(),
+            offense_concepts=offense_concepts,
+            defense_calls=defense_calls,
             offense_action_fields={
                 concept: self.graph.offense_concept(concept)["action_fields"]
-                for concept in self.legal_offense_concepts()
+                for concept in offense_concepts
             },
             defense_action_fields={
                 call: self.graph.defense_call(call)["action_fields"]
-                for call in self.legal_defense_calls()
+                for call in defense_calls
             },
+            risk_levels=list(self.graph.resolution_model["risk_levels"]),
         )
+
+    def fallback_offense_action(self, remaining_budget: Dict[str, int]) -> OffenseAction:
+        legal = self.legal_offense_concepts(remaining_budget)
+        if not legal:
+            raise ActionValidationError(["No legal offense fallback available"])
+        concept = min(legal, key=lambda item: (self.graph.base_ep_for_offense(item), item))
+        return self.build_offense_action(concept, "conservative", remaining_budget)
+
+    def fallback_defense_action(self, remaining_budget: Dict[str, int]) -> DefenseAction:
+        legal = self.legal_defense_calls(remaining_budget)
+        if not legal:
+            raise ActionValidationError(["No legal defense fallback available"])
+        call = min(legal, key=lambda item: (float(self.graph.defense_call(item)["base_ep_allowed"]), item))
+        return self.build_defense_action(call, "conservative", remaining_budget)
 
 
 class LegalActionFacade:
@@ -106,6 +201,7 @@ class LegalActionFacade:
         "_defense_calls",
         "_defense_call_set",
         "_defense_action_fields",
+        "_risk_levels",
     )
 
     def __init__(
@@ -114,6 +210,7 @@ class LegalActionFacade:
         defense_calls: List[str],
         offense_action_fields: Dict[str, Dict[str, str]],
         defense_action_fields: Dict[str, Dict[str, str]],
+        risk_levels: List[str],
     ) -> None:
         self._offense_concepts = tuple(offense_concepts)
         self._offense_concept_set = frozenset(offense_concepts)
@@ -121,6 +218,7 @@ class LegalActionFacade:
         self._defense_calls = tuple(defense_calls)
         self._defense_call_set = frozenset(defense_calls)
         self._defense_action_fields = dict(defense_action_fields)
+        self._risk_levels = frozenset(risk_levels)
 
     def legal_offense_concepts(self) -> List[str]:
         return list(self._offense_concepts)
@@ -130,10 +228,14 @@ class LegalActionFacade:
 
     def build_offense_action(self, concept: str, risk_level: str = "balanced") -> OffenseAction:
         if concept not in self._offense_concept_set:
-            raise ActionValidationError(f"Illegal or resource-impossible offense concept: {concept}")
+            raise ActionValidationError([f"Illegal or resource-impossible offense concept: {concept}"])
+        if risk_level not in self._risk_levels:
+            raise ActionValidationError([f"Illegal offense risk level: {risk_level}"])
         return _make_offense_action(concept, risk_level, self._offense_action_fields[concept])
 
     def build_defense_action(self, call: str, risk_level: str = "balanced") -> DefenseAction:
         if call not in self._defense_call_set:
-            raise ActionValidationError(f"Illegal or resource-impossible defense call: {call}")
+            raise ActionValidationError([f"Illegal or resource-impossible defense call: {call}"])
+        if risk_level not in self._risk_levels:
+            raise ActionValidationError([f"Illegal defense risk level: {risk_level}"])
         return _make_defense_action(call, risk_level, self._defense_action_fields[call])

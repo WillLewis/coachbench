@@ -13,6 +13,20 @@
       "disguise": 3
     }
   },
+  "drive_budgets": {
+    "offense": {
+      "protection": 14,
+      "spacing": 18,
+      "deception": 14,
+      "volatility": 14
+    },
+    "defense": {
+      "rush": 16,
+      "coverage": 20,
+      "box": 16,
+      "disguise": 14
+    }
+  },
   "offense_costs": {
     "inside_zone": {
       "protection": 1,
