@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+import random
+
 from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from coachbench.action_legality import ActionValidationError, LegalActionEnumerator
 from coachbench.engine import CoachBenchEngine
 from coachbench.graph_loader import StrategyGraph
 from coachbench.observations import defense_observation_before_play, offense_observation_before_play
+from coachbench.resolution_engine import ResolutionEngine
 from coachbench.schema import GameState
 from coachbench.schema import AgentMemory, DefenseAction, OffenseAction
+from scripts.run_daily_slate import slate_entries
+from scripts.run_match_matrix import case_seed
 
 
 def test_showcase_replay_is_deterministic() -> None:
@@ -106,6 +111,64 @@ def test_replay_includes_episode_and_per_play_contract_fields() -> None:
     assert play_internal["legal_action_sets"] == public_play["legal_action_sets"]
     assert play_internal["resource_budget_snapshot"] == public_play["resource_budget_snapshot"]
     assert play_internal["validation_result"] == public_play["validation_result"]
+
+
+def test_replay_metadata_records_custom_episode_parameters() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense(), max_plays=3, start_yardline=19)
+    metadata = replay["metadata"]
+
+    assert metadata["start_yardline"] == 19
+    assert metadata["max_plays"] == 3
+    assert replay["plays"][0]["public"]["next_state"]["max_plays"] == 3
+
+
+def test_match_matrix_seed_is_content_addressed() -> None:
+    label = "B_adaptive_offense_vs_A_static_defense"
+
+    assert case_seed(42, label) == case_seed(42, label)
+    assert case_seed(42, label) != case_seed(42, "A_static_offense_vs_A_static_defense")
+    assert case_seed(42, label) != 43
+
+
+def test_daily_slate_entries_are_explicit_and_legacy_lengths_are_validated() -> None:
+    entries = slate_entries({
+        "entries": [
+            {"seed": 1, "matchup": {"offense": "static", "defense": "adaptive"}},
+        ],
+    })
+    assert entries == [{"seed": 1, "matchup": {"offense": "static", "defense": "adaptive"}}]
+
+    try:
+        slate_entries({
+            "seeds": [1, 2],
+            "matchups": [{"offense": "static", "defense": "adaptive"}],
+        })
+    except ValueError as exc:
+        assert "equal length" in str(exc)
+    else:
+        raise AssertionError("Mismatched legacy slate was not rejected")
+
+
+def test_belief_values_serialize_without_float_drift() -> None:
+    replay = CoachBenchEngine(seed=99).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    serialized = str(replay)
+
+    assert "0.41000000000000003" not in serialized
+
+
+def test_turnover_on_downs_keeps_provisional_down_visible() -> None:
+    graph = StrategyGraph()
+    legal = LegalActionEnumerator(graph)
+    result = ResolutionEngine(graph, random.Random(0)).resolve(
+        GameState(down=4, distance=10, yardline=20),
+        legal.build_offense_action("outside_zone", "conservative"),
+        legal.build_defense_action("bear_front", "balanced"),
+        AgentMemory(),
+        AgentMemory(),
+    )
+
+    assert result.terminal_reason == "turnover_on_downs"
+    assert result.next_state.down == 5
 
 
 def test_validation_rejects_tampered_action_fields_and_risk() -> None:

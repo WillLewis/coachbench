@@ -61,11 +61,6 @@ class ResolutionEngine:
                 int(expected_value * float(yards_model["failure_ep_multiplier"]) + noise),
             )
 
-        terminal = False
-        terminal_reason: Optional[str] = None
-        points = state.points
-        next_yardline = max(0, state.yardline - yards)
-
         turnover_model = self.model["turnover_model"]
         turnover_probability = max(
             float(turnover_model["minimum_probability"]),
@@ -73,6 +68,17 @@ class ResolutionEngine:
             + float(risk["turnover_modifier"])
             + float(interaction["turnover_modifier"]),
         )
+
+        terminal = False
+        terminal_reason: Optional[str] = None
+        points = state.points
+        next_yardline = max(0, state.yardline - yards)
+        if yards >= state.distance:
+            next_down = 1
+            next_distance = min(10, max(1, next_yardline))
+        else:
+            next_down = state.down + 1
+            next_distance = max(1, state.distance - yards)
 
         if (
             self.rng.random() < turnover_probability
@@ -90,26 +96,9 @@ class ResolutionEngine:
             terminal_reason = "max_plays_reached"
             field_goal = self.model["field_goal_model"]
             points = int(field_goal["points"]) if next_yardline <= int(field_goal["max_yardline_for_attempt"]) else state.points
-        elif yards >= state.distance:
-            next_down = 1
-            next_distance = min(10, max(1, next_yardline))
-        else:
-            next_down = state.down + 1
-            next_distance = state.distance - yards
-            if next_down > 4:
-                terminal = True
-                terminal_reason = "turnover_on_downs"
-
-        if not terminal:
-            if yards >= state.distance:
-                next_down = 1
-                next_distance = min(10, max(1, next_yardline))
-            else:
-                next_down = state.down + 1
-                next_distance = max(1, state.distance - yards)
-        else:
-            next_down = state.down
-            next_distance = max(1, state.distance - yards)
+        elif next_down > 4:
+            terminal = True
+            terminal_reason = "turnover_on_downs"
 
         offense_event_tags = [
             event["tag"]

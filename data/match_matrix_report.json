@@ -4,10 +4,11 @@
   "cases": [
     {
       "case": "A_static_offense_vs_A_static_defense",
-      "points": 7,
-      "result": "touchdown",
+      "seed": 226394082,
+      "points": 0,
+      "result": "stopped",
       "plays": 6,
-      "film_room_headline": "Touchdown drive",
+      "film_room_headline": "Drive stopped",
       "turning_point": {
         "play_index": 2,
         "expected_value_delta": 0.85,
@@ -18,9 +19,10 @@
     },
     {
       "case": "B_adaptive_offense_vs_A_static_defense",
+      "seed": 4275618346,
       "points": 0,
       "result": "stopped",
-      "plays": 4,
+      "plays": 7,
       "film_room_headline": "Drive stopped",
       "turning_point": {
         "play_index": 2,
@@ -30,6 +32,7 @@
     },
     {
       "case": "A_static_offense_vs_B_adaptive_defense",
+      "seed": 1826322261,
       "points": 7,
       "result": "touchdown",
       "plays": 5,
@@ -44,10 +47,11 @@
     },
     {
       "case": "B_adaptive_offense_vs_B_adaptive_defense",
-      "points": 0,
-      "result": "stopped",
-      "plays": 7,
-      "film_room_headline": "Drive stopped",
+      "seed": 117961950,
+      "points": 7,
+      "result": "touchdown",
+      "plays": 4,
+      "film_room_headline": "Touchdown drive",
       "turning_point": {
         "play_index": 2,
         "expected_value_delta": 0.76,

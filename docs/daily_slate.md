@@ -5,13 +5,25 @@ Daily Slate is a fixed-seed local challenge set. It gives players a repeatable r
 ## P0 local version
 
 ```text
-three fixed seeds
+explicit seed/matchup entries
 fictional team context
 baseline/adaptive matchups
 engine-generated replays
 Film Room output per seed
 summary report
 ```
+
+Slate files should prefer:
+
+```json
+{
+  "entries": [
+    {"seed": 42, "matchup": {"offense": "adaptive", "defense": "static"}}
+  ]
+}
+```
+
+Legacy `seeds` and `matchups` arrays are accepted only when their lengths match exactly.
 
 Run:
 

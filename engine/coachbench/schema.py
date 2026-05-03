@@ -59,12 +59,16 @@ class BeliefState:
     screen_trap_risk: float = 0.25
 
     def clamp(self) -> "BeliefState":
-        for key, value in self.to_dict().items():
-            setattr(self, key, max(0.0, min(1.0, float(value))))
+        for key in self.__dataclass_fields__:
+            value = getattr(self, key)
+            setattr(self, key, round(max(0.0, min(1.0, float(value))), 4))
         return self
 
     def to_dict(self) -> Dict[str, float]:
-        return asdict(self)
+        return {
+            key: round(float(value), 4)
+            for key, value in asdict(self).items()
+        }
 
 
 @dataclass

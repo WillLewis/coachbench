@@ -1,15 +1,24 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
-import _path  # noqa: F401
+try:
+    import _path  # noqa: F401
+except ModuleNotFoundError:
+    from scripts import _path  # noqa: F401
 from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from agents.static_defense import StaticDefense
 from agents.static_offense import StaticOffense
 from coachbench.engine import CoachBenchEngine
+
+
+def case_seed(base_seed: int, case_label: str) -> int:
+    digest = hashlib.sha256(f"{base_seed}:{case_label}".encode("utf-8")).hexdigest()
+    return int(digest[:8], 16)
 
 
 def main() -> None:
@@ -25,11 +34,14 @@ def main() -> None:
         ("B_adaptive_offense", AdaptiveOffense(), "B_adaptive_defense", AdaptiveDefense()),
     ]
     results = []
-    for index, (off_key, off_agent, def_key, def_agent) in enumerate(cases):
-        engine = CoachBenchEngine(seed=args.seed + index)
-        replay = engine.run_drive(off_agent, def_agent, agent_garage_config={"matrix_case": f"{off_key}_vs_{def_key}"})
+    for off_key, off_agent, def_key, def_agent in cases:
+        label = f"{off_key}_vs_{def_key}"
+        seed = case_seed(args.seed, label)
+        engine = CoachBenchEngine(seed=seed)
+        replay = engine.run_drive(off_agent, def_agent, agent_garage_config={"matrix_case": label})
         results.append({
-            "case": f"{off_key}_vs_{def_key}",
+            "case": label,
+            "seed": seed,
             "points": replay["score"]["points"],
             "result": replay["score"]["result"],
             "plays": len(replay["plays"]),

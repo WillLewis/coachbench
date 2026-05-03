@@ -4,7 +4,10 @@ import argparse
 import json
 from pathlib import Path
 
-import _path  # noqa: F401
+try:
+    import _path  # noqa: F401
+except ModuleNotFoundError:
+    from scripts import _path  # noqa: F401
 from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from agents.static_defense import StaticDefense
@@ -20,6 +23,20 @@ def defense_agent(kind: str):
     return AdaptiveDefense() if kind == "adaptive" else StaticDefense()
 
 
+def slate_entries(slate: dict):
+    if "entries" in slate:
+        return slate["entries"]
+
+    seeds = slate.get("seeds", [])
+    matchups = slate.get("matchups", [])
+    if len(seeds) != len(matchups):
+        raise ValueError("Daily Slate seeds and matchups must have equal length, or use explicit entries.")
+    return [
+        {"seed": seed, "matchup": matchup}
+        for seed, matchup in zip(seeds, matchups)
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run a fixed-seed local Daily Slate.")
     parser.add_argument("--slate", default="data/daily_slate/sample_slate.json")
@@ -27,12 +44,11 @@ def main() -> None:
     args = parser.parse_args()
 
     slate = json.loads(Path(args.slate).read_text(encoding="utf-8"))
-    seeds = slate["seeds"]
-    matchups = slate["matchups"]
     results = []
 
-    for index, seed in enumerate(seeds):
-        matchup = matchups[index % len(matchups)]
+    for entry in slate_entries(slate):
+        seed = entry["seed"]
+        matchup = entry["matchup"]
         engine = CoachBenchEngine(seed=int(seed))
         replay = engine.run_drive(
             offense_agent(matchup["offense"]),

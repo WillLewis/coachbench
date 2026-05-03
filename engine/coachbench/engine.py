@@ -99,8 +99,9 @@ class CoachBenchEngine:
         defense_agent: DefenseAgent,
         agent_garage_config: Dict[str, Any] | None = None,
         max_plays: int = 8,
+        start_yardline: int = 22,
     ) -> Dict[str, Any]:
-        state = GameState(max_plays=max_plays)
+        state = GameState(max_plays=max_plays, yardline=start_yardline)
         initial_state = state
         offense_resources = dict(self.graph.constraints["drive_budgets"]["offense"])
         defense_resources = dict(self.graph.constraints["drive_budgets"]["defense"])

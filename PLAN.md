@@ -592,7 +592,7 @@ Users tune agents, submit locally or later through hosted eval, and compare resu
 ### 7.2 P0 local version
 
 ```text
-3 fixed seeds
+3 explicit seed/matchup entries
 same fictional roster profile
 same baseline opponent set
 local results report

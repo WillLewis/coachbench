@@ -1,23 +1,27 @@
 {
   "slate_id": "daily-slate-local-v0",
   "description": "Local fixed-seed red-zone slate using fictional teams and symbolic strategy.",
-  "seeds": [
-    42,
-    99,
-    202
-  ],
-  "matchups": [
+  "entries": [
     {
-      "offense": "adaptive",
-      "defense": "static"
+      "seed": 42,
+      "matchup": {
+        "offense": "adaptive",
+        "defense": "static"
+      }
     },
     {
-      "offense": "adaptive",
-      "defense": "adaptive"
+      "seed": 99,
+      "matchup": {
+        "offense": "adaptive",
+        "defense": "adaptive"
+      }
     },
     {
-      "offense": "static",
-      "defense": "adaptive"
+      "seed": 202,
+      "matchup": {
+        "offense": "static",
+        "defense": "adaptive"
+      }
     }
   ]
 }
