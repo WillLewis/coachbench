@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from coachbench.action_legality import LegalActionEnumerator
+from coachbench.action_legality import LegalActionFacade
 from coachbench.schema import AgentMemory, OffenseAction
 
 
@@ -15,7 +15,7 @@ class ExampleCustomOffense:
 
     name = "Example Custom Offense"
 
-    def choose_action(self, observation: Dict[str, Any], memory: AgentMemory, legal: LegalActionEnumerator) -> OffenseAction:
+    def choose_action(self, observation: Dict[str, Any], memory: AgentMemory, legal: LegalActionFacade) -> OffenseAction:
         if memory.beliefs.screen_trap_risk > 0.45:
             return legal.build_offense_action("quick_game", "balanced")
         return legal.build_offense_action("screen", "balanced")

@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from coachbench.action_legality import LegalActionEnumerator
+from coachbench.action_legality import LegalActionFacade
 from coachbench.schema import AgentMemory, OffenseAction
 
 
 class AdaptiveOffense:
     name = "Team B Adaptive Offense"
 
-    def choose_action(self, observation: Dict[str, Any], memory: AgentMemory, legal: LegalActionEnumerator) -> OffenseAction:
+    def choose_action(self, observation: Dict[str, Any], memory: AgentMemory, legal: LegalActionFacade) -> OffenseAction:
         beliefs = memory.beliefs
         tendencies = memory.opponent_visible_tendencies
         down = int(observation["game_state"]["down"])
@@ -23,7 +23,7 @@ class AdaptiveOffense:
             return legal.build_offense_action("screen", "balanced")
         if beliefs.run_fit_aggression > 0.42:
             return legal.build_offense_action("play_action_flood", "balanced")
-        if tendencies.get("bear_front", 0) >= 1:
+        if tendencies.get("wide_zone_constrained", 0) >= 1:
             return legal.build_offense_action("quick_game", "balanced")
         if down == 1:
             return legal.build_offense_action("outside_zone", "conservative")

@@ -3,6 +3,25 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 
+def _public_play(play: Dict[str, Any]) -> Dict[str, Any]:
+    return play.get("public", play)
+
+
+def _internal_play(play: Dict[str, Any]) -> Dict[str, Any]:
+    return play.get("engine_internal", play)
+
+
+def _observed_events(play: Dict[str, Any]) -> List[Dict[str, Any]]:
+    if "offense_observed" not in play and "defense_observed" not in play:
+        return play.get("events", [])
+
+    events_by_tag: Dict[str, Dict[str, Any]] = {}
+    for key in ("offense_observed", "defense_observed"):
+        for event in play.get(key, {}).get("events", []):
+            events_by_tag.setdefault(event["tag"], event)
+    return list(events_by_tag.values())
+
+
 def build_film_room(play_results: List[Dict[str, Any]], points: int) -> Dict[str, Any]:
     if not play_results:
         return {
@@ -12,8 +31,8 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int) -> Dict[str
             "suggested_tweaks": [],
         }
 
-    turning = max(play_results, key=lambda p: abs(float(p.get("expected_value_delta", 0.0))))
-    tags = [event["tag"] for play in play_results for event in play.get("events", [])]
+    turning = max(play_results, key=lambda p: abs(float(_internal_play(p).get("expected_value_delta", 0.0))))
+    tags = [event["tag"] for play in play_results for event in _observed_events(play)]
     notes: List[str] = []
     tweaks: List[str] = []
 
@@ -42,9 +61,9 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int) -> Dict[str
     return {
         "headline": headline,
         "turning_point": {
-            "play_index": turning.get("play_index"),
-            "expected_value_delta": turning.get("expected_value_delta"),
-            "graph_card_ids": turning.get("graph_card_ids", []),
+            "play_index": _public_play(turning).get("play_index"),
+            "expected_value_delta": _internal_play(turning).get("expected_value_delta"),
+            "graph_card_ids": _public_play(turning).get("graph_card_ids", []),
         },
         "notes": notes,
         "suggested_tweaks": tweaks,

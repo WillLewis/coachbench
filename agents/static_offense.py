@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from coachbench.action_legality import LegalActionEnumerator
+from coachbench.action_legality import LegalActionFacade
 from coachbench.schema import AgentMemory, OffenseAction
 
 
 class StaticOffense:
     name = "Team A Static Offense"
 
-    def choose_action(self, observation: Dict[str, Any], memory: AgentMemory, legal: LegalActionEnumerator) -> OffenseAction:
+    def choose_action(self, observation: Dict[str, Any], memory: AgentMemory, legal: LegalActionFacade) -> OffenseAction:
         down = int(observation["game_state"]["down"])
         distance = int(observation["game_state"]["distance"])
         if down >= 3 and distance >= 6:

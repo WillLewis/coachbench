@@ -13,8 +13,20 @@
       "epa_modifier": 0.35,
       "success_modifier": 0.14,
       "tactical_events": [
-        "coverage_switch_stress",
-        "nickel_passoff_test"
+        {
+          "tag": "coverage_switch_stress",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        },
+        {
+          "tag": "nickel_passoff_test",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        }
       ],
       "counters": [
         "redzone_bracket",
@@ -36,8 +48,19 @@
       "epa_modifier": 0.48,
       "success_modifier": 0.18,
       "tactical_events": [
-        "pressure_punished",
-        "space_created_after_rush"
+        {
+          "tag": "pressure_punished",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        },
+        {
+          "tag": "space_created_after_rush",
+          "visible_to": [
+            "offense"
+          ]
+        }
       ],
       "counters": [
         "simulated_pressure",
@@ -60,8 +83,19 @@
       "epa_modifier": -0.42,
       "success_modifier": -0.18,
       "tactical_events": [
-        "screen_baited",
-        "simulated_pressure_revealed"
+        {
+          "tag": "screen_baited",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        },
+        {
+          "tag": "simulated_pressure_revealed",
+          "visible_to": [
+            "offense"
+          ]
+        }
       ],
       "counters": [
         "quick_game",
@@ -83,8 +117,19 @@
       "epa_modifier": -0.32,
       "success_modifier": -0.12,
       "tactical_events": [
-        "wide_zone_constrained",
-        "front_strength_declared"
+        {
+          "tag": "wide_zone_constrained",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        },
+        {
+          "tag": "front_strength_declared",
+          "visible_to": [
+            "offense"
+          ]
+        }
       ],
       "counters": [
         "quick_game",
@@ -118,8 +163,19 @@
       "epa_modifier": 0.28,
       "success_modifier": 0.1,
       "tactical_events": [
-        "run_tendency_exploited",
-        "second_level_conflict"
+        {
+          "tag": "run_tendency_exploited",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        },
+        {
+          "tag": "second_level_conflict",
+          "visible_to": [
+            "offense"
+          ]
+        }
       ],
       "counters": [
         "edge_contain",
@@ -144,8 +200,19 @@
       "epa_modifier": -0.3,
       "success_modifier": -0.1,
       "tactical_events": [
-        "explosive_window_capped",
-        "underneath_space_conceded"
+        {
+          "tag": "explosive_window_capped",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        },
+        {
+          "tag": "underneath_space_conceded",
+          "visible_to": [
+            "offense"
+          ]
+        }
       ],
       "counters": [
         "quick_game",
@@ -168,7 +235,13 @@
       "epa_modifier": 0.18,
       "success_modifier": 0.08,
       "tactical_events": [
-        "underneath_space_taken"
+        {
+          "tag": "underneath_space_taken",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        }
       ],
       "counters": [
         "trap_coverage",
@@ -191,7 +264,13 @@
       "epa_modifier": 0.25,
       "success_modifier": 0.1,
       "tactical_events": [
-        "conflict_defender_stressed"
+        {
+          "tag": "conflict_defender_stressed",
+          "visible_to": [
+            "offense",
+            "defense"
+          ]
+        }
       ],
       "counters": [
         "quarters_match",

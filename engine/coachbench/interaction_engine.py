@@ -24,8 +24,15 @@ class ConceptInteractionEngine:
             epa_modifier += float(item.get("epa_modifier", 0.0))
             success_modifier += float(item.get("success_modifier", 0.0))
             for event in item.get("tactical_events", []):
+                if isinstance(event, str):
+                    tag = event
+                    visible_to = ["offense", "defense"]
+                else:
+                    tag = str(event["tag"])
+                    visible_to = list(event.get("visible_to", ["offense", "defense"]))
                 events.append({
-                    "tag": event,
+                    "tag": tag,
+                    "visible_to": visible_to,
                     "graph_card_id": item["id"],
                     "description": item["name"],
                     "counters": item.get("counters", []),

@@ -86,12 +86,23 @@ class ResolutionEngine:
             next_down = state.down
             next_distance = max(1, state.distance - yards)
 
-        event_tags = [event["tag"] for event in interaction["events"]]
-        update_beliefs(offense_memory, defense_memory, event_tags)
+        offense_event_tags = [
+            event["tag"]
+            for event in interaction["events"]
+            if "offense" in event.get("visible_to", ["offense", "defense"])
+        ]
+        defense_event_tags = [
+            event["tag"]
+            for event in interaction["events"]
+            if "defense" in event.get("visible_to", ["offense", "defense"])
+        ]
+        update_beliefs(offense_memory, defense_memory, offense_event_tags, defense_event_tags)
         offense_memory.remember_own_call(offense_action.concept_family)
         defense_memory.remember_own_call(defense_action.coverage_family)
-        offense_memory.increment_tendency(defense_action.coverage_family)
-        defense_memory.increment_tendency(offense_action.concept_family)
+        for tag in offense_event_tags:
+            offense_memory.increment_tendency(tag)
+        for tag in defense_event_tags:
+            defense_memory.increment_tendency(tag)
 
         next_state = GameState(
             down=next_down,

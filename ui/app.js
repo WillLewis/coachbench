@@ -31,9 +31,10 @@ function renderTimeline() {
   const timeline = document.getElementById('timeline');
   timeline.innerHTML = '';
   replay.plays.forEach((play, index) => {
+    const publicPlay = play.public || play;
     const btn = document.createElement('button');
     btn.className = 'play';
-    btn.textContent = `Play ${play.play_index}`;
+    btn.textContent = `Play ${publicPlay.play_index}`;
     btn.onclick = () => selectPlay(index);
     timeline.appendChild(btn);
   });
@@ -45,7 +46,8 @@ function selectPlay(index) {
     button.classList.toggle('active', i === index);
   });
   const play = replay.plays[index];
-  renderBall(play.next_state.yardline);
+  const publicPlay = play.public || play;
+  renderBall(publicPlay.next_state.yardline);
   renderPlayDetails(play);
   renderBeliefs(play);
   renderEvents(play);
@@ -59,18 +61,20 @@ function renderBall(yardline) {
 }
 
 function renderPlayDetails(play) {
+  const publicPlay = play.public || play;
   document.getElementById('playDetails').innerHTML = `
-    <div class="kv"><span>Outcome</span><strong>${play.yards_gained} yards</strong></div>
-    <div class="kv"><span>Expected value</span><span>${play.expected_value_delta}</span></div>
-    <div class="kv"><span>Offense</span><span>${play.offense_action.concept_family}</span></div>
-    <div class="kv"><span>Defense</span><span>${play.defense_action.coverage_family}</span></div>
-    <div class="kv"><span>Next state</span><span>${play.next_state.down} & ${play.next_state.distance} at ${play.next_state.yardline}</span></div>
-    <div class="kv"><span>Terminal</span><span>${play.terminal_reason || 'no'}</span></div>
+    <div class="kv"><span>Outcome</span><strong>${publicPlay.yards_gained} yards</strong></div>
+    <div class="kv"><span>Expected value</span><span>${publicPlay.expected_value_delta}</span></div>
+    <div class="kv"><span>Offense</span><span>${publicPlay.offense_action.concept_family}</span></div>
+    <div class="kv"><span>Defense</span><span>${publicPlay.defense_action.coverage_family}</span></div>
+    <div class="kv"><span>Next state</span><span>${publicPlay.next_state.down} & ${publicPlay.next_state.distance} at ${publicPlay.next_state.yardline}</span></div>
+    <div class="kv"><span>Terminal</span><span>${publicPlay.terminal_reason || 'no'}</span></div>
   `;
 }
 
 function renderBeliefs(play) {
-  const beliefs = play.offense_belief_after || {};
+  const offenseObserved = play.offense_observed || {};
+  const beliefs = offenseObserved.belief_after || play.offense_belief_after || {};
   const rows = Object.entries(beliefs).map(([key, value]) => {
     const pct = Math.round(Number(value) * 100);
     return `
@@ -84,7 +88,8 @@ function renderBeliefs(play) {
 }
 
 function renderEvents(play) {
-  const events = play.events || [];
+  const publicPlay = play.public || play;
+  const events = publicPlay.events || [];
   if (!events.length) {
     document.getElementById('events').innerHTML = '<p class="muted">No high-leverage graph event on this play.</p>';
     return;

@@ -388,7 +388,6 @@ Offense can observe:
 game state
 own prior calls
 own resource usage
-visible defensive shell/alignment family
 post-play tactical events revealed to offense
 outcome
 belief-state update
@@ -400,13 +399,12 @@ Defense can observe:
 game state
 own prior calls
 own resource usage
-offensive personnel/formation/motion family
 post-play tactical events revealed to defense
 outcome
 belief-state update
 ```
 
-Neither side receives the opponent's full private action before committing.
+P0 does not expose pre-commitment shell, alignment, personnel, formation, or motion hints because the starter engine has no separate commit/reveal phase yet. Neither side receives the opponent's full private action before committing. Post-play learning is event-mediated through graph events with explicit side visibility.
 
 ### 4.4 Replay contract
 
