@@ -13,6 +13,10 @@
     "success_modifier": [
       -0.5,
       0.5
+    ],
+    "turnover_modifier": [
+      -0.2,
+      0.2
     ]
   }
 }

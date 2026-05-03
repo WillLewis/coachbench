@@ -16,6 +16,8 @@ class StrategyGraph:
         self.concepts = self._load_json("concepts.json")
         self.constraints = self._load_json("resource_constraints.json")
         self.interactions = self._load_json("interactions.json")["interactions"]
+        self.resolution_model = self._load_json("resolution_model.json")
+        self.belief_model = self._load_json("belief_model.json")
 
     def _load_json(self, name: str) -> Dict[str, Any]:
         path = self.graph_dir / name
@@ -29,10 +31,22 @@ class StrategyGraph:
         return [item["id"] for item in self.concepts["defense"]]
 
     def base_ep_for_offense(self, concept: str) -> float:
+        return float(self.offense_concept(concept)["base_ep"])
+
+    def base_success_for_offense(self, concept: str) -> float:
+        return float(self.offense_concept(concept)["base_success"])
+
+    def offense_concept(self, concept: str) -> Dict[str, Any]:
         for item in self.concepts["offense"]:
             if item["id"] == concept:
-                return float(item.get("base_ep", 0.3))
+                return item
         raise KeyError(f"Unknown offense concept: {concept}")
+
+    def defense_call(self, call: str) -> Dict[str, Any]:
+        for item in self.concepts["defense"]:
+            if item["id"] == call:
+                return item
+        raise KeyError(f"Unknown defense call: {call}")
 
     def matching_interactions(self, offense_concept: str, defense_call: str, recent_offense: list[str]) -> List[Dict[str, Any]]:
         matches: List[Dict[str, Any]] = []

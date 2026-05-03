@@ -14,6 +14,7 @@ class ResolutionEngine:
         self.graph = graph
         self.rng = rng
         self.interactions = ConceptInteractionEngine(graph)
+        self.model = graph.resolution_model
 
     def resolve(
         self,
@@ -29,42 +30,66 @@ class ResolutionEngine:
             recent_offense=offense_memory.own_recent_calls,
         )
         base = self.graph.base_ep_for_offense(offense_action.concept_family)
-        risk_adjustment = {
-            "conservative": -0.08,
-            "balanced": 0.0,
-            "aggressive": 0.08,
-        }.get(offense_action.risk_level, 0.0)
-        expected_value = base + interaction["epa_modifier"] + risk_adjustment
-        success_probability = max(0.05, min(0.90, 0.45 + interaction["success_modifier"] + risk_adjustment))
+        risk = self.model["risk_levels"].get(offense_action.risk_level, self.model["risk_levels"]["balanced"])
+        expected_value = base + interaction["epa_modifier"] + float(risk["epa_modifier"])
+        success_bounds = self.model["success_probability_bounds"]
+        success_probability = max(
+            float(success_bounds["minimum"]),
+            min(
+                float(success_bounds["maximum"]),
+                self.graph.base_success_for_offense(offense_action.concept_family)
+                + interaction["success_modifier"]
+                + float(risk["success_modifier"]),
+            ),
+        )
         success = self.rng.random() < success_probability
 
-        noise = self.rng.randint(-2, 2)
+        yards_model = self.model["yardage_model"]
+        noise = self.rng.randint(int(yards_model["noise_min"]), int(yards_model["noise_max"]))
         if success:
-            yards = max(1, int(4 + expected_value * 4 + noise))
+            yards = max(
+                int(yards_model["minimum_success_yards"]),
+                int(
+                    float(yards_model["success_base_yards"])
+                    + expected_value * float(yards_model["success_ep_multiplier"])
+                    + noise
+                ),
+            )
         else:
-            yards = min(2, int(expected_value * 2 + noise))
+            yards = min(
+                int(yards_model["maximum_failure_yards"]),
+                int(expected_value * float(yards_model["failure_ep_multiplier"]) + noise),
+            )
 
         terminal = False
         terminal_reason: Optional[str] = None
         points = state.points
         next_yardline = max(0, state.yardline - yards)
 
-        turnover_probability = max(0.01, 0.04 + (0.05 if offense_action.risk_level == "aggressive" else 0.0))
-        if defense_action.coverage_family in {"trap_coverage", "zero_pressure"}:
-            turnover_probability += 0.03
+        turnover_model = self.model["turnover_model"]
+        turnover_probability = max(
+            float(turnover_model["minimum_probability"]),
+            float(turnover_model["baseline_probability"])
+            + float(risk["turnover_modifier"])
+            + float(interaction["turnover_modifier"]),
+        )
 
-        if self.rng.random() < turnover_probability and offense_action.concept_family in {"vertical_shot", "screen", "rpo_glance"}:
+        if (
+            self.rng.random() < turnover_probability
+            and offense_action.concept_family in set(turnover_model["eligible_offense_concepts"])
+        ):
             terminal = True
             terminal_reason = "turnover"
             points = state.points
         elif next_yardline <= 0:
             terminal = True
             terminal_reason = "touchdown"
-            points = 7
+            points = int(self.model["touchdown_points"])
         elif state.play_index + 1 >= state.max_plays:
             terminal = True
             terminal_reason = "max_plays_reached"
-            points = 3 if next_yardline <= 8 else state.points
+            field_goal = self.model["field_goal_model"]
+            points = int(field_goal["points"]) if next_yardline <= int(field_goal["max_yardline_for_attempt"]) else state.points
         elif yards >= state.distance:
             next_down = 1
             next_distance = min(10, max(1, next_yardline))
@@ -96,7 +121,7 @@ class ResolutionEngine:
             for event in interaction["events"]
             if "defense" in event.get("visible_to", ["offense", "defense"])
         ]
-        update_beliefs(offense_memory, defense_memory, offense_event_tags, defense_event_tags)
+        update_beliefs(offense_memory, defense_memory, offense_event_tags, defense_event_tags, self.graph.belief_model)
         offense_memory.remember_own_call(offense_action.concept_family)
         defense_memory.remember_own_call(defense_action.coverage_family)
         for tag in offense_event_tags:

@@ -17,12 +17,14 @@ class ConceptInteractionEngine:
         events: List[Dict[str, Any]] = []
         epa_modifier = 0.0
         success_modifier = 0.0
+        turnover_modifier = 0.0
         graph_card_ids: List[str] = []
 
         for item in matches:
             graph_card_ids.append(item["id"])
             epa_modifier += float(item.get("epa_modifier", 0.0))
             success_modifier += float(item.get("success_modifier", 0.0))
+            turnover_modifier += float(item.get("turnover_modifier", 0.0))
             for event in item.get("tactical_events", []):
                 if isinstance(event, str):
                     tag = event
@@ -42,5 +44,6 @@ class ConceptInteractionEngine:
             "events": events,
             "epa_modifier": epa_modifier,
             "success_modifier": success_modifier,
+            "turnover_modifier": turnover_modifier,
             "graph_card_ids": graph_card_ids,
         }

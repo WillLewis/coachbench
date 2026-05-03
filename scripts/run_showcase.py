@@ -13,10 +13,38 @@ from agents.static_offense import StaticOffense
 from coachbench.engine import CoachBenchEngine
 
 
+def load_agent_garage_profiles():
+    return json.loads(Path("agent_garage/profiles.json").read_text(encoding="utf-8"))
+
+
+def profile_config(profiles, side: str, key: str):
+    group = "offense_archetypes" if side == "offense" else "defense_archetypes"
+    profile = dict(profiles[group][key])
+    profile["profile_key"] = key
+    return profile
+
+
 def build_agents(offense: str, defense: str):
-    offense_agent = AdaptiveOffense() if offense == "adaptive" else StaticOffense()
-    defense_agent = AdaptiveDefense() if defense == "adaptive" else StaticDefense()
-    return offense_agent, defense_agent
+    profiles = load_agent_garage_profiles()
+    garage_config = {"source": "agent_garage_profiles_v0"}
+
+    if offense == "adaptive":
+        offense_profile = profile_config(profiles, "offense", "misdirection_artist")
+        offense_agent = AdaptiveOffense(offense_profile)
+        garage_config["offense_profile"] = offense_profile
+    else:
+        offense_agent = StaticOffense()
+        garage_config["offense_profile"] = {"profile_key": "static_baseline", "label": "Static Baseline"}
+
+    if defense == "adaptive":
+        defense_profile = profile_config(profiles, "defense", "disguise_specialist")
+        defense_agent = AdaptiveDefense(defense_profile)
+        garage_config["defense_profile"] = defense_profile
+    else:
+        defense_agent = StaticDefense()
+        garage_config["defense_profile"] = {"profile_key": "static_baseline", "label": "Static Baseline"}
+
+    return offense_agent, defense_agent, garage_config
 
 
 def main() -> None:
@@ -29,15 +57,11 @@ def main() -> None:
     args = parser.parse_args()
 
     engine = CoachBenchEngine(seed=args.seed)
-    offense_agent, defense_agent = build_agents(args.offense, args.defense)
+    offense_agent, defense_agent, garage_config = build_agents(args.offense, args.defense)
     replay = engine.run_drive(
         offense_agent,
         defense_agent,
-        agent_garage_config={
-            "offense_archetype": "Misdirection Artist" if args.offense == "adaptive" else "Efficiency Optimizer",
-            "defense_archetype": "Disguise Specialist" if args.defense == "adaptive" else "Coverage Shell Conservative",
-            "source": "starter_default",
-        },
+        agent_garage_config=garage_config,
     )
 
     out = Path(args.out)

@@ -1,0 +1,74 @@
+{
+  "model_id": "redzone_belief_v0",
+  "description": "Event-visible belief deltas for starter coordinator memories.",
+  "belief_deltas": {
+    "screen_baited": {
+      "offense": {
+        "simulated_pressure_risk": 0.22,
+        "screen_trap_risk": 0.24,
+        "true_pressure_confidence": -0.12
+      },
+      "defense": {
+        "screen_trap_risk": 0.12
+      }
+    },
+    "simulated_pressure_revealed": {
+      "offense": {
+        "simulated_pressure_risk": 0.22,
+        "screen_trap_risk": 0.24,
+        "true_pressure_confidence": -0.12
+      },
+      "defense": {}
+    },
+    "pressure_punished": {
+      "offense": {
+        "true_pressure_confidence": 0.16
+      },
+      "defense": {
+        "screen_trap_risk": 0.12
+      }
+    },
+    "coverage_switch_stress": {
+      "offense": {
+        "match_coverage_stress": 0.2
+      },
+      "defense": {
+        "match_coverage_stress": 0.16
+      }
+    },
+    "nickel_passoff_test": {
+      "offense": {
+        "match_coverage_stress": 0.2
+      },
+      "defense": {
+        "match_coverage_stress": 0.16
+      }
+    },
+    "wide_zone_constrained": {
+      "offense": {
+        "run_fit_aggression": 0.18
+      },
+      "defense": {
+        "run_fit_aggression": 0.1
+      }
+    },
+    "front_strength_declared": {
+      "offense": {
+        "run_fit_aggression": 0.18
+      },
+      "defense": {}
+    },
+    "underneath_space_taken": {
+      "offense": {},
+      "defense": {
+        "match_coverage_stress": 0.08
+      }
+    },
+    "run_tendency_exploited": {
+      "offense": {},
+      "defense": {
+        "run_fit_aggression": 0.08
+      }
+    }
+  }
+}

@@ -4,61 +4,131 @@
       "id": "inside_zone",
       "label": "Inside Zone",
       "family": "run",
-      "base_ep": 0.35
+      "base_ep": 0.35,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "none",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "outside_zone",
       "label": "Outside Zone",
       "family": "run",
-      "base_ep": 0.25
+      "base_ep": 0.25,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "none",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "power_counter",
       "label": "Power Counter",
       "family": "run",
-      "base_ep": 0.3
+      "base_ep": 0.3,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "none",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "quick_game",
       "label": "Quick Game",
       "family": "pass",
-      "base_ep": 0.45
+      "base_ep": 0.45,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "none",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "bunch_mesh",
       "label": "Bunch Mesh",
       "family": "pass",
-      "base_ep": 0.5
+      "base_ep": 0.5,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "bunch",
+        "motion_family": "none",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "rpo_glance",
       "label": "RPO Glance",
       "family": "hybrid",
-      "base_ep": 0.42
+      "base_ep": 0.42,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "orbit",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "play_action_flood",
       "label": "Play-Action Flood",
       "family": "pass",
-      "base_ep": 0.48
+      "base_ep": 0.48,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "none",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "vertical_shot",
       "label": "Vertical Shot",
       "family": "pass",
-      "base_ep": 0.28
+      "base_ep": 0.28,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "none",
+        "protection_family": "max"
+      }
     },
     {
       "id": "screen",
       "label": "Screen",
       "family": "pass",
-      "base_ep": 0.22
+      "base_ep": 0.22,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "orbit",
+        "protection_family": "standard"
+      }
     },
     {
       "id": "bootleg",
       "label": "Bootleg",
       "family": "pass",
-      "base_ep": 0.38
+      "base_ep": 0.38,
+      "base_success": 0.45,
+      "action_fields": {
+        "personnel_family": "fictional_11",
+        "formation_family": "compact",
+        "motion_family": "none",
+        "protection_family": "standard"
+      }
     }
   ],
   "defense": [
@@ -66,61 +136,131 @@
       "id": "base_cover3",
       "label": "Base Cover 3",
       "family": "zone",
-      "base_ep_allowed": 0.4
+      "base_ep_allowed": 0.4,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "four_man",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "cover3_match",
       "label": "Cover 3 Match",
       "family": "match",
-      "base_ep_allowed": 0.34
+      "base_ep_allowed": 0.34,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "four_man",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "quarters_match",
       "label": "Quarters Match",
       "family": "match",
-      "base_ep_allowed": 0.3
+      "base_ep_allowed": 0.3,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "four_man",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "cover1_man",
       "label": "Cover 1 Man",
       "family": "man",
-      "base_ep_allowed": 0.36
+      "base_ep_allowed": 0.36,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "four_man",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "two_high_shell",
       "label": "Two-High Shell",
       "family": "zone",
-      "base_ep_allowed": 0.32
+      "base_ep_allowed": 0.32,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "four_man",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "zero_pressure",
       "label": "Zero Pressure",
       "family": "pressure",
-      "base_ep_allowed": 0.2
+      "base_ep_allowed": 0.2,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "pressure",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "simulated_pressure",
       "label": "Simulated Pressure",
       "family": "pressure",
-      "base_ep_allowed": 0.24
+      "base_ep_allowed": 0.24,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "pressure",
+        "disguise_family": "late",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "bear_front",
       "label": "Bear Front",
       "family": "front",
-      "base_ep_allowed": 0.28
+      "base_ep_allowed": 0.28,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "bear",
+        "pressure_family": "four_man",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "trap_coverage",
       "label": "Trap Coverage",
       "family": "coverage",
-      "base_ep_allowed": 0.26
+      "base_ep_allowed": 0.26,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "four_man",
+        "disguise_family": "late",
+        "matchup_focus": "red_zone_space"
+      }
     },
     {
       "id": "redzone_bracket",
       "label": "Red-Zone Bracket",
       "family": "coverage",
-      "base_ep_allowed": 0.22
+      "base_ep_allowed": 0.22,
+      "action_fields": {
+        "personnel_family": "fictional_nickel",
+        "front_family": "even",
+        "pressure_family": "four_man",
+        "disguise_family": "none",
+        "matchup_focus": "red_zone_space"
+      }
     }
   ]
 }

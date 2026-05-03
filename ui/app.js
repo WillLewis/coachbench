@@ -19,11 +19,13 @@ function renderHeader() {
 
 function renderGarage() {
   const cfg = replay.agent_garage_config || {};
+  const offenseProfile = cfg.offense_profile || {};
+  const defenseProfile = cfg.defense_profile || {};
   document.getElementById('garage').innerHTML = `
     <div class="kv"><span>Offense</span><strong>${replay.agents.offense}</strong></div>
     <div class="kv"><span>Defense</span><strong>${replay.agents.defense}</strong></div>
-    <div class="kv"><span>Offense archetype</span><span>${cfg.offense_archetype || 'Starter'}</span></div>
-    <div class="kv"><span>Defense archetype</span><span>${cfg.defense_archetype || 'Starter'}</span></div>
+    <div class="kv"><span>Offense profile</span><span>${offenseProfile.label || 'Starter'}</span></div>
+    <div class="kv"><span>Defense profile</span><span>${defenseProfile.label || 'Starter'}</span></div>
   `;
 }
 

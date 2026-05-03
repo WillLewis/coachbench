@@ -120,5 +120,7 @@ class CoachBenchEngine:
             agent_garage_config=agent_garage_config or {},
             play_results=play_results,
             final_points=state.points,
+            touchdown_points=int(self.graph.resolution_model["touchdown_points"]),
+            field_goal_points=int(self.graph.resolution_model["field_goal_model"]["points"]),
             legal_sets=self.legal.public_legal_sets(),
         )

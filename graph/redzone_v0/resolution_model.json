@@ -1,0 +1,48 @@
+{
+  "model_id": "redzone_resolution_v0",
+  "description": "Graph-owned starter resolution constants for symbolic red-zone outcomes.",
+  "risk_levels": {
+    "conservative": {
+      "epa_modifier": -0.08,
+      "success_modifier": -0.08,
+      "turnover_modifier": 0.0
+    },
+    "balanced": {
+      "epa_modifier": 0.0,
+      "success_modifier": 0.0,
+      "turnover_modifier": 0.0
+    },
+    "aggressive": {
+      "epa_modifier": 0.08,
+      "success_modifier": 0.08,
+      "turnover_modifier": 0.05
+    }
+  },
+  "success_probability_bounds": {
+    "minimum": 0.05,
+    "maximum": 0.9
+  },
+  "yardage_model": {
+    "success_base_yards": 4,
+    "success_ep_multiplier": 4,
+    "failure_ep_multiplier": 2,
+    "noise_min": -2,
+    "noise_max": 2,
+    "minimum_success_yards": 1,
+    "maximum_failure_yards": 2
+  },
+  "turnover_model": {
+    "baseline_probability": 0.04,
+    "minimum_probability": 0.01,
+    "eligible_offense_concepts": [
+      "vertical_shot",
+      "screen",
+      "rpo_glance"
+    ]
+  },
+  "field_goal_model": {
+    "max_yardline_for_attempt": 8,
+    "points": 3
+  },
+  "touchdown_points": 7
+}

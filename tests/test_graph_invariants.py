@@ -36,6 +36,32 @@ def test_every_tactical_event_declares_visibility() -> None:
             )
 
 
+def test_concept_cards_declare_action_fields_and_resolution_priors() -> None:
+    concepts = _load_graph_json("concepts.json")
+    offense_fields = {"personnel_family", "formation_family", "motion_family", "protection_family"}
+    defense_fields = {"personnel_family", "front_family", "pressure_family", "disguise_family", "matchup_focus"}
+
+    for concept in concepts["offense"]:
+        assert offense_fields <= set(concept.get("action_fields", {})), f"{concept['id']} missing offense action fields"
+        assert "base_ep" in concept, f"{concept['id']} missing base_ep"
+        assert "base_success" in concept, f"{concept['id']} missing base_success"
+
+    for call in concepts["defense"]:
+        assert defense_fields <= set(call.get("action_fields", {})), f"{call['id']} missing defense action fields"
+
+
+def test_belief_model_only_references_declared_tactical_events() -> None:
+    interactions = _load_graph_json("interactions.json")["interactions"]
+    declared_tags = {
+        event["tag"]
+        for interaction in interactions
+        for event in interaction.get("tactical_events", [])
+    }
+    belief_tags = set(_load_graph_json("belief_model.json")["belief_deltas"])
+
+    assert belief_tags <= declared_tags
+
+
 def test_interaction_modifiers_stay_within_declared_bounds() -> None:
     interactions = _load_graph_json("interactions.json")["interactions"]
     bounds = _load_graph_json("graph_tests.json")["modifier_bounds"]

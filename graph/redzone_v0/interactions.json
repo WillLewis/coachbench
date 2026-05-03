@@ -47,6 +47,7 @@
       ],
       "epa_modifier": 0.48,
       "success_modifier": 0.18,
+      "turnover_modifier": -0.01,
       "tactical_events": [
         {
           "tag": "pressure_punished",
@@ -82,6 +83,7 @@
       ],
       "epa_modifier": -0.42,
       "success_modifier": -0.18,
+      "turnover_modifier": 0.03,
       "tactical_events": [
         {
           "tag": "screen_baited",

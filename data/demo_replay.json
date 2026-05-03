@@ -18,9 +18,24 @@
     "defense": "Team B Adaptive Defense"
   },
   "agent_garage_config": {
-    "offense_archetype": "Misdirection Artist",
-    "defense_archetype": "Disguise Specialist",
-    "source": "starter_default"
+    "source": "agent_garage_profiles_v0",
+    "offense_profile": {
+      "label": "Misdirection Artist",
+      "risk_tolerance": "medium",
+      "adaptation_speed": 0.7,
+      "screen_trigger_confidence": 0.62,
+      "explosive_shot_tolerance": 0.45,
+      "run_pass_tendency": "constraint_heavy",
+      "profile_key": "misdirection_artist"
+    },
+    "defense_profile": {
+      "label": "Disguise Specialist",
+      "risk_tolerance": "medium",
+      "disguise_sensitivity": 0.85,
+      "pressure_frequency": 0.4,
+      "counter_repeat_tolerance": 0.55,
+      "profile_key": "disguise_specialist"
+    }
   },
   "legal_sets": {
     "offense": [
@@ -201,7 +216,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         }
       },
@@ -320,7 +335,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         },
         "defense_belief_after": {
@@ -527,7 +542,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         }
       },
@@ -646,7 +661,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         },
         "defense_belief_after": {
@@ -853,7 +868,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         }
       },
@@ -972,7 +987,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         },
         "defense_belief_after": {
@@ -1164,7 +1179,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         }
       },
@@ -1268,7 +1283,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         },
         "defense_belief_after": {
@@ -1460,7 +1475,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         }
       },
@@ -1564,7 +1579,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         },
         "defense_belief_after": {
@@ -1756,7 +1771,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         }
       },
@@ -1860,7 +1875,7 @@
           "true_pressure_confidence": 0.3,
           "simulated_pressure_risk": 0.3,
           "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.43,
+          "run_fit_aggression": 0.61,
           "screen_trap_risk": 0.25
         },
         "defense_belief_after": {

@@ -8,6 +8,8 @@ The graph is the source of football-inspired tactical truth.
 graph.meta.json
 concepts.json
 interactions.json
+belief_model.json
+resolution_model.json
 resource_constraints.json
 graph_tests.json
 ```
