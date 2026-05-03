@@ -12,6 +12,7 @@ from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from agents.static_defense import StaticDefense
 from agents.static_offense import StaticOffense
+from coachbench.contracts import validate_daily_slate_report
 from coachbench.engine import CoachBenchEngine
 
 
@@ -76,6 +77,7 @@ def main() -> None:
             "average_points": round(sum(item["points"] for item in results) / max(1, len(results)), 2),
         },
     }
+    validate_daily_slate_report(report)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

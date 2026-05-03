@@ -2541,5 +2541,8 @@
       "Pair outside-zone tendency with play-action flood or bootleg counters.",
       "If explosives are capped, increase efficient quick-game calls."
     ]
+  },
+  "debug": {
+    "fields": []
   }
 }

@@ -59,4 +59,7 @@ def build_replay(
             "invalid_action_count": invalid_action_count,
         },
         "film_room": film_room,
+        "debug": {
+            "fields": [],
+        },
     }

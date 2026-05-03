@@ -10,6 +10,7 @@ from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from agents.static_defense import StaticDefense
 from agents.static_offense import StaticOffense
+from coachbench.contracts import validate_replay_contract
 from coachbench.engine import CoachBenchEngine
 
 
@@ -63,6 +64,7 @@ def main() -> None:
         defense_agent,
         agent_garage_config=garage_config,
     )
+    validate_replay_contract(replay)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

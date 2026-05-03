@@ -13,6 +13,7 @@ from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from agents.static_defense import StaticDefense
 from agents.static_offense import StaticOffense
+from coachbench.contracts import validate_match_matrix_report
 from coachbench.engine import CoachBenchEngine
 
 
@@ -54,6 +55,7 @@ def main() -> None:
         "seed_start": args.seed,
         "cases": results,
     }
+    validate_match_matrix_report(report)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
