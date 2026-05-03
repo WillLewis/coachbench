@@ -1,0 +1,3 @@
+# Runtime has no third-party Python dependencies.
+# Dev/test dependency suggestion:
+# pytest>=8.0

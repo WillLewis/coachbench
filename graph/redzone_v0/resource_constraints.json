@@ -1,0 +1,140 @@
+{
+  "budgets": {
+    "offense": {
+      "protection": 3,
+      "spacing": 3,
+      "deception": 3,
+      "volatility": 3
+    },
+    "defense": {
+      "rush": 3,
+      "coverage": 3,
+      "box": 3,
+      "disguise": 3
+    }
+  },
+  "offense_costs": {
+    "inside_zone": {
+      "protection": 1,
+      "spacing": 1,
+      "deception": 0,
+      "volatility": 1
+    },
+    "outside_zone": {
+      "protection": 1,
+      "spacing": 1,
+      "deception": 1,
+      "volatility": 1
+    },
+    "power_counter": {
+      "protection": 1,
+      "spacing": 0,
+      "deception": 1,
+      "volatility": 1
+    },
+    "quick_game": {
+      "protection": 1,
+      "spacing": 2,
+      "deception": 0,
+      "volatility": 1
+    },
+    "bunch_mesh": {
+      "protection": 1,
+      "spacing": 3,
+      "deception": 1,
+      "volatility": 1
+    },
+    "rpo_glance": {
+      "protection": 1,
+      "spacing": 2,
+      "deception": 2,
+      "volatility": 2
+    },
+    "play_action_flood": {
+      "protection": 2,
+      "spacing": 2,
+      "deception": 3,
+      "volatility": 2
+    },
+    "vertical_shot": {
+      "protection": 3,
+      "spacing": 2,
+      "deception": 1,
+      "volatility": 3
+    },
+    "screen": {
+      "protection": 1,
+      "spacing": 2,
+      "deception": 2,
+      "volatility": 2
+    },
+    "bootleg": {
+      "protection": 2,
+      "spacing": 1,
+      "deception": 3,
+      "volatility": 2
+    }
+  },
+  "defense_costs": {
+    "base_cover3": {
+      "rush": 1,
+      "coverage": 2,
+      "box": 2,
+      "disguise": 0
+    },
+    "cover3_match": {
+      "rush": 1,
+      "coverage": 3,
+      "box": 1,
+      "disguise": 1
+    },
+    "quarters_match": {
+      "rush": 1,
+      "coverage": 3,
+      "box": 1,
+      "disguise": 1
+    },
+    "cover1_man": {
+      "rush": 1,
+      "coverage": 2,
+      "box": 2,
+      "disguise": 1
+    },
+    "two_high_shell": {
+      "rush": 1,
+      "coverage": 3,
+      "box": 0,
+      "disguise": 1
+    },
+    "zero_pressure": {
+      "rush": 3,
+      "coverage": 0,
+      "box": 2,
+      "disguise": 1
+    },
+    "simulated_pressure": {
+      "rush": 2,
+      "coverage": 2,
+      "box": 1,
+      "disguise": 3
+    },
+    "bear_front": {
+      "rush": 2,
+      "coverage": 1,
+      "box": 3,
+      "disguise": 0
+    },
+    "trap_coverage": {
+      "rush": 1,
+      "coverage": 3,
+      "box": 1,
+      "disguise": 3
+    },
+    "redzone_bracket": {
+      "rush": 1,
+      "coverage": 3,
+      "box": 1,
+      "disguise": 2
+    }
+  }
+}

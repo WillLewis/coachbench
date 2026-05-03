@@ -1,0 +1,87 @@
+{
+  "slate_id": "daily-slate-local-v0",
+  "results": [
+    {
+      "seed_hash": "73475cb40a56",
+      "matchup": {
+        "offense": "adaptive",
+        "defense": "static"
+      },
+      "points": 0,
+      "result": "stopped",
+      "plays": 4,
+      "film_room": {
+        "headline": "Drive stopped",
+        "turning_point": {
+          "play_index": 3,
+          "expected_value_delta": 0.5,
+          "graph_card_ids": []
+        },
+        "notes": [
+          "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
+        ],
+        "suggested_tweaks": [
+          "Run the same agent across the Daily Slate to check whether the result is robust."
+        ]
+      }
+    },
+    {
+      "seed_hash": "8c1f1046219d",
+      "matchup": {
+        "offense": "adaptive",
+        "defense": "adaptive"
+      },
+      "points": 0,
+      "result": "stopped",
+      "plays": 7,
+      "film_room": {
+        "headline": "Drive stopped",
+        "turning_point": {
+          "play_index": 2,
+          "expected_value_delta": 0.76,
+          "graph_card_ids": [
+            "redzone.play_action_after_run_tendency.v1"
+          ]
+        },
+        "notes": [
+          "The defense used front strength to constrain outside-zone looks.",
+          "The offense took underneath space conceded by safer coverage structure."
+        ],
+        "suggested_tweaks": [
+          "Pair outside-zone tendency with play-action flood or bootleg counters.",
+          "If explosives are capped, increase efficient quick-game calls."
+        ]
+      }
+    },
+    {
+      "seed_hash": "c17edaae86e4",
+      "matchup": {
+        "offense": "static",
+        "defense": "adaptive"
+      },
+      "points": 7,
+      "result": "touchdown",
+      "plays": 6,
+      "film_room": {
+        "headline": "Touchdown drive",
+        "turning_point": {
+          "play_index": 2,
+          "expected_value_delta": 0.85,
+          "graph_card_ids": [
+            "redzone.bunch_mesh_vs_match.v1"
+          ]
+        },
+        "notes": [
+          "Bunch/mesh created communication stress against match-style coverage."
+        ],
+        "suggested_tweaks": [
+          "Increase bunch/mesh use when match coverage stress confidence rises."
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "total_points": 7,
+    "average_points": 2.33
+  }
+}

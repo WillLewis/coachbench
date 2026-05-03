@@ -1,0 +1,16 @@
+{
+  "graph_id": "redzone_v0",
+  "version": "0.1.0",
+  "description": "Compact fictional red-zone strategy graph for CoachBench starter.",
+  "scope": [
+    "red_zone_only",
+    "symbolic_concepts",
+    "fictional_teams"
+  ],
+  "license_safety": {
+    "real_teams": false,
+    "real_players": false,
+    "licensed_logos": false,
+    "official_ratings": false
+  }
+}

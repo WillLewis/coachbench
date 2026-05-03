@@ -1,0 +1,60 @@
+{
+  "report_id": "team-interaction-matrix-v0",
+  "seed_start": 42,
+  "cases": [
+    {
+      "case": "A_static_offense_vs_A_static_defense",
+      "points": 7,
+      "result": "touchdown",
+      "plays": 6,
+      "film_room_headline": "Touchdown drive",
+      "turning_point": {
+        "play_index": 2,
+        "expected_value_delta": 0.85,
+        "graph_card_ids": [
+          "redzone.bunch_mesh_vs_match.v1"
+        ]
+      }
+    },
+    {
+      "case": "B_adaptive_offense_vs_A_static_defense",
+      "points": 0,
+      "result": "stopped",
+      "plays": 4,
+      "film_room_headline": "Drive stopped",
+      "turning_point": {
+        "play_index": 2,
+        "expected_value_delta": 0.42,
+        "graph_card_ids": []
+      }
+    },
+    {
+      "case": "A_static_offense_vs_B_adaptive_defense",
+      "points": 7,
+      "result": "touchdown",
+      "plays": 5,
+      "film_room_headline": "Touchdown drive",
+      "turning_point": {
+        "play_index": 2,
+        "expected_value_delta": 0.85,
+        "graph_card_ids": [
+          "redzone.bunch_mesh_vs_match.v1"
+        ]
+      }
+    },
+    {
+      "case": "B_adaptive_offense_vs_B_adaptive_defense",
+      "points": 0,
+      "result": "stopped",
+      "plays": 7,
+      "film_room_headline": "Drive stopped",
+      "turning_point": {
+        "play_index": 2,
+        "expected_value_delta": 0.76,
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ]
+      }
+    }
+  ]
+}

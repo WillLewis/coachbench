@@ -1,0 +1,126 @@
+{
+  "offense": [
+    {
+      "id": "inside_zone",
+      "label": "Inside Zone",
+      "family": "run",
+      "base_ep": 0.35
+    },
+    {
+      "id": "outside_zone",
+      "label": "Outside Zone",
+      "family": "run",
+      "base_ep": 0.25
+    },
+    {
+      "id": "power_counter",
+      "label": "Power Counter",
+      "family": "run",
+      "base_ep": 0.3
+    },
+    {
+      "id": "quick_game",
+      "label": "Quick Game",
+      "family": "pass",
+      "base_ep": 0.45
+    },
+    {
+      "id": "bunch_mesh",
+      "label": "Bunch Mesh",
+      "family": "pass",
+      "base_ep": 0.5
+    },
+    {
+      "id": "rpo_glance",
+      "label": "RPO Glance",
+      "family": "hybrid",
+      "base_ep": 0.42
+    },
+    {
+      "id": "play_action_flood",
+      "label": "Play-Action Flood",
+      "family": "pass",
+      "base_ep": 0.48
+    },
+    {
+      "id": "vertical_shot",
+      "label": "Vertical Shot",
+      "family": "pass",
+      "base_ep": 0.28
+    },
+    {
+      "id": "screen",
+      "label": "Screen",
+      "family": "pass",
+      "base_ep": 0.22
+    },
+    {
+      "id": "bootleg",
+      "label": "Bootleg",
+      "family": "pass",
+      "base_ep": 0.38
+    }
+  ],
+  "defense": [
+    {
+      "id": "base_cover3",
+      "label": "Base Cover 3",
+      "family": "zone",
+      "base_ep_allowed": 0.4
+    },
+    {
+      "id": "cover3_match",
+      "label": "Cover 3 Match",
+      "family": "match",
+      "base_ep_allowed": 0.34
+    },
+    {
+      "id": "quarters_match",
+      "label": "Quarters Match",
+      "family": "match",
+      "base_ep_allowed": 0.3
+    },
+    {
+      "id": "cover1_man",
+      "label": "Cover 1 Man",
+      "family": "man",
+      "base_ep_allowed": 0.36
+    },
+    {
+      "id": "two_high_shell",
+      "label": "Two-High Shell",
+      "family": "zone",
+      "base_ep_allowed": 0.32
+    },
+    {
+      "id": "zero_pressure",
+      "label": "Zero Pressure",
+      "family": "pressure",
+      "base_ep_allowed": 0.2
+    },
+    {
+      "id": "simulated_pressure",
+      "label": "Simulated Pressure",
+      "family": "pressure",
+      "base_ep_allowed": 0.24
+    },
+    {
+      "id": "bear_front",
+      "label": "Bear Front",
+      "family": "front",
+      "base_ep_allowed": 0.28
+    },
+    {
+      "id": "trap_coverage",
+      "label": "Trap Coverage",
+      "family": "coverage",
+      "base_ep_allowed": 0.26
+    },
+    {
+      "id": "redzone_bracket",
+      "label": "Red-Zone Bracket",
+      "family": "coverage",
+      "base_ep_allowed": 0.22
+    }
+  ]
+}

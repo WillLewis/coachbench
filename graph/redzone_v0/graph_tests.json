@@ -1,0 +1,18 @@
+{
+  "required_invariants": [
+    "every_interaction_has_counter",
+    "every_interaction_has_limitation",
+    "modifiers_within_bounds",
+    "no_licensed_references"
+  ],
+  "modifier_bounds": {
+    "epa_modifier": [
+      -1.0,
+      1.0
+    ],
+    "success_modifier": [
+      -0.5,
+      0.5
+    ]
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "interactions": [
+    {
+      "id": "redzone.bunch_mesh_vs_match.v1",
+      "name": "Bunch mesh stresses match coverage communication",
+      "offense_concepts": [
+        "bunch_mesh"
+      ],
+      "defense_calls": [
+        "cover3_match",
+        "quarters_match"
+      ],
+      "epa_modifier": 0.35,
+      "success_modifier": 0.14,
+      "tactical_events": [
+        "coverage_switch_stress",
+        "nickel_passoff_test"
+      ],
+      "counters": [
+        "redzone_bracket",
+        "trap_coverage"
+      ],
+      "limitations": [
+        "Symbolic spacing only; no full route geometry."
+      ]
+    },
+    {
+      "id": "redzone.screen_vs_zero_pressure.v1",
+      "name": "Screens can punish true pressure",
+      "offense_concepts": [
+        "screen"
+      ],
+      "defense_calls": [
+        "zero_pressure"
+      ],
+      "epa_modifier": 0.48,
+      "success_modifier": 0.18,
+      "tactical_events": [
+        "pressure_punished",
+        "space_created_after_rush"
+      ],
+      "counters": [
+        "simulated_pressure",
+        "trap_coverage"
+      ],
+      "limitations": [
+        "Does not model individual pursuit angles."
+      ]
+    },
+    {
+      "id": "redzone.screen_vs_simulated_pressure.v1",
+      "name": "Simulated pressure can bait screens",
+      "offense_concepts": [
+        "screen"
+      ],
+      "defense_calls": [
+        "simulated_pressure",
+        "trap_coverage"
+      ],
+      "epa_modifier": -0.42,
+      "success_modifier": -0.18,
+      "tactical_events": [
+        "screen_baited",
+        "simulated_pressure_revealed"
+      ],
+      "counters": [
+        "quick_game",
+        "play_action_flood"
+      ],
+      "limitations": [
+        "Trap success is modeled symbolically."
+      ]
+    },
+    {
+      "id": "redzone.outside_zone_vs_bear.v1",
+      "name": "Bear front constrains outside zone",
+      "offense_concepts": [
+        "outside_zone"
+      ],
+      "defense_calls": [
+        "bear_front"
+      ],
+      "epa_modifier": -0.32,
+      "success_modifier": -0.12,
+      "tactical_events": [
+        "wide_zone_constrained",
+        "front_strength_declared"
+      ],
+      "counters": [
+        "quick_game",
+        "play_action_flood",
+        "bootleg"
+      ],
+      "limitations": [
+        "No full blocking surface model."
+      ]
+    },
+    {
+      "id": "redzone.play_action_after_run_tendency.v1",
+      "name": "Play-action gains value after credible run tendency",
+      "offense_concepts": [
+        "play_action_flood",
+        "bootleg"
+      ],
+      "defense_calls": [
+        "bear_front",
+        "base_cover3",
+        "cover1_man"
+      ],
+      "sequence_trigger": {
+        "offense_recent": [
+          "inside_zone",
+          "outside_zone",
+          "power_counter"
+        ],
+        "min_count": 1
+      },
+      "epa_modifier": 0.28,
+      "success_modifier": 0.1,
+      "tactical_events": [
+        "run_tendency_exploited",
+        "second_level_conflict"
+      ],
+      "counters": [
+        "edge_contain",
+        "two_high_shell",
+        "redzone_bracket"
+      ],
+      "limitations": [
+        "Run tendency is counted by concept family in P0."
+      ]
+    },
+    {
+      "id": "redzone.vertical_vs_two_high.v1",
+      "name": "Two-high shell reduces vertical shot value",
+      "offense_concepts": [
+        "vertical_shot"
+      ],
+      "defense_calls": [
+        "two_high_shell",
+        "quarters_match",
+        "redzone_bracket"
+      ],
+      "epa_modifier": -0.3,
+      "success_modifier": -0.1,
+      "tactical_events": [
+        "explosive_window_capped",
+        "underneath_space_conceded"
+      ],
+      "counters": [
+        "quick_game",
+        "inside_zone"
+      ],
+      "limitations": [
+        "Does not model individual receiver speed."
+      ]
+    },
+    {
+      "id": "redzone.quick_game_vs_two_high.v1",
+      "name": "Quick game can take conceded underneath space",
+      "offense_concepts": [
+        "quick_game"
+      ],
+      "defense_calls": [
+        "two_high_shell",
+        "redzone_bracket"
+      ],
+      "epa_modifier": 0.18,
+      "success_modifier": 0.08,
+      "tactical_events": [
+        "underneath_space_taken"
+      ],
+      "counters": [
+        "trap_coverage",
+        "cover1_man"
+      ],
+      "limitations": [
+        "Yards after catch modeled coarsely."
+      ]
+    },
+    {
+      "id": "redzone.rpo_vs_static_zone.v1",
+      "name": "RPO glance stresses static zone conflict defenders",
+      "offense_concepts": [
+        "rpo_glance"
+      ],
+      "defense_calls": [
+        "base_cover3",
+        "two_high_shell"
+      ],
+      "epa_modifier": 0.25,
+      "success_modifier": 0.1,
+      "tactical_events": [
+        "conflict_defender_stressed"
+      ],
+      "counters": [
+        "quarters_match",
+        "trap_coverage"
+      ],
+      "limitations": [
+        "Conflict defender represented symbolically."
+      ]
+    }
+  ]
+}

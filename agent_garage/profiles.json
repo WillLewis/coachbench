@@ -1,0 +1,66 @@
+{
+  "offense_archetypes": {
+    "efficiency_optimizer": {
+      "label": "Efficiency Optimizer",
+      "risk_tolerance": "low",
+      "adaptation_speed": 0.55,
+      "screen_trigger_confidence": 0.7,
+      "explosive_shot_tolerance": 0.25,
+      "run_pass_tendency": "balanced_pass"
+    },
+    "aggressive_shot_taker": {
+      "label": "Aggressive Shot-Taker",
+      "risk_tolerance": "high",
+      "adaptation_speed": 0.45,
+      "screen_trigger_confidence": 0.55,
+      "explosive_shot_tolerance": 0.75,
+      "run_pass_tendency": "pass_heavy"
+    },
+    "misdirection_artist": {
+      "label": "Misdirection Artist",
+      "risk_tolerance": "medium",
+      "adaptation_speed": 0.7,
+      "screen_trigger_confidence": 0.62,
+      "explosive_shot_tolerance": 0.45,
+      "run_pass_tendency": "constraint_heavy"
+    },
+    "run_game_builder": {
+      "label": "Run-Game Builder",
+      "risk_tolerance": "medium_low",
+      "adaptation_speed": 0.5,
+      "screen_trigger_confidence": 0.45,
+      "explosive_shot_tolerance": 0.35,
+      "run_pass_tendency": "run_to_play_action"
+    }
+  },
+  "defense_archetypes": {
+    "coverage_shell_conservative": {
+      "label": "Coverage Shell Conservative",
+      "risk_tolerance": "low",
+      "disguise_sensitivity": 0.35,
+      "pressure_frequency": 0.25,
+      "counter_repeat_tolerance": 0.4
+    },
+    "pressure_look_defender": {
+      "label": "Pressure-Look Defender",
+      "risk_tolerance": "medium_high",
+      "disguise_sensitivity": 0.7,
+      "pressure_frequency": 0.55,
+      "counter_repeat_tolerance": 0.45
+    },
+    "disguise_specialist": {
+      "label": "Disguise Specialist",
+      "risk_tolerance": "medium",
+      "disguise_sensitivity": 0.85,
+      "pressure_frequency": 0.4,
+      "counter_repeat_tolerance": 0.55
+    },
+    "man_coverage_bully": {
+      "label": "Man-Coverage Bully",
+      "risk_tolerance": "high",
+      "disguise_sensitivity": 0.45,
+      "pressure_frequency": 0.5,
+      "counter_repeat_tolerance": 0.35
+    }
+  }
+}
