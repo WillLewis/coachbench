@@ -124,7 +124,7 @@ function moveIndicator() {
 
 function renderBall(yardline, terminalReason) {
   const clamped = Math.max(0, Math.min(25, Number(yardline)));
-  const left = 9 + (clamped / 25) * 82;
+  const left = 8 + ((25 - clamped) / 25) * 84;
   const ball = $('ball');
   ball.style.left = `${left}%`;
   ball.classList.toggle('touchdown', terminalReason === 'touchdown');

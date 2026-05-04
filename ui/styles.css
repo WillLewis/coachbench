@@ -127,34 +127,62 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 }
 .yard-rule { position: absolute; inset-block: 0; width: 1px; background: rgba(255,255,255,0.05); }
 .yard-rule span { position: absolute; bottom: 12px; left: 8px; color: var(--text-faint); font-size: 11px; font-variant-numeric: tabular-nums; }
-.y5 { left: 34%; } .y10 { left: 50%; } .y15 { left: 66%; } .y20 { left: 82%; }
+.y20 { left: 18%; } .y15 { left: 34%; } .y10 { left: 50%; } .y5 { left: 66%; }
 .mid-rule { position: absolute; inset-block: 0; left: 50%; width: 1px; background: rgba(255,255,255,0.06); }
 .endzone {
   position: absolute;
-  inset-block: 0;
-  left: 0;
+  top: 0;
+  bottom: 0;
+  left: auto !important;
+  right: 0 !important;
   width: 18%;
   display: grid;
   place-items: center;
   color: var(--text-muted);
   background: rgba(255,85,119,0.10);
-  border-right: 1px solid rgba(255,85,119,0.35);
+  border-left: 1px solid rgba(255,85,119,0.35);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
 }
-.field > .endzone { writing-mode: vertical-rl; }
+.field > .endzone {
+  writing-mode: vertical-rl;
+  transform: none;
+}
 .ball {
   position: absolute;
   top: 50%;
   left: 10%;
   width: 18px;
-  height: 18px;
+  height: 12px;
   border-radius: 50%;
   background: var(--ball);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotate(-20deg);
   transition: left 600ms var(--ease-out);
   box-shadow: 0 0 16px rgba(251,191,36,0.35);
+}
+.ball::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  right: 4px;
+  height: 1px;
+  background: rgba(8,9,11,0.56);
+  transform: translateY(-50%);
+}
+.ball::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 1px;
+  height: 6px;
+  border-left: 1px solid rgba(8,9,11,0.56);
+  border-right: 1px solid rgba(8,9,11,0.56);
+  transform: translateX(-50%);
 }
 .ball.move { animation: ballArc 600ms var(--ease-out); }
 .ball.touchdown { animation: resultPulse 600ms var(--ease-out); }
@@ -174,7 +202,7 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   display: block;
   width: 0%;
   height: 100%;
-  background: rgba(0,210,142,0.60);
+  background: rgba(156,163,175,0.32);
 }
 .autoplay-progress.running::before { animation: autoplayFill 3500ms linear forwards; }
 .timeline { position: relative; display: flex; gap: 8px; flex-wrap: wrap; padding-top: 8px; }
@@ -337,7 +365,7 @@ ul { padding-left: 20px; }
 li { margin-bottom: 7px; line-height: 1.45; }
 code { color: var(--accent); }
 
-@keyframes ballArc { 50% { transform: translate(-50%, calc(-50% - 8px)); } }
+@keyframes ballArc { 50% { transform: translate(-50%, calc(-50% - 8px)) rotate(-20deg); } }
 @keyframes chipEnter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes mountFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes sparkDraw { to { stroke-dashoffset: 0; } }
