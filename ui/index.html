@@ -8,6 +8,7 @@
 </head>
 <body>
   <main class="shell">
+    <div id="modeBanner" class="mode-banner">Loading replay</div>
     <section class="hero">
       <div>
         <p class="eyebrow">CoachBench</p>
@@ -28,8 +29,7 @@
       </article>
       <article class="panel">
         <h2>Daily Slate</h2>
-        <p>Local fixed-seed challenges are available through <code>scripts/run_daily_slate.py</code>.</p>
-        <p class="muted">P0 slate mode is reproducible and strategy-only.</p>
+        <div id="dailySlate"></div>
       </article>
     </section>
 
@@ -47,10 +47,13 @@
         <div id="timeline" class="timeline"></div>
       </article>
 
-      <article class="panel">
-        <h2>Selected Play</h2>
-        <div id="playDetails"></div>
-      </article>
+      <article class="panel"><h2>Post-Drive Summary</h2><div id="driveSummary"></div></article>
+    </section>
+
+    <section class="grid three">
+      <article class="panel"><h2>Offense Call</h2><div id="offenseCall"></div></article>
+      <article class="panel"><h2>Defense Call</h2><div id="defenseCall"></div></article>
+      <article class="panel"><h2>Play Outcome</h2><div id="playOutcome"></div><div id="validation"></div></article>
     </section>
 
     <section class="grid two">
@@ -62,6 +65,11 @@
         <h2>Graph Events</h2>
         <div id="events"></div>
       </article>
+    </section>
+
+    <section class="grid two">
+      <article class="panel"><h2>Resource Tradeoffs</h2><div id="resources"></div></article>
+      <article class="panel"><h2>Graph Cards</h2><div id="graphCards"></div></article>
     </section>
 
     <section class="panel">
