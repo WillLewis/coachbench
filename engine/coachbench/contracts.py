@@ -485,6 +485,26 @@ def validate_calibration_eval_report(report: Dict[str, Any]) -> None:
     _require_fields(report["scouting_mae_lift"], {"offense", "defense"}, "calibration eval scouting_mae_lift")
 
 
+def validate_qualification_report(report: Dict[str, Any]) -> None:
+    _require_fields(
+        report,
+        {"qualification_id", "agent_path", "side", "submitted_at", "static_validation", "gauntlet", "passed", "reasons"},
+        "qualification report",
+    )
+    _require_fields(report["static_validation"], {"errors", "warnings"}, "qualification static_validation")
+
+
+def validate_challenge_report(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"challenge_id", "agent_id", "opponent_kind", "seeds", "summary", "replay_paths"}, "challenge report")
+    _require_fields(report["summary"], {"games_played", "mean_points_per_drive", "touchdown_rate"}, "challenge summary")
+
+
+def validate_leaderboard_snapshot(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"season_id", "seed_set_hash", "standings"}, "leaderboard snapshot")
+    for row in report["standings"]:
+        _require_fields(row, {"agent_id", "label", "games_played", "mean_points_per_drive", "touchdown_rate"}, "leaderboard row")
+
+
 def validate_comparison_report(report: Dict[str, Any]) -> None:
     _require_fields(report, {"report_id", "team_a", "team_b", "seeds", "cases", "answers", "metrics"}, "comparison report")
     _require_fields(report["team_a"], {"team_id", "label"}, "comparison team_a")

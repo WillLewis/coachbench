@@ -1,0 +1,9 @@
+
+[arena]
+fastapi
+uvicorn
+httpx
+pydantic
+
+[dev]
+pytest>=8.0

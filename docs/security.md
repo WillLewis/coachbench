@@ -21,3 +21,31 @@ dependency allowlist at first
 ```
 
 Do not implement hosted uploads or arbitrary code execution without a sandbox design review.
+
+## Phase 6 Local-Mode Additions
+
+Phase 6 adds local-only arena primitives:
+
+```text
+AST static validation
+isolated subprocess runner
+stripped worker environment
+ephemeral working directories
+CPU / memory / file descriptor limits where supported
+SQLite registry and queue
+admin-token-gated moderation endpoints
+hidden-seed leaderboard hashes
+```
+
+Remaining gaps before public hosting:
+
+```text
+real container isolation
+network policy outside Python
+KMS-backed seed storage
+immutable audit logs
+rate limiting
+abuse handling
+human moderation
+legal review
+```

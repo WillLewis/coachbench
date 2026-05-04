@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: coachbench
+Version: 0.1.0
+Summary: Football-inspired red-zone adversarial-agent benchmark starter.
+Requires-Python: >=3.10
+License-File: LICENSE_NOTES.md
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Provides-Extra: arena
+Requires-Dist: fastapi; extra == "arena"
+Requires-Dist: uvicorn; extra == "arena"
+Requires-Dist: httpx; extra == "arena"
+Requires-Dist: pydantic; extra == "arena"
+Dynamic: license-file
