@@ -1,0 +1,28 @@
+{
+  "seeds": [
+    {
+      "seed": 42,
+      "rationale": "touchdown drive with wide_zone_constrained, run_tendency_exploited, and underneath_space_taken events"
+    },
+    {
+      "seed": 99,
+      "rationale": "turnover-on-downs stop after seven plays with the same graph-card event family"
+    },
+    {
+      "seed": 202,
+      "rationale": "five-play touchdown with outside zone constraint and play-action counter events"
+    },
+    {
+      "seed": 311,
+      "rationale": "five-play touchdown preserving the adaptive-vs-adaptive event sequence"
+    },
+    {
+      "seed": 404,
+      "rationale": "five-play touchdown replay for another deterministic seed in the golden set"
+    }
+  ],
+  "matchup": {
+    "offense": "adaptive",
+    "defense": "adaptive"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "seeds": [
+    42,
+    99,
+    202,
+    311,
+    404,
+    515,
+    628,
+    733,
+    841,
+    956,
+    1063,
+    1170,
+    1281,
+    1395,
+    1502,
+    1614,
+    1727,
+    1840,
+    1958,
+    2071
+  ],
+  "matchup": {
+    "offense": "adaptive",
+    "defense": "adaptive"
+  },
+  "ranges": {
+    "mean_points_per_drive": {
+      "min": 0.5,
+      "max": 7.0
+    },
+    "touchdown_rate": {
+      "min": 0.0,
+      "max": 0.85
+    },
+    "field_goal_rate": {
+      "min": 0.0,
+      "max": 0.6
+    },
+    "turnover_rate": {
+      "min": 0.0,
+      "max": 0.5
+    },
+    "mean_plays_per_drive": {
+      "min": 2.0,
+      "max": 8.0
+    },
+    "invalid_action_rate": {
+      "min": 0.0,
+      "max": 0.0
+    }
+  }
+}

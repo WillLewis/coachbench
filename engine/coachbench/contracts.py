@@ -358,3 +358,17 @@ def validate_comparison_report(report: Dict[str, Any]) -> None:
         },
         "comparison metrics",
     )
+
+
+def validate_calibration_report(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"seeds", "matchup", "ranges"}, "calibration report")
+    _require_fields(report["matchup"], {"offense", "defense"}, "calibration matchup")
+    for metric in (
+        "mean_points_per_drive",
+        "touchdown_rate",
+        "field_goal_rate",
+        "turnover_rate",
+        "mean_plays_per_drive",
+        "invalid_action_rate",
+    ):
+        _require_fields(report["ranges"].get(metric, {}), {"min", "max"}, f"calibration range {metric}")

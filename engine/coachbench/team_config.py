@@ -33,8 +33,8 @@ REQUIRED_TEAM_FIELDS = {
 }
 
 
-def load_team(path: Path) -> TeamConfig:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+def load_team(path: Path | str) -> TeamConfig:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
     missing = REQUIRED_TEAM_FIELDS - set(payload)
     if missing:
         raise ValueError(f"Team config missing fields: {sorted(missing)}")
