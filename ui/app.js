@@ -1,10 +1,10 @@
-let replay = null;
-let graphCards = {};
-
+let replay, graphCards = {}, conceptLabels = {}, profiles = {}, selectedIndex = 0, garageState = {};
 const $ = id => document.getElementById(id);
-const label = key => key.replaceAll('_', ' ');
-const value = item => item === null || item === undefined || item === '' ? '-' : item;
 const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const label = key => conceptLabels[key] || String(key || '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+const value = item => item === null || item === undefined || item === '' ? '-' : item;
+const pct = raw => Math.round(Number(raw || 0) * 100);
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -14,137 +14,145 @@ async function fetchJson(url) {
 
 async function loadReplay() {
   replay = await fetchJson('static_proof_replay.json').catch(() => fetchJson('demo_replay.json'));
-  const graph = await fetchJson('../graph/redzone_v0/interactions.json').catch(() => ({ interactions: [] }));
+  const [graph, concepts, loadedProfiles] = await Promise.all([
+    fetchJson('../graph/redzone_v0/interactions.json').catch(() => ({ interactions: [] })),
+    fetchJson('../graph/redzone_v0/concepts.json').catch(() => ({ offense: [], defense: [] })),
+    fetchJson('../agent_garage/profiles.json').catch(() => ({})),
+  ]);
   graphCards = Object.fromEntries((graph.interactions || []).map(card => [card.id, card]));
+  [...(concepts.offense || []), ...(concepts.defense || [])].forEach(item => conceptLabels[item.id] = item.label || item.name);
+  profiles = loadedProfiles;
+  garageState = structuredClone(replay.agent_garage_config || {});
   renderHeader();
   renderGarage();
   renderDailySlate();
   renderTimeline();
   renderDriveSummary();
   renderFilmRoom();
+  setupOverlay();
   selectPlay(0);
+  mountRows(document);
 }
 
 function renderHeader() {
-  const mode = replay.metadata.mode;
-  $('modeBanner').textContent = mode === 'static_proof'
+  const staticMode = replay.metadata.mode === 'static_proof';
+  $('modeBanner').textContent = staticMode
     ? 'Phase 0B static schema/UI proof - not an engine-generated benchmark result.'
     : 'Engine-generated replay';
-  $('modeBanner').classList.toggle('static-proof', mode === 'static_proof');
-  $('resultLabel').textContent = label(replay.score.result);
-  $('pointsLabel').textContent = `${replay.score.points} pts`;
+  $('modeBanner').classList.toggle('static-proof', staticMode);
+  morphText($('resultLabel'), label(replay.score.result));
+  morphText($('pointsLabel'), `${replay.score.points} pts`);
   $('episodeLabel').textContent = replay.metadata.episode_id;
+  if (replay.score.result === 'touchdown') flashScore('good');
+  if (replay.score.result === 'stopped') flashScore('warn');
 }
 
-function kvRows(obj, keys) {
-  return keys.map(key => `<div class="kv"><span>${label(key)}</span><span>${value(obj[key])}</span></div>`).join('');
+function kvRows(obj, keys = Object.keys(obj || {})) {
+  return keys.map(key => `<div class="kv"><span>${label(key)}</span><span>${value(formatValue(obj[key]))}</span></div>`).join('');
 }
 
-function profileRows(profile) {
-  const set = controls.filter(key => profile[key] !== undefined && profile[key] !== null && profile[key] !== '');
-  const missing = controls.filter(key => !set.includes(key)).map(label).join(', ');
-  return `
-    ${kvRows(profile, set)}
-    <p class="muted compact">Other PLAN §5.2 controls not set on this profile: ${missing || '-'}</p>
-  `;
-}
-
-function renderGarage() {
-  const cfg = replay.agent_garage_config || {};
-  const offense = cfg.offense_profile || {};
-  const defense = cfg.defense_profile || {};
-  $('garage').innerHTML = `
-    <div class="kv"><span>Offense</span><strong>${replay.agents.offense}</strong></div>
-    <div class="kv"><span>Defense</span><strong>${replay.agents.defense}</strong></div>
-    <h3>Offense profile</h3>${profileRows(offense)}
-    <h3>Defense profile</h3>${profileRows(defense)}
-  `;
-}
-
-async function renderDailySlate() {
-  const target = $('dailySlate');
-  try {
-    const slate = await fetchJson('../data/daily_slate/sample_slate.json');
-    const entries = slate.entries || [];
-    target.innerHTML = entries.map((entry, index) => {
-      const matchup = entry.matchup || {};
-      const name = `${value(matchup.offense)} vs ${value(matchup.defense)}`;
-      return `<div class="slate-chip"><strong>${entry.seed || `Entry ${index + 1}`}</strong><span>${name}</span><small>preview not available in static proof</small></div>`;
-    }).join('') || '<p class="muted">Daily Slate sample not present</p>';
-    target.insertAdjacentHTML('afterbegin', '<p class="muted compact">Phase 0B preview only. Static proof does not fabricate slate results.</p>');
-  } catch {
-    target.innerHTML = '<p class="muted">Daily Slate sample not present</p>';
-  }
+function formatValue(raw) {
+  if (Array.isArray(raw)) return raw.map(label).join(', ');
+  if (typeof raw === 'object' && raw) return JSON.stringify(raw);
+  return typeof raw === 'string' ? label(raw) : raw;
 }
 
 function renderTimeline() {
-  $('timeline').innerHTML = '';
+  $('timeline').innerHTML = '<div id="timelineIndicator" class="timeline-indicator"></div>';
   replay.plays.forEach((play, index) => {
     const btn = document.createElement('button');
     btn.className = 'play';
+    btn.type = 'button';
+    btn.role = 'tab';
     btn.textContent = `Play ${play.public.play_index}`;
     btn.onclick = () => selectPlay(index);
+    btn.onkeydown = event => handleTimelineKey(event, index);
     $('timeline').appendChild(btn);
   });
 }
 
+function handleTimelineKey(event, index) {
+  if (event.key === 'ArrowRight') { event.preventDefault(); focusPlay(Math.min(index + 1, replay.plays.length - 1)); }
+  if (event.key === 'ArrowLeft') { event.preventDefault(); focusPlay(Math.max(index - 1, 0)); }
+  if (event.key === 'Enter') { event.preventDefault(); selectPlay(index); }
+}
+
+function focusPlay(index) {
+  const btn = document.querySelectorAll('button.play')[index];
+  btn.focus();
+  selectPlay(index);
+}
+
 function selectPlay(index) {
-  document.querySelectorAll('button.play').forEach((button, i) => button.classList.toggle('active', i === index));
+  selectedIndex = index;
   const play = replay.plays[index];
   const prior = index > 0 ? replay.plays[index - 1] : null;
+  document.querySelectorAll('button.play').forEach((button, i) => {
+    button.classList.toggle('active', i === index);
+    button.setAttribute('aria-selected', i === index ? 'true' : 'false');
+  });
+  moveIndicator();
   renderBall(play.public.next_state.yardline);
+  $('driveState').textContent = `${play.public.next_state.down} & ${play.public.next_state.distance} at ${play.public.next_state.yardline}`;
   renderAction('offenseCall', play.public.offense_action);
   renderAction('defenseCall', play.public.defense_action);
   renderOutcome(play.public);
   renderResources(play.public.resource_budget_snapshot, prior && prior.public.resource_budget_snapshot);
-  renderGraphCards(play.public.graph_card_ids || []);
-  renderBeliefs(play);
   renderEvents(play);
+  renderGraphCards(play.public.graph_card_ids || []);
+  renderBeliefs(play, prior);
   renderValidation(play.public.validation_result);
+  mountPanels(['offenseCall', 'defenseCall', 'playOutcome', 'resources', 'events', 'graphCards', 'beliefs']);
+}
+
+function moveIndicator() {
+  const active = document.querySelector('button.play.active');
+  const indicator = $('timelineIndicator');
+  if (!active || !indicator) return;
+  indicator.style.width = `${active.offsetWidth}px`;
+  indicator.style.transform = `translateX(${active.offsetLeft}px)`;
 }
 
 function renderBall(yardline) {
-  const clamped = Math.max(0, Math.min(25, yardline));
-  $('ball').style.left = `${8 + ((25 - clamped) / 25) * 74}%`;
+  const clamped = Math.max(0, Math.min(25, Number(yardline)));
+  const left = 8 + ((25 - clamped) / 25) * 76;
+  const ball = $('ball');
+  ball.style.left = `${left}%`;
+  if (!reduced()) {
+    ball.classList.remove('move');
+    void ball.offsetWidth;
+    ball.classList.add('move');
+  }
 }
 
 function renderAction(target, action) {
-  $(''+target).innerHTML = kvRows(action, Object.keys(action));
+  $(target).innerHTML = kvRows(action, Object.keys(action));
 }
 
 function renderOutcome(play) {
   $('playOutcome').innerHTML = `
-    <div class="kv"><span>yards gained</span><strong>${play.yards_gained}</strong></div>
-    <div class="kv"><span>expected value delta</span><span>${play.expected_value_delta}</span></div>
-    <div class="kv"><span>success</span><span>${play.success}</span></div>
-    <div class="kv"><span>terminal</span><span>${play.terminal}</span></div>
-    <div class="kv"><span>terminal reason</span><span>${value(play.terminal_reason)}</span></div>
-    <div class="kv"><span>next state</span><span>${play.next_state.down} & ${play.next_state.distance} at ${play.next_state.yardline}</span></div>
+    <div class="kv"><span>Yards Gained</span><strong>${play.yards_gained}</strong></div>
+    <div class="kv"><span>Expected Value Delta</span><span>${play.expected_value_delta}</span></div>
+    <div class="kv"><span>Success</span><span>${play.success ? 'Yes' : 'No'}</span></div>
+    <div class="kv"><span>Terminal</span><span>${play.terminal ? 'Yes' : 'No'}</span></div>
+    <div class="kv"><span>Terminal Reason</span><span>${value(label(play.terminal_reason))}</span></div>
+    <div class="kv"><span>Next State</span><span>${play.next_state.down} & ${play.next_state.distance} at ${play.next_state.yardline}</span></div>
   `;
 }
 
 function resourceRows(snapshot, prior, side) {
-  const before = snapshot[`${side}_before`] || {};
-  const cost = snapshot[`${side}_cost`] || {};
-  const remaining = snapshot[`${side}_remaining`] || {};
+  const before = snapshot[`${side}_before`] || {}, cost = snapshot[`${side}_cost`] || {}, remaining = snapshot[`${side}_remaining`] || {};
   const priorRemaining = prior ? prior[`${side}_remaining`] || {} : null;
-  return Object.keys(before).map(resource => {
-    const delta = priorRemaining ? remaining[resource] - priorRemaining[resource] : null;
-    return { resource, before: before[resource], cost: cost[resource] || 0, remaining: remaining[resource], delta };
-  });
+  return Object.keys(before).map(resource => ({
+    resource, before: before[resource], cost: cost[resource] || 0, remaining: remaining[resource],
+    delta: priorRemaining ? remaining[resource] - priorRemaining[resource] : null,
+  }));
 }
 
 function resourceTable(snapshot, prior, side) {
-  const rows = resourceRows(snapshot, prior, side);
-  return `
-    <div class="resource-card">
-      <h3>${side}</h3>
-      <table class="resource-table">
-        <thead><tr><th>resource</th><th>before</th><th>cost</th><th>remaining</th><th>Δ</th></tr></thead>
-        <tbody>${rows.map(row => `<tr><td>${row.resource}</td><td>${row.before}</td><td>${row.cost}</td><td>${row.remaining}</td><td>${row.delta === null ? '-' : row.delta}</td></tr>`).join('')}</tbody>
-      </table>
-    </div>
-  `;
+  return `<div class="resource-card"><h3>${label(side)}</h3><table class="matrix"><thead><tr><th>Resource</th><th>Before</th><th>Cost</th><th>Remaining</th><th>Delta</th></tr></thead><tbody>${
+    resourceRows(snapshot, prior, side).map(row => `<tr><td>${label(row.resource)}</td><td>${row.before}</td><td>${row.cost}</td><td>${row.remaining}</td><td class="${row.delta < 0 ? 'delta-neg' : row.delta > 0 ? 'delta-pos' : ''}">${row.delta === null ? '' : row.delta}</td></tr>`).join('')
+  }</tbody></table></div>`;
 }
 
 function renderResources(snapshot, prior) {
@@ -152,65 +160,163 @@ function renderResources(snapshot, prior) {
 }
 
 function renderGraphCards(ids) {
-  $('graphCards').innerHTML = ids.map(id => {
-    const card = graphCards[id];
-    if (!card) return `<p class="muted">Card not found: ${id}</p>`;
-    const tags = (card.tactical_events || []).map(event => event.tag || event).join(', ');
-    return `
-      <div class="card-ref">
-        <h3>${card.name}</h3>
-        <div class="kv"><span>ID</span><span>${id}</span></div>
-        <div class="kv"><span>Counters</span><span>${(card.counters || []).join(', ') || '-'}</span></div>
-        <div class="kv"><span>Limitations</span><span>${(card.limitations || []).join(' ') || '-'}</span></div>
-        <div class="kv"><span>Events</span><span>${tags || '-'}</span></div>
-      </div>
-    `;
-  }).join('') || '<p class="muted">No graph card on this play.</p>';
+  $('graphCards').innerHTML = ids.map(id => graphCardHtml(graphCards[id], id)).join('') || '<p class="muted">No graph card on this play.</p>';
 }
 
-function renderBeliefs(play) {
-  const beliefs = (play.offense_observed || {}).belief_after || {};
+function graphCardHtml(card, id) {
+  if (!card) return `<p class="muted">Card not found: ${id}</p>`;
+  const tags = (card.tactical_events || []).map(event => event.tag || event).join(', ');
+  return `<div class="card-ref"><h3>${card.name}</h3>${kvRows({ id: card.id, counters: card.counters || [], limitations: (card.limitations || []).join(' '), events: tags }, ['id', 'counters', 'limitations', 'events'])}</div>`;
+}
+
+function renderBeliefs(play, prior) {
+  const beliefs = play.offense_observed?.belief_after || {};
+  const priorBeliefs = prior?.offense_observed?.belief_after || {};
   $('beliefs').innerHTML = Object.entries(beliefs).map(([key, raw]) => {
-    const pct = Math.round(Number(raw) * 100);
-    return `<div class="bar"><label><span>${label(key)}</span><span>${pct}%</span></label><div class="meter"><div class="fill" style="width:${pct}%"></div></div></div>`;
-  }).join('');
+    const percent = pct(raw);
+    const changed = Math.abs(percent - pct(priorBeliefs[key])) >= 10;
+    return `<div class="bar"><label><span>${label(key)}</span><span>${percent}%</span></label><div class="meter"><div class="fill ${changed ? 'glow' : ''}" style="width:${percent}%"></div></div></div>`;
+  }).join('') || '<p class="muted">No belief data on this play.</p>';
 }
 
 function renderEvents(play) {
   const events = play.public.events || [];
   $('events').innerHTML = events.length
-    ? events.map(event => `<div class="chip">${event.tag}</div><p><strong>${event.graph_card_id}</strong><br>${event.description}</p>`).join('')
+    ? events.map(event => `<div class="event-block"><span class="chip">${label(event.tag)}</span><p><strong>${event.graph_card_id}</strong><br>${event.description || ''}</p></div>`).join('')
     : '<p class="muted">No public graph event on this play.</p>';
 }
 
 function renderValidation(result) {
-  $('validation').innerHTML = result ? `<div class="kv"><span>Validation</span><span>${result.ok ? 'ok' : 'rejected'}</span></div>` : '';
+  $('validation').innerHTML = result ? `<div class="kv"><span>Validation</span><span>${result.ok ? 'Accepted' : 'Rejected'}</span></div>` : '';
 }
 
 function renderDriveSummary() {
-  const last = replay.plays[replay.plays.length - 1].public;
+  const last = replay.plays.at(-1).public;
+  const points = replay.plays.map(play => Number(play.public.expected_value_delta || 0));
   $('driveSummary').innerHTML = `
     <div class="kv"><span>Result</span><strong>${label(replay.score.result)}</strong></div>
     <div class="kv"><span>Points</span><span>${replay.score.points}</span></div>
-    <div class="kv"><span>Plays played</span><span>${replay.plays.length}</span></div>
-    <div class="kv"><span>Terminal reason</span><span>${value(last.terminal_reason)}</span></div>
-    <p class="muted">Drive ended at yardline ${last.next_state.yardline} after play ${last.play_index}.</p>
+    <div class="kv"><span>Plays Played</span><span>${replay.plays.length}</span></div>
+    <div class="kv"><span>Terminal Reason</span><span>${value(label(last.terminal_reason))}</span></div>
+    <p class="muted compact">Drive ended at yardline ${last.next_state.yardline} after play ${last.play_index}.</p>
+    ${sparkline(points)}
   `;
+}
+
+function sparkline(values) {
+  if (!values.length) return '';
+  const min = Math.min(...values), max = Math.max(...values), range = max - min || 1;
+  const pts = values.map((v, i) => `${(i / Math.max(1, values.length - 1)) * 100},${58 - ((v - min) / range) * 48}`).join(' ');
+  return `<svg class="sparkline" viewBox="0 0 100 70" preserveAspectRatio="none"><path class="draw-on-mount" d="M${pts.replaceAll(' ', ' L')}" /></svg>`;
 }
 
 function renderFilmRoom() {
   const room = replay.film_room || {};
-  const list = items => {
-    const visible = (items || []).slice(0, 5).map(item => `<li>${item}</li>`).join('');
-    const extra = (items || []).length > 5 ? `<li class="muted">and ${(items || []).length - 5} more</li>` : '';
-    return visible + extra || '<li class="muted">-</li>';
-  };
-  $('filmRoom').innerHTML = `
-    <div class="kv"><span>Headline</span><strong>${room.headline || 'Film Room'}</strong></div>
-    <div class="kv"><span>Turning point</span><span>Play ${(room.turning_point || {}).play_index || '-'}</span></div>
-    <h3>Notes</h3><ul>${list(room.notes)}</ul>
-    <h3>Suggested tweaks</h3><ul>${list(room.suggested_tweaks)}</ul>
-  `;
+  const list = items => ((items || []).slice(0, 5).map(item => `<li>${item}</li>`).join('') || '<li class="muted">-</li>') + ((items || []).length > 5 ? `<li class="muted">and ${(items || []).length - 5} more</li>` : '');
+  $('filmRoom').innerHTML = `<div class="kv"><span>Headline</span><strong>${room.headline || 'Film Room'}</strong></div><div class="kv"><span>Turning Point</span><span>Play ${room.turning_point?.play_index || '-'}</span></div><h3>Notes</h3><ul>${list(room.notes)}</ul><h3>Suggested Tweaks</h3><ul>${list(room.suggested_tweaks)}</ul>`;
+}
+
+function renderGarage() {
+  const cfg = garageState || {};
+  $('garage').innerHTML = `<div class="kv"><span>Offense</span><strong>${replay.agents.offense}</strong></div><div class="kv"><span>Defense</span><strong>${replay.agents.defense}</strong></div><div class="garage-edit-grid">${profileEditor('offense_profile')}${profileEditor('defense_profile')}</div><button id="copyGarage" class="ghost-button" type="button">Copy Profile Payload</button><textarea id="garagePayload" readonly>${garagePayload()}</textarea>`;
+  $('copyGarage').onclick = () => navigator.clipboard?.writeText($('garagePayload').value);
+  document.querySelectorAll('[data-profile]').forEach(input => input.oninput = updateGarage);
+}
+
+function profileEditor(profileKey) {
+  const profile = garageState[profileKey] || {};
+  const set = controls.filter(key => profile[key] !== undefined && profile[key] !== null && profile[key] !== '');
+  const missing = controls.filter(key => !set.includes(key)).map(label).join(', ');
+  return `<div class="profile-editor"><h3>${label(profileKey)}</h3>${set.map(key => controlInput(profileKey, key, profile[key])).join('')}<p class="muted compact">Other PLAN §5.2 controls not set on this profile: ${missing || '-'}</p></div>`;
+}
+
+function controlInput(profileKey, key, current) {
+  const numeric = typeof current === 'number';
+  if (numeric) return `<label><span class="label">${label(key)}: ${current}</span><input data-profile="${profileKey}" data-key="${key}" type="range" min="0" max="1" step="0.01" value="${current}"></label>`;
+  const options = optionValues(key, current).map(item => `<option ${item === current ? 'selected' : ''}>${item}</option>`).join('');
+  return `<label><span class="label">${label(key)}</span><select data-profile="${profileKey}" data-key="${key}">${options}</select></label>`;
+}
+
+function optionValues(key, current) {
+  if (key.includes('archetype')) return [...new Set([current, ...(profiles.offense_archetypes ? Object.values(profiles.offense_archetypes).map(p => p.label) : []), ...(profiles.defense_archetypes ? Object.values(profiles.defense_archetypes).map(p => p.label) : [])])];
+  if (key === 'risk_tolerance') return [...new Set([current, 'low', 'medium_low', 'medium', 'medium_high', 'high'])];
+  if (key === 'resource_conservation') return [...new Set([current, 'low', 'balanced', 'high'])];
+  return [current];
+}
+
+function updateGarage(event) {
+  const { profile, key } = event.target.dataset;
+  garageState[profile][key] = event.target.type === 'range' ? Number(event.target.value) : event.target.value;
+  renderGarage();
+}
+
+function garagePayload() {
+  return JSON.stringify({ note: 'Paste this payload into a local profile note; browser edits do not rerun the engine.', command: `python scripts/run_showcase.py --seed ${replay.metadata.seed_hash ? 42 : 42} --offense adaptive --defense adaptive --out data/demo_replay.json --copy-ui`, agent_garage_config: garageState }, null, 2);
+}
+
+async function renderDailySlate() {
+  const target = $('dailySlate');
+  try {
+    const slate = await fetchJson('../data/daily_slate/sample_slate.json');
+    const results = await fetchJson('../data/daily_slate/results.json').catch(() => ({ results: [] }));
+    target.innerHTML = `<div class="slate-grid">${(slate.entries || []).map((entry, i) => slateCard(entry, i, results.results || [])).join('')}</div>`;
+  } catch {
+    target.innerHTML = '<p class="muted">Daily Slate sample not present.</p>';
+  }
+}
+
+function slateCard(entry, index, results) {
+  const match = entry.matchup || {};
+  const result = results[index];
+  return `<div class="slate-card"><strong>${entry.seed || `Entry ${index + 1}`}</strong><span>${label(match.offense)} vs ${label(match.defense)}</span><p class="muted compact">preview not available in static proof</p>${result ? `<div class="kv"><span>Result</span><span>${label(result.result)}</span></div><div class="kv"><span>Points</span><span>${result.points}</span></div>` : ''}</div>`;
+}
+
+function setupOverlay() {
+  $('openGraphExplorer').onclick = openGraphExplorer;
+  $('closeGraphExplorer').onclick = closeGraphExplorer;
+  $('overlayBackdrop').onclick = closeGraphExplorer;
+  $('graphSearch').oninput = renderGraphExplorer;
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeGraphExplorer(); });
+}
+
+function openGraphExplorer() {
+  $('graphOverlay').hidden = false;
+  $('graphSearch').value = '';
+  renderGraphExplorer();
+  $('graphSearch').focus();
+}
+
+function closeGraphExplorer() {
+  $('graphOverlay').hidden = true;
+}
+
+function renderGraphExplorer() {
+  const query = ($('graphSearch').value || '').toLowerCase();
+  const cards = Object.values(graphCards).filter(card => JSON.stringify(card).toLowerCase().includes(query));
+  $('graphExplorerList').innerHTML = cards.map(card => graphCardHtml(card, card.id)).join('') || '<p class="muted">No matching graph cards.</p>';
+}
+
+function morphText(el, next) {
+  if (el.textContent === next) return;
+  el.style.opacity = '0';
+  setTimeout(() => { el.textContent = next; el.style.opacity = '1'; }, reduced() ? 0 : 150);
+}
+
+function flashScore(kind) {
+  const card = $('scorecard');
+  card.classList.remove('flash-good', 'flash-warn');
+  void card.offsetWidth;
+  card.classList.add(kind === 'good' ? 'flash-good' : 'flash-warn');
+}
+
+function mountPanels(ids) { ids.forEach(id => mountRows($(id))); }
+function mountRows(root) {
+  root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel, #offenseCall, #defenseCall, #playOutcome, #resources, #events, #graphCards, #beliefs').forEach(panel => {
+    panel.classList.remove('mount');
+    [...panel.children].slice(0, 6).forEach((child, i) => child.style.animationDelay = `${Math.min(i, 6) * 40}ms`);
+    void panel.offsetWidth;
+    panel.classList.add('mount');
+  }) : null;
 }
 
 loadReplay().catch(error => {

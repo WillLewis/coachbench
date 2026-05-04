@@ -7,76 +7,92 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header class="topbar">
+    <div>
+      <p class="wordmark">CoachBench</p>
+      <div id="modeBanner" class="mode-banner">Phase 0B static schema/UI proof - not an engine-generated benchmark result.</div>
+    </div>
+    <div id="scorecard" class="scorecard" aria-live="polite">
+      <span id="resultLabel">Loading</span>
+      <strong id="pointsLabel">0 pts</strong>
+      <small id="episodeLabel">episode</small>
+    </div>
+  </header>
+
   <main class="shell">
-    <div id="modeBanner" class="mode-banner">Phase 0B static schema/UI proof - not an engine-generated benchmark result.</div>
-    <section class="hero">
-      <div>
-        <p class="eyebrow">CoachBench</p>
-        <h1>Can your agent discover the edge before the opponent adjusts?</h1>
-        <p class="subhead">A football-inspired red-zone adversarial-agent arena with legal play calls, resource constraints, belief updates, Agent Garage, Film Room, and Daily Slate.</p>
-      </div>
-      <div class="scorecard">
-        <span id="resultLabel">Loading</span>
-        <strong id="pointsLabel">0 pts</strong>
-        <small id="episodeLabel">episode</small>
-      </div>
+    <section class="hero row-mount">
+      <p class="eyebrow">Fictional red-zone benchmark</p>
+      <h1>Can your agent discover the edge before the opponent adjusts?</h1>
+      <p class="subhead">Inspect legal calls, resource tradeoffs, belief movement, graph-backed events, and Film Room feedback from a deterministic replay.</p>
     </section>
 
-    <section class="grid main-grid">
+    <section class="main-grid row-mount">
       <article class="panel field-panel">
-        <h2>Red-Zone Replay</h2>
+        <div class="panel-title"><h2>Field + Timeline</h2><span id="driveState">Loading</span></div>
         <div class="field">
-          <div class="endzone">END ZONE</div>
+          <div class="yard-rule y20"><span>20</span></div>
+          <div class="yard-rule y15"><span>15</span></div>
+          <div class="yard-rule y10"><span>10</span></div>
+          <div class="yard-rule y5"><span>5</span></div>
+          <div class="endzone">End Zone</div>
           <div id="ball" class="ball"></div>
-          <div class="yardline y5">5</div>
-          <div class="yardline y10">10</div>
-          <div class="yardline y15">15</div>
-          <div class="yardline y20">20</div>
         </div>
-        <div id="timeline" class="timeline"></div>
+        <div id="timeline" class="timeline" role="tablist" aria-label="Play timeline"></div>
       </article>
-
-      <article class="panel"><h2>Post-Drive Summary</h2><div id="driveSummary"></div></article>
+      <article class="panel summary-panel">
+        <h2>Post-Drive Summary</h2>
+        <div id="driveSummary"></div>
+      </article>
     </section>
 
-    <section class="grid three">
+    <section class="three row-mount">
       <article class="panel"><h2>Offense Call</h2><div id="offenseCall"></div></article>
       <article class="panel"><h2>Defense Call</h2><div id="defenseCall"></div></article>
       <article class="panel"><h2>Play Outcome</h2><div id="playOutcome"></div><div id="validation"></div></article>
     </section>
 
-    <section class="grid two">
-      <article class="panel">
-        <h2>Beliefs</h2>
-        <div id="beliefs"></div>
-      </article>
-      <article class="panel">
-        <h2>Graph Events</h2>
-        <div id="events"></div>
-      </article>
+    <section class="two row-mount">
+      <article class="panel"><h2>Beliefs</h2><div id="beliefs"></div></article>
+      <article class="panel"><h2>Graph Events + Cards</h2><div id="events"></div><div id="graphCards"></div></article>
     </section>
 
-    <section class="grid two">
-      <article class="panel"><h2>Resource Tradeoffs</h2><div id="resources"></div></article>
-      <article class="panel"><h2>Graph Cards</h2><div id="graphCards"></div></article>
+    <section class="panel row-mount">
+      <h2>Resource Tradeoffs</h2>
+      <div id="resources"></div>
     </section>
 
-    <section class="panel">
+    <section class="panel row-mount">
       <h2>Film Room</h2>
       <div id="filmRoom"></div>
     </section>
 
-    <section class="grid footer-grid">
-      <article class="panel">
-        <h2>Agent Garage</h2>
-        <div id="garage"></div>
+    <footer class="footer-strip row-mount">
+      <article class="panel garage-panel">
+        <details open>
+          <summary><h2>Agent Garage</h2></summary>
+          <div id="garage"></div>
+        </details>
       </article>
-      <article class="panel">
-        <h2>Daily Slate</h2>
-        <div id="dailySlate"></div>
-      </article>
-    </section>
+      <article class="panel"><h2>Daily Slate</h2><div id="dailySlate"></div></article>
+      <button id="openGraphExplorer" class="panel explorer-launch" type="button">Graph Cards</button>
+    </footer>
   </main>
+
+  <div id="graphOverlay" class="overlay" hidden>
+    <button id="overlayBackdrop" class="overlay-backdrop" type="button" aria-label="Close graph cards"></button>
+    <section class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="graphExplorerTitle">
+      <div class="overlay-head">
+        <div>
+          <p class="eyebrow">Graph-backed tactical truth</p>
+          <h2 id="graphExplorerTitle">Graph Cards</h2>
+        </div>
+        <button id="closeGraphExplorer" class="ghost-button" type="button">Close</button>
+      </div>
+      <input id="graphSearch" class="search" type="search" placeholder="Search card name, event, counter, or id" />
+      <div id="graphExplorerList" class="explorer-list"></div>
+    </section>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

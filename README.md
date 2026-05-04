@@ -1,40 +1,17 @@
 # CoachBench
 
-CoachBench is a football-inspired adversarial-agent arena for short red-zone strategy contests. Offensive and defensive coordinator agents compete through simultaneous legal play calls, scarce tactical resources, partial observability, in-game belief updates, and seeded reproducibility.
-
-Public line:
+CoachBench is a football-inspired adversarial-agent arena for short red-zone strategy contests. Coordinator agents compete through simultaneous legal calls, scarce tactical resources, partial observations, belief updates, graph-backed tactical events, and seeded reproducibility.
 
 > Can your agent discover the edge before the opponent adjusts?
 
-This starter repo includes:
+## What The Demo Proves
 
-```text
-strategy graph v0
-legal action enumerator
-resource feasibility checks
-simple concept interaction engine
-static and adaptive starter agents
-engine-generated showcase replay
-Agent Garage config starter
-Film Room note generator
-Daily Slate starter
-zero-dependency replay UI
-branch-level operating instructions
-```
+The public demo proves a local behavioral floor: fixed seeds can show adaptive agents changing call distribution, legal choices constrained by resources, graph-backed event logs, and Film Room feedback derived from replay events. It does not claim real-world predictive accuracy; CoachBench uses fictional teams, fictional roster profiles, symbolic concepts, and inspectable logic.
 
-## Product boundary
-
-CoachBench uses fictional teams, fictional roster profiles, symbolic football concepts, and inspectable logic. Do not add real teams, real players, licensed logos, official ratings products, or licensed pro-league references.
-
-CoachBench is not a gambling product and does not support cash contests or wagering.
-
-## Quick start
+## Quick Start
 
 ```bash
-python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui
-python scripts/run_match_matrix.py --out data/match_matrix_report.json
-python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --out data/daily_slate/results.json
-python -m http.server 8000
+make demo
 ```
 
 Then open:
@@ -43,68 +20,76 @@ Then open:
 http://localhost:8000/ui/
 ```
 
-## Repo map
+Useful commands:
+
+```bash
+make test
+make showcase
+make golden-update
+make baseline-update
+```
+
+Manual equivalent:
+
+```bash
+python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui
+python scripts/run_match_matrix.py --out data/match_matrix_report.json
+python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --out data/daily_slate/results.json
+python -m http.server 8000
+```
+
+## Screenshot Placeholder
+
+Add a screenshot or short local capture of `http://localhost:8000/ui/` here after the UI is opened in a browser.
+
+## Included Pieces
 
 ```text
-PLAN.md                         final product/build plan
-AGENTS.md                       branch-level operating instructions for coding agents
-CLAUDE.md                       Claude Code-specific operating instructions
-pyproject.toml                  Python package metadata
-package.json                    UI script metadata
+Strategy graph v0
+Legal action enumerator
+Resource feasibility validation
+Concept interaction engine
+Static and adaptive starter agents
+Team A / Team B configuration files
+Engine-generated showcase replay
+Best-of-N and comparison reports
+Golden replay drift tests
+Calibration sanity ranges
+Agent Garage display and local edit shell
+Film Room structured notes
+Daily Slate local report
+Zero-dependency replay UI
+```
 
+## Repo Map
+
+```text
+PLAN.md                         product/build plan
+AGENTS.md                       coding-agent operating instructions
+CLAUDE.md                       Claude Code operating instructions
 engine/coachbench/              core symbolic engine
 agents/                         starter coordinator agents
 graph/redzone_v0/               graph cards and resource constraints
-scripts/                        runnable local scripts
-data/                           generated and sample replay/slate data
+scripts/                        local run and evaluation utilities
+data/                           generated replays, reports, baselines
 ui/                             zero-dependency replay UI
-docs/                           product, graph, security, and mode notes
-sandbox/                        hosted-runner placeholder guidance
-tests/                          smoke tests
+docs/                           product and safety notes
+tests/                          smoke, contract, drift, calibration tests
 ```
 
-## Current phase
+## Product Boundary
 
-This repo is a Phase 0A/0B starter with enough Phase 1 scaffolding to generate an engine-driven replay. The code is intentionally compact and inspectable.
+CoachBench is a fictional, local-first strategy benchmark. Do not add real teams, real players, licensed logos, official ratings products, or hosted third-party execution without a sandbox design review.
 
-## Key commands
-
-Generate showcase replay:
+## Quality Gates
 
 ```bash
-python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui
-```
-
-Run interaction matrix:
-
-```bash
-python scripts/run_match_matrix.py --out data/match_matrix_report.json
-```
-
-Run Daily Slate:
-
-```bash
-python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --out data/daily_slate/results.json
-```
-
-Run tests:
-
-```bash
-python -m pytest
-```
-
-## Quality gates
-
-Before considering a change ready:
-
-```text
+python -m pytest -q
 python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui
 python scripts/run_match_matrix.py --out data/match_matrix_report.json
 python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --out data/daily_slate/results.json
-python -m pytest
-grep generated files for licensed references
 ```
 
 ## Backlog
 
-Rookie Pools and Social Share are intentionally parked in `docs/backlog.md` until the core player loop is validated.
+Rookie Pools and Social Share remain parked in `docs/backlog.md` until the core player loop is validated.
