@@ -23,6 +23,45 @@ def test_showcase_replay_is_deterministic() -> None:
     assert "film_room" in first
 
 
+def test_plan_final_success_seeded_demo_shows_adaptation_loop() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    plays = replay["plays"]
+
+    offense_calls = [play["public"]["offense_action"]["concept_family"] for play in plays]
+    defense_calls = [play["public"]["defense_action"]["coverage_family"] for play in plays]
+
+    assert offense_calls[:2] == ["outside_zone", "play_action_flood"]
+    assert "wide_zone_constrained" in {event["tag"] for event in plays[0]["offense_observed"]["events"]}
+    assert len(set(offense_calls)) >= 3
+
+    assert defense_calls[0] == "bear_front"
+    assert "redzone_bracket" in defense_calls[1:]
+    first_bracket_index = defense_calls.index("redzone_bracket")
+    prior_defense_events = {
+        event["tag"]
+        for play in plays[:first_bracket_index]
+        for event in play["defense_observed"]["events"]
+    }
+    assert "run_tendency_exploited" in prior_defense_events
+
+    for play in plays:
+        public = play["public"]
+        assert public["graph_card_ids"] or public["events"]
+        assert public["offense_action"]["concept_family"] in public["legal_action_sets"]["offense"]
+        assert public["defense_action"]["coverage_family"] in public["legal_action_sets"]["defense"]
+        assert public["resource_budget_snapshot"]["offense_remaining"]
+        assert public["resource_budget_snapshot"]["defense_remaining"]
+        for section in ("public", "offense_observed", "defense_observed"):
+            for event in play[section]["events"]:
+                assert event["graph_card_id"]
+
+    film_room = replay["film_room"]
+    assert film_room["notes"]
+    assert film_room["suggested_tweaks"]
+    assert all(note.startswith("Graph card \"") for note in film_room["notes"])
+    assert any(tweak.startswith("Review graph-listed counters") for tweak in film_room["suggested_tweaks"])
+
+
 def test_legal_action_enumerator_rejects_invalid_action() -> None:
     legal = LegalActionEnumerator(StrategyGraph())
     bad = OffenseAction(

@@ -72,6 +72,20 @@ OBSERVED_PLAY_FIELDS = {
     "belief_after",
 }
 
+FILM_ROOM_FIELDS = {
+    "headline",
+    "turning_point",
+    "notes",
+    "suggested_tweaks",
+}
+
+TURNING_POINT_FIELDS = {
+    "play_index",
+    "expected_value_delta",
+    "graph_card_ids",
+    "metric",
+}
+
 HIDDEN_OBSERVATION_FIELDS = {
     "seed",
     "seed_hash",
@@ -152,6 +166,20 @@ def validate_film_room_is_event_derived(replay: Dict[str, Any]) -> None:
             raise ContractValidationError(f"Film Room note is not event-derived: {note}")
 
 
+def validate_film_room_schema(film_room: Dict[str, Any]) -> None:
+    _require_fields(film_room, FILM_ROOM_FIELDS, "film_room")
+    if not isinstance(film_room["notes"], list):
+        raise ContractValidationError("film_room notes must be a list")
+    if not isinstance(film_room["suggested_tweaks"], list):
+        raise ContractValidationError("film_room suggested_tweaks must be a list")
+
+    turning_point = film_room["turning_point"]
+    if turning_point is not None:
+        _require_fields(turning_point, TURNING_POINT_FIELDS, "film_room turning_point")
+        if turning_point["metric"] != "largest_abs_expected_value_delta":
+            raise ContractValidationError(f"Unknown turning-point metric: {turning_point['metric']}")
+
+
 def validate_replay_contract(replay: Dict[str, Any]) -> None:
     _require_fields(replay, {"metadata", "agents", "legal_sets", "plays", "score", "film_room", "debug"}, "replay")
     _require_fields(replay["metadata"], REPLAY_METADATA_FIELDS, "metadata")
@@ -159,6 +187,7 @@ def validate_replay_contract(replay: Dict[str, Any]) -> None:
         raise ContractValidationError("metadata must not expose raw seed")
     if replay["debug"] != {"fields": []}:
         raise ContractValidationError("P0 debug partition must be present and empty")
+    validate_film_room_schema(replay["film_room"])
 
     _require_fields(replay["score"], {"points", "result", "invalid_action_count"}, "score")
     if replay["score"]["result"] not in {"touchdown", "field_goal", "stopped"}:

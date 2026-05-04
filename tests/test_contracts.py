@@ -12,7 +12,8 @@ from coachbench.contracts import (
     validate_replay_contract,
 )
 from coachbench.engine import CoachBenchEngine
-from coachbench.film_room import build_film_room, headline_for_terminal
+from coachbench.film_room import build_film_room, film_room_note_for_event, headline_for_terminal
+from coachbench.graph_loader import StrategyGraph
 from scripts.run_daily_slate import defense_agent, offense_agent, slate_entries
 from scripts.run_match_matrix import case_seed
 
@@ -71,7 +72,12 @@ def test_scoring_reports_satisfy_contracts() -> None:
                 "result": "stopped",
                 "plays": 1,
                 "film_room_headline": "Drive stopped",
-                "turning_point": {"play_index": 1},
+                "turning_point": {
+                    "play_index": 1,
+                    "expected_value_delta": 0.0,
+                    "graph_card_ids": [],
+                    "metric": "largest_abs_expected_value_delta",
+                },
             }
         ],
     }
@@ -120,6 +126,27 @@ def test_film_room_notes_must_be_event_derived() -> None:
         assert "Film Room note" in str(exc)
     else:
         raise AssertionError("Unsupported Film Room note was accepted")
+
+
+def test_film_room_notes_must_reference_observed_card_ids() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    observed_card_ids = {
+        event["graph_card_id"]
+        for play in replay["plays"]
+        for section in ("public", "offense_observed", "defense_observed")
+        for event in play[section]["events"]
+    }
+    absent_card = next(card for card in StrategyGraph().interactions if card["id"] not in observed_card_ids)
+    event = dict(absent_card["tactical_events"][0])
+    event["graph_card_id"] = absent_card["id"]
+    replay["film_room"]["notes"] = [film_room_note_for_event(event, absent_card)]
+
+    try:
+        validate_film_room_is_event_derived(replay)
+    except ContractValidationError as exc:
+        assert "Film Room note" in str(exc)
+    else:
+        raise AssertionError("Film Room note from an unobserved graph card was accepted")
 
 
 def test_film_room_notes_use_graph_cards_not_agent_intent_claims() -> None:

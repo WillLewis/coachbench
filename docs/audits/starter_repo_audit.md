@@ -58,6 +58,7 @@ Missing or partial:
 - Calibration is intentionally lightweight and symbolic.
 - No execution sandbox for arbitrary third-party code is implemented, which matches current safety constraints.
 - Replay validation is present but not published as a standalone schema artifact.
+- PLAN section 16 defines the headline P0/P1 success criterion. The seeded adaptive showcase now has a direct regression test, but it remains a starter proof rather than a broad adaptation benchmark.
 
 ## Acceptance Checklist Coverage
 
@@ -126,9 +127,25 @@ Covered by:
 - `validate_film_room_is_event_derived` rejects unsupported notes.
 - Tests:
   - `test_film_room_notes_must_be_event_derived`
+  - `test_film_room_notes_must_reference_observed_card_ids`
   - graph event visibility tests in `test_graph_invariants.py`
 
-Assessment: Covered for existing Film Room note vocabulary.
+Assessment: Covered for existing Film Room note vocabulary and observed graph-card references.
+
+### PLAN §16 Final Success Test
+
+Covered by:
+
+- The seed-42 adaptive showcase contains an end-to-end adaptation loop:
+  - offense changes from outside zone into play action after observed defensive front events
+  - defense changes into bracket coverage after observed run-tendency events
+  - tactical events reference graph card IDs
+  - selected actions are legal within each play's resource-constrained legal set
+  - Film Room emits graph-card-derived notes and counter-oriented tweaks
+- Test:
+  - `test_plan_final_success_seeded_demo_shows_adaptation_loop`
+
+Assessment: Covered as a starter seeded-demo regression. Still not a statistical or multi-seed adaptation benchmark.
 
 ### Daily Slate Reproducibility
 
@@ -163,6 +180,7 @@ Assessment: Covered for graph files. Broader repo-wide generated-output scanning
 - Match matrix reproducibility is tested at seed function level, but there is no golden report diff test.
 - Resource depletion is tested with targeted budget examples, not with exhaustive per-drive legal-set transitions across all actions.
 - Agent Garage profile wiring is present for showcase adaptive agents, but tests do not yet assert every profile parameter has behavioral influence.
+- PLAN section 16 is covered by one seeded adaptive showcase regression, not by a matrix of agents/seeds.
 
 ## Recommended Next Implementation Tickets
 
