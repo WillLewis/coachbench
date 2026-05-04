@@ -17,7 +17,7 @@ from coachbench.contracts import (
     validate_replay_contract,
 )
 from coachbench.engine import CoachBenchEngine
-from coachbench.film_room import build_film_room, film_room_note_for_event, headline_for_terminal
+from coachbench.film_room import build_film_room, film_room_note_for_event, film_room_tweak_for_card, headline_for_terminal
 from coachbench.graph_loader import StrategyGraph
 from coachbench.observations import (
     defense_observation_before_play,
@@ -303,6 +303,37 @@ def test_film_room_notes_must_reference_observed_card_ids() -> None:
         assert "Film Room note" in str(exc)
     else:
         raise AssertionError("Film Room note from an unobserved graph card was accepted")
+
+
+def test_film_room_tweaks_must_be_graph_derived() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    replay["film_room"]["suggested_tweaks"] = ["Call more screens because they are clever."]
+
+    try:
+        validate_film_room_is_event_derived(replay)
+    except ContractValidationError as exc:
+        assert "Film Room tweak" in str(exc)
+    else:
+        raise AssertionError("Unsupported Film Room tweak was accepted")
+
+
+def test_film_room_tweaks_must_reference_observed_card_ids() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    observed_card_ids = {
+        event["graph_card_id"]
+        for play in replay["plays"]
+        for section in ("public", "offense_observed", "defense_observed")
+        for event in play[section]["events"]
+    }
+    absent_card = next(card for card in StrategyGraph().interactions if card["id"] not in observed_card_ids)
+    replay["film_room"]["suggested_tweaks"] = [film_room_tweak_for_card(absent_card)]
+
+    try:
+        validate_film_room_is_event_derived(replay)
+    except ContractValidationError as exc:
+        assert "Film Room tweak" in str(exc)
+    else:
+        raise AssertionError("Film Room tweak from an unobserved graph card was accepted")
 
 
 def test_film_room_notes_use_graph_cards_not_agent_intent_claims() -> None:

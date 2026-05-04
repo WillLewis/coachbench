@@ -4,6 +4,9 @@ from typing import Any, Dict, List
 
 from .graph_loader import StrategyGraph
 
+NO_EVENT_FILM_ROOM_NOTE = "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
+NO_EVENT_FILM_ROOM_TWEAK = "Review call sequencing, resource use, and risk level against nearby fixed seeds."
+
 
 def _public_play(play: Dict[str, Any]) -> Dict[str, Any]:
     return play.get("public", play)
@@ -90,8 +93,8 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: Stra
             tweaks.append(film_room_tweak_for_card(card))
 
     if not notes:
-        notes.append("No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds.")
-        tweaks.append("Review call sequencing, resource use, and risk level against nearby fixed seeds.")
+        notes.append(NO_EVENT_FILM_ROOM_NOTE)
+        tweaks.append(NO_EVENT_FILM_ROOM_TWEAK)
 
     terminal_reason = _public_play(play_results[-1]).get("terminal_reason")
 

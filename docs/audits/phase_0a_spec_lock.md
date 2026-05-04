@@ -18,7 +18,7 @@ Phase 0A is locked. Changes to the artifacts below require a follow-up audit ent
 | 10 | product non-goals | `PLAN.md` section 3, `docs/backlog.md` | `test_p0_scope_terms_stay_inside_allowed_boundary_docs` |
 | 11 | license-safe naming rules | `AGENTS.md`, `CLAUDE.md`, `README.md`, `graph/redzone_v0/graph.meta.json` | `test_repo_contains_no_banned_licensed_or_monetized_terms` |
 | 12 | Agent Garage v0 spec | `PLAN.md` section 5.2, `docs/agent_garage.md`, `agent_garage/profiles.json` | `test_agent_garage_doc_lists_plan_5_2_controls` |
-| 13 | Film Room v0 spec | `PLAN.md` section 6, `docs/film_room.md`, `engine/coachbench/film_room.py` | `test_film_room_notes_must_reference_observed_card_ids` |
+| 13 | Film Room v0 spec | `PLAN.md` section 6, `docs/film_room.md`, `engine/coachbench/film_room.py` | `test_film_room_tweaks_must_reference_observed_card_ids` |
 | 14 | Daily Slate v0 spec | `PLAN.md` section 7.2, `docs/daily_slate.md`, `data/daily_slate/sample_slate.json` | `test_daily_slate_script_output_is_deterministic_and_contract_valid` |
 | 15 | Backlog section | `PLAN.md` section 14, `docs/backlog.md` | `test_p0_scope_terms_stay_inside_allowed_boundary_docs` |
 

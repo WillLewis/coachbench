@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from .film_room import film_room_note_for_event
+from .film_room import (
+    NO_EVENT_FILM_ROOM_NOTE,
+    NO_EVENT_FILM_ROOM_TWEAK,
+    film_room_note_for_event,
+    film_room_tweak_for_card,
+)
 from .graph_loader import StrategyGraph
 
 
@@ -135,9 +140,6 @@ HIDDEN_OBSERVATION_FIELDS = {
     "opponent_action",
 }
 
-NO_EVENT_FILM_ROOM_NOTE = "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
-
-
 class ContractValidationError(AssertionError):
     pass
 
@@ -194,14 +196,24 @@ def validate_film_room_is_event_derived(replay: Dict[str, Any]) -> None:
         for event in events
         if event.get("graph_card_id") in cards_by_id
     }
+    allowed_tweaks = {
+        film_room_tweak_for_card(cards_by_id[event["graph_card_id"]])
+        for event in events
+        if event.get("graph_card_id") in cards_by_id
+    }
     if not event_tags:
         allowed_notes.add(NO_EVENT_FILM_ROOM_NOTE)
+        allowed_tweaks.add(NO_EVENT_FILM_ROOM_TWEAK)
     if event_tags and not allowed_notes:
         allowed_notes.add(NO_EVENT_FILM_ROOM_NOTE)
+        allowed_tweaks.add(NO_EVENT_FILM_ROOM_TWEAK)
 
     for note in replay.get("film_room", {}).get("notes", []):
         if note not in allowed_notes:
             raise ContractValidationError(f"Film Room note is not event-derived: {note}")
+    for tweak in replay.get("film_room", {}).get("suggested_tweaks", []):
+        if tweak not in allowed_tweaks:
+            raise ContractValidationError(f"Film Room tweak is not graph-derived: {tweak}")
 
 
 def validate_film_room_schema(film_room: Dict[str, Any]) -> None:

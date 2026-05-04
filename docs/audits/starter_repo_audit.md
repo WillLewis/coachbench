@@ -126,12 +126,15 @@ Covered by:
 
 - `film_room.py` derives notes from observed replay event tags.
 - `validate_film_room_is_event_derived` rejects unsupported notes.
+- Suggested tweaks must resolve to observed graph-card counters or the declared no-event fallback.
 - Tests:
   - `test_film_room_notes_must_be_event_derived`
   - `test_film_room_notes_must_reference_observed_card_ids`
+  - `test_film_room_tweaks_must_be_graph_derived`
+  - `test_film_room_tweaks_must_reference_observed_card_ids`
   - graph event visibility tests in `test_graph_invariants.py`
 
-Assessment: Covered for existing Film Room note vocabulary and observed graph-card references.
+Assessment: Covered for existing Film Room note/tweak vocabulary and observed graph-card references.
 
 ### PLAN §16 Final Success Test
 
