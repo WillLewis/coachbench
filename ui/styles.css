@@ -111,7 +111,7 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 .main-grid { grid-template-columns: minmax(0, 2fr) minmax(280px, 0.75fr); align-items: stretch; }
 .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.footer-strip { grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.9fr) 180px; align-items: stretch; }
+.footer-strip { grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.8fr) minmax(260px, 0.8fr) 180px; align-items: stretch; }
 .panel { padding: 20px; min-width: 0; }
 .summary-panel { display: grid; align-content: start; }
 .panel-title { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
@@ -326,6 +326,20 @@ textarea { width: 100%; min-height: 92px; resize: vertical; color: var(--text-mu
 .ghost-button { cursor: pointer; }
 .explorer-launch { align-self: center; justify-self: start; color: var(--accent); }
 
+.roster-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.roster-side {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px;
+  background: var(--bg-elev-1);
+}
+.roster-bar { margin: 10px 0; }
+.roster-bar label { display: flex; justify-content: space-between; gap: 12px; color: var(--text-muted); font-size: 12px; }
+.roster-bar small { display: block; margin-top: 4px; color: var(--text-faint); font-size: 11px; }
+.roster-strength small { color: var(--accent); }
+.roster-weakness small { color: var(--warn); }
+.roster-weakness .fill { background: var(--warn); }
+
 .sparkline-wrap { margin: 16px 0 12px; }
 .sparkline {
   width: 100%;
@@ -377,7 +391,7 @@ code { color: var(--accent); }
 @media (max-width: 960px) {
   .topbar { display: grid; grid-template-columns: 1fr; align-items: stretch; }
   .mode-banner { width: 100%; }
-  .main-grid, .three, .two, .footer-strip, .resource-grid, .garage-edit-grid, .slate-grid { grid-template-columns: 1fr; }
+  .main-grid, .three, .two, .footer-strip, .resource-grid, .garage-edit-grid, .slate-grid, .roster-grid { grid-template-columns: 1fr; }
   .field { min-height: 300px; }
   .scorecard { max-width: none; flex-basis: auto; }
 }

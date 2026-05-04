@@ -23,6 +23,9 @@ class ResolutionEngine:
         defense_action: DefenseAction,
         offense_memory: AgentMemory,
         defense_memory: AgentMemory,
+        offense_roster_modifier: tuple[float, float] = (0.0, 0.0),
+        defense_roster_modifier: tuple[float, float] = (0.0, 0.0),
+        hidden_trait_modifier: tuple[float, float, int] = (0.0, 0.0, 0),
     ) -> PlayResolution:
         interaction = self.interactions.evaluate(
             offense_action,
@@ -32,20 +35,26 @@ class ResolutionEngine:
         base = self.graph.base_ep_for_offense(offense_action.concept_family)
         risk = self.model["risk_levels"].get(offense_action.risk_level, self.model["risk_levels"]["balanced"])
         expected_value = base + interaction["epa_modifier"] + float(risk["epa_modifier"])
+        expected_value += float(offense_roster_modifier[0])
+        expected_value -= float(defense_roster_modifier[0])
+        expected_value += float(hidden_trait_modifier[0])
         success_bounds = self.model["success_probability_bounds"]
+        raw_success_probability = (
+            self.graph.base_success_for_offense(offense_action.concept_family)
+            + interaction["success_modifier"]
+            + float(risk["success_modifier"])
+            + float(offense_roster_modifier[1])
+            - float(defense_roster_modifier[1])
+            + float(hidden_trait_modifier[1])
+        )
         success_probability = max(
             float(success_bounds["minimum"]),
-            min(
-                float(success_bounds["maximum"]),
-                self.graph.base_success_for_offense(offense_action.concept_family)
-                + interaction["success_modifier"]
-                + float(risk["success_modifier"]),
-            ),
+            min(float(success_bounds["maximum"]), raw_success_probability),
         )
         success = self.rng.random() < success_probability
 
         yards_model = self.model["yardage_model"]
-        noise = self.rng.randint(int(yards_model["noise_min"]), int(yards_model["noise_max"]))
+        noise = self.rng.randint(int(yards_model["noise_min"]), int(yards_model["noise_max"])) + int(hidden_trait_modifier[2])
         if success:
             yards = max(
                 int(yards_model["minimum_success_yards"]),

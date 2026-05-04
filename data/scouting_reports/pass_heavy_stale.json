@@ -1,0 +1,25 @@
+{
+  "report_id": "scout_fictional_pass_heavy_offense_v0_stale_11",
+  "label": "Pass Heavy Offense Edge Scouting",
+  "freshness": "stale",
+  "completeness": 0.6,
+  "estimated_traits": {
+    "defense_disguise_quality": null,
+    "defense_pressure_discipline": null,
+    "defense_redzone_density": 0.6697,
+    "matchup_volatility": 0.6363,
+    "offense_explosive_propensity": 0.8531,
+    "offense_run_commitment": 0.485,
+    "offense_screen_self_belief": 0.6739
+  },
+  "confidence": {
+    "offense_explosive_propensity": "low",
+    "offense_screen_self_belief": "low",
+    "offense_run_commitment": "low",
+    "defense_disguise_quality": "low",
+    "defense_pressure_discipline": "low",
+    "defense_redzone_density": "low",
+    "matchup_volatility": "low"
+  },
+  "notes": "Fictional deterministic scouting estimate."
+}

@@ -138,6 +138,9 @@ HIDDEN_OBSERVATION_FIELDS = {
     "debug",
     "future_plays",
     "opponent_action",
+    "hidden_traits",
+    "scouting_noise_seed",
+    "true_traits",
 }
 
 class ContractValidationError(AssertionError):
@@ -258,6 +261,8 @@ def validate_replay_contract(replay: Dict[str, Any]) -> None:
             raise ContractValidationError("public play must not include side belief state")
 
     validate_film_room_is_event_derived(replay)
+    if "inference_report" in replay:
+        validate_inference_report(replay["inference_report"])
 
 
 def validate_match_matrix_report(report: Dict[str, Any]) -> None:
@@ -330,6 +335,154 @@ def validate_best_of_n_report(report: Dict[str, Any]) -> None:
             {"seed", "direction", "points", "result", "plays", "film_room_headline"},
             "best-of-N drive",
         )
+
+
+def validate_tournament_report(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"report_id", "teams", "seeds", "standings", "raw_drives"}, "tournament report")
+    for team in report["teams"]:
+        _require_fields(team, {"team_id", "label"}, "tournament team")
+    for row in report["standings"]:
+        _require_fields(
+            row,
+            {
+                "rank",
+                "team_id",
+                "label",
+                "games_played",
+                "mean_points_per_drive",
+                "touchdown_rate",
+                "head_to_head",
+            },
+            "tournament standing",
+        )
+    for drive in report["raw_drives"]:
+        _require_fields(
+            drive,
+            {"seed", "team_id", "opponent_team_id", "direction", "points", "result", "plays"},
+            "tournament raw drive",
+        )
+
+
+def validate_roster_budget(payload: Dict[str, Any]) -> None:
+    _require_fields(payload, {"roster_id", "label", "budget_points", "position_groups", "notes"}, "roster budget")
+    expected_traits = {
+        "qb": "decision_making",
+        "running_backs": "run_power",
+        "receivers": "separation",
+        "offensive_line": "protection",
+        "front_seven": "rush_pressure",
+        "secondary": "coverage_tightness",
+    }
+    groups = payload["position_groups"]
+    extra = set(groups) - set(expected_traits)
+    missing = set(expected_traits) - set(groups)
+    if extra or missing:
+        raise ContractValidationError(f"roster budget groups invalid; missing={sorted(missing)} extra={sorted(extra)}")
+    total = 0
+    for group, trait in expected_traits.items():
+        item = groups[group]
+        _require_fields(item, {"trait", "value"}, f"roster budget {group}")
+        if item["trait"] != trait:
+            raise ContractValidationError(f"roster budget {group} trait must be {trait}")
+        if not isinstance(item["value"], int) or not 0 <= item["value"] <= 100:
+            raise ContractValidationError(f"roster budget {group} value must be an integer in [0, 100]")
+        total += item["value"]
+    if total != payload["budget_points"]:
+        raise ContractValidationError(f"roster budget total {total} does not equal budget_points {payload['budget_points']}")
+
+
+def validate_mirrored_seed_report(report: Dict[str, Any]) -> None:
+    _require_fields(
+        report,
+        {"report_id", "team_a", "team_b", "offense_roster", "defense_roster", "seeds", "drives", "roster_lift_offense", "notes"},
+        "mirrored seed report",
+    )
+    for drive in report["drives"]:
+        _require_fields(drive, {"seed", "direction", "points", "result", "plays", "film_room_headline"}, "mirrored seed drive")
+
+
+def validate_budget_leaderboard_report(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"report_id", "entries", "seeds", "standings", "raw_drives"}, "budget leaderboard report")
+    for entry in report["entries"]:
+        _require_fields(
+            entry,
+            {"entry_id", "team_id", "roster_id", "label", "budget_points", "games_played", "total_points", "mean_points_per_drive"},
+            "budget leaderboard entry",
+        )
+    for row in report["standings"]:
+        _require_fields(row, {"rank", "entry_id", "mean_points_per_drive", "total_points"}, "budget leaderboard standing")
+    for drive in report["raw_drives"]:
+        _require_fields(drive, {"seed", "entry_id", "opponent_entry_id", "direction", "points", "result", "plays"}, "budget leaderboard drive")
+
+
+def validate_matchup_traits(payload: Dict[str, Any]) -> None:
+    _require_fields(payload, {"matchup_id", "label", "values", "notes"}, "matchup traits")
+    allowed = {
+        "offense_explosive_propensity",
+        "offense_screen_self_belief",
+        "offense_run_commitment",
+        "defense_disguise_quality",
+        "defense_pressure_discipline",
+        "defense_redzone_density",
+        "matchup_volatility",
+    }
+    found = set(payload["values"])
+    if found != allowed:
+        raise ContractValidationError(f"matchup traits invalid; missing={sorted(allowed - found)} extra={sorted(found - allowed)}")
+    for key, value in payload["values"].items():
+        if not isinstance(value, (int, float)) or not 0.0 <= float(value) <= 1.0:
+            raise ContractValidationError(f"matchup trait {key} must be in [0, 1]")
+
+
+def validate_scouting_report(payload: Dict[str, Any]) -> None:
+    _require_fields(payload, {"report_id", "label", "freshness", "completeness", "estimated_traits", "confidence", "notes"}, "scouting report")
+    if payload["freshness"] not in {"fresh", "stale"}:
+        raise ContractValidationError("scouting report freshness must be fresh or stale")
+    if not isinstance(payload["completeness"], (int, float)) or not 0.0 <= float(payload["completeness"]) <= 1.0:
+        raise ContractValidationError("scouting report completeness must be in [0, 1]")
+    allowed = {
+        "offense_explosive_propensity",
+        "offense_screen_self_belief",
+        "offense_run_commitment",
+        "defense_disguise_quality",
+        "defense_pressure_discipline",
+        "defense_redzone_density",
+        "matchup_volatility",
+    }
+    if set(payload["estimated_traits"]) != allowed:
+        raise ContractValidationError("scouting report estimated traits must match allowed traits")
+    if set(payload["confidence"]) != allowed:
+        raise ContractValidationError("scouting report confidence must match allowed traits")
+    for key, value in payload["estimated_traits"].items():
+        if value is not None and (not isinstance(value, (int, float)) or not 0.0 <= float(value) <= 1.0):
+            raise ContractValidationError(f"scouting estimate {key} must be in [0, 1] or null")
+        if payload["confidence"][key] not in {"low", "medium", "high"}:
+            raise ContractValidationError(f"scouting confidence {key} is invalid")
+
+
+def validate_inference_report(report: Dict[str, Any]) -> None:
+    _require_fields(
+        report,
+        {"report_id", "matchup_id", "offense_calibration", "defense_calibration", "scouting_used", "notes"},
+        "inference report",
+    )
+    for side in ("offense_calibration", "defense_calibration"):
+        _require_fields(report[side], {"per_trait_error", "mean_absolute_error", "calibrated_traits"}, f"inference {side}")
+
+
+def validate_calibration_eval_report(report: Dict[str, Any]) -> None:
+    _require_fields(
+        report,
+        {"report_id", "team_a", "team_b", "matchup_traits", "scouting", "seeds", "with_scouting", "without_scouting", "scouting_mae_lift"},
+        "calibration eval report",
+    )
+    for key in ("with_scouting", "without_scouting"):
+        _require_fields(
+            report[key],
+            {"offense_mae", "defense_mae", "per_trait_offense_mae", "per_trait_defense_mae"},
+            f"calibration eval {key}",
+        )
+    _require_fields(report["scouting_mae_lift"], {"offense", "defense"}, "calibration eval scouting_mae_lift")
 
 
 def validate_comparison_report(report: Dict[str, Any]) -> None:

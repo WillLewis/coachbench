@@ -26,6 +26,7 @@ async function loadReplay() {
   renderHeader();
   renderGarage();
   renderDailySlate();
+  renderRosterStrengths();
   renderTimeline();
   renderDriveSummary();
   renderFilmRoom();
@@ -302,6 +303,35 @@ function slateCard(entry, index, results) {
     <div class="slate-result"><span class="slate-label">Result</span><span class="slate-value">${result ? label(result.result) : 'Preview Pending'}</span></div>
     <div class="slate-points"><span class="slate-label">Points</span><span class="slate-value">${result ? result.points : '-'}</span></div>
     <p class="slate-note">preview not available in static proof</p>
+  </div>`;
+}
+
+function renderRosterStrengths() {
+  const rosters = replay.agent_garage_config?.rosters;
+  if (!rosters) {
+    $('rosterStrengths').innerHTML = '<p class="muted">No roster applied - running on neutral baseline.</p>';
+    return;
+  }
+  $('rosterStrengths').innerHTML = `<div class="roster-grid">${rosterSide('Offense', rosters.offense)}${rosterSide('Defense', rosters.defense)}</div>`;
+}
+
+function rosterSide(title, roster) {
+  if (!roster) return `<div class="roster-side"><h3>${title}</h3><p class="muted">No roster applied.</p></div>`;
+  const entries = Object.entries(roster.values || {}).sort((a, b) => b[1] - a[1]);
+  const strengths = new Set(entries.slice(0, 3).map(([key]) => key));
+  const weaknesses = new Set(entries.slice(-3).map(([key]) => key));
+  return `<div class="roster-side">
+    <h3>${title}</h3>
+    <p class="muted compact">${roster.label || roster.roster_id} · Budget: ${roster.budget_points || 0} / 600</p>
+    ${entries.map(([key, raw]) => {
+      const value = Number(raw || 0);
+      const bucket = strengths.has(key) ? 'Strength' : weaknesses.has(key) ? 'Weakness' : 'Neutral';
+      return `<div class="roster-bar ${bucket === 'Strength' ? 'roster-strength' : bucket === 'Weakness' ? 'roster-weakness' : ''}">
+        <label><span>${label(key)}</span><strong>${value}</strong></label>
+        <div class="meter"><div class="fill" style="width:${value}%"></div></div>
+        <small>${bucket}</small>
+      </div>`;
+    }).join('')}
   </div>`;
 }
 

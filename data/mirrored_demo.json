@@ -1,0 +1,96 @@
+{
+  "report_id": "mirrored_seed_v0",
+  "team_a": {
+    "team_id": "team_a_static_baseline",
+    "label": "Team A \u2014 Static Baseline"
+  },
+  "team_b": {
+    "team_id": "team_b_adaptive_counter",
+    "label": "Team B \u2014 Adaptive Counter"
+  },
+  "offense_roster": {
+    "roster_id": "pass_heavy_v0",
+    "label": "Pass Heavy",
+    "budget_points": 300,
+    "values": {
+      "qb": 70,
+      "running_backs": 30,
+      "receivers": 70,
+      "offensive_line": 60,
+      "front_seven": 35,
+      "secondary": 35
+    },
+    "notes": "Fictional roster budget emphasizing pass-game position groups while staying at 300 points."
+  },
+  "defense_roster": {
+    "roster_id": "defense_heavy_v0",
+    "label": "Defense Heavy",
+    "budget_points": 300,
+    "values": {
+      "qb": 35,
+      "running_backs": 45,
+      "receivers": 35,
+      "offensive_line": 45,
+      "front_seven": 70,
+      "secondary": 70
+    },
+    "notes": "Fictional roster budget emphasizing front and coverage groups while staying at 300 points."
+  },
+  "seeds": [
+    42,
+    99,
+    202
+  ],
+  "drives": [
+    {
+      "seed": 42,
+      "direction": "drive_1:team_a_static_baseline_oc_vs_team_b_adaptive_counter_dc",
+      "points": 7,
+      "result": "touchdown",
+      "plays": 6,
+      "film_room_headline": "Touchdown drive"
+    },
+    {
+      "seed": 42,
+      "direction": "drive_2:team_b_adaptive_counter_oc_vs_team_a_static_baseline_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 4,
+      "film_room_headline": "Turnover on downs"
+    },
+    {
+      "seed": 99,
+      "direction": "drive_1:team_a_static_baseline_oc_vs_team_b_adaptive_counter_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 7,
+      "film_room_headline": "Turnover on downs"
+    },
+    {
+      "seed": 99,
+      "direction": "drive_2:team_b_adaptive_counter_oc_vs_team_a_static_baseline_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 7,
+      "film_room_headline": "Turnover on downs"
+    },
+    {
+      "seed": 202,
+      "direction": "drive_1:team_a_static_baseline_oc_vs_team_b_adaptive_counter_dc",
+      "points": 7,
+      "result": "touchdown",
+      "plays": 6,
+      "film_room_headline": "Touchdown drive"
+    },
+    {
+      "seed": 202,
+      "direction": "drive_2:team_b_adaptive_counter_oc_vs_team_a_static_baseline_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 3,
+      "film_room_headline": "Turnover"
+    }
+  ],
+  "roster_lift_offense": 4.6667,
+  "notes": "Mirrored rosters - difference is agent skill."
+}

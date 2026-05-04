@@ -16,6 +16,9 @@ from .observations import (
 )
 from .replay import build_replay
 from .resolution_engine import ResolutionEngine
+from .roster_budget import RosterBudget, defense_modifier, has_nonzero_modifier, offense_modifier
+from .matchup_traits import MatchupTraits, defense_trait_modifier, has_nonzero_trait_modifier, offense_trait_modifier
+from .scouting import ScoutingReport, belief_calibration_error
 from .schema import AgentMemory, DefenseAction, GameState, OffenseAction
 
 
@@ -100,6 +103,11 @@ class CoachBenchEngine:
         agent_garage_config: Dict[str, Any] | None = None,
         max_plays: int = 8,
         start_yardline: int = 22,
+        offense_roster: RosterBudget | None = None,
+        defense_roster: RosterBudget | None = None,
+        matchup_traits: MatchupTraits | None = None,
+        offense_scouting: ScoutingReport | None = None,
+        defense_scouting: ScoutingReport | None = None,
     ) -> Dict[str, Any]:
         state = GameState(max_plays=max_plays, yardline=start_yardline)
         initial_state = state
@@ -109,6 +117,11 @@ class CoachBenchEngine:
         defense_memory = AgentMemory()
         play_results = []
         invalid_action_count = 0
+
+        if offense_scouting and hasattr(offense_agent, "pre_drive_observation"):
+            offense_agent.pre_drive_observation(offense_scouting.to_agent_dict())
+        if defense_scouting and hasattr(defense_agent, "pre_drive_observation"):
+            defense_agent.pre_drive_observation(defense_scouting.to_agent_dict())
 
         while not state.terminal:
             legal_sets = self.legal.public_legal_sets(offense_resources, defense_resources)
@@ -144,7 +157,30 @@ class CoachBenchEngine:
                 self.graph.constraints["defense_costs"][defense_action.coverage_family],
             )
 
-            result = self.resolution.resolve(state, offense_action, defense_action, offense_memory, defense_memory)
+            hidden_modifier = (0.0, 0.0, 0)
+            active_matchup_traits = bool(matchup_traits and has_nonzero_trait_modifier(matchup_traits))
+            if active_matchup_traits and matchup_traits:
+                off_epa, off_succ, off_noise = offense_trait_modifier(matchup_traits, offense_action.concept_family)
+                def_epa, def_succ, def_noise = defense_trait_modifier(matchup_traits, defense_action.coverage_family)
+                hidden_modifier = (
+                    max(-0.15, min(0.15, off_epa + def_epa)),
+                    max(-0.10, min(0.10, off_succ + def_succ)),
+                    int(max(-2, min(2, off_noise + def_noise))),
+                )
+
+            if offense_roster or defense_roster or active_matchup_traits:
+                result = self.resolution.resolve(
+                    state,
+                    offense_action,
+                    defense_action,
+                    offense_memory,
+                    defense_memory,
+                    offense_modifier(offense_roster, offense_action.concept_family) if offense_roster else (0.0, 0.0),
+                    defense_modifier(defense_roster, defense_action.coverage_family) if defense_roster else (0.0, 0.0),
+                    hidden_modifier,
+                )
+            else:
+                result = self.resolution.resolve(state, offense_action, defense_action, offense_memory, defense_memory)
             engine_internal = result.to_dict()
             engine_internal["legal_action_set_id"] = self._legal_action_set_id(legal_sets)
             engine_internal["legal_action_sets"] = legal_sets
@@ -172,7 +208,24 @@ class CoachBenchEngine:
             defense_resources = defense_resources_after
             state = result.next_state
 
-        return build_replay(
+        replay_agent_garage_config = dict(agent_garage_config or {})
+        if (
+            (offense_roster and has_nonzero_modifier(offense_roster))
+            or (defense_roster and has_nonzero_modifier(defense_roster))
+        ):
+            replay_agent_garage_config["rosters"] = {
+                "offense": offense_roster.to_public_dict() if offense_roster else None,
+                "defense": defense_roster.to_public_dict() if defense_roster else None,
+            }
+        if matchup_traits and has_nonzero_trait_modifier(matchup_traits):
+            replay_agent_garage_config["matchup_traits"] = matchup_traits.to_public_dict()
+        if offense_scouting or defense_scouting:
+            replay_agent_garage_config["scouting"] = {
+                "offense": offense_scouting.to_public_dict() if offense_scouting else None,
+                "defense": defense_scouting.to_public_dict() if defense_scouting else None,
+            }
+
+        replay = build_replay(
             seed=self.seed,
             start_yardline=initial_state.yardline,
             max_plays=initial_state.max_plays,
@@ -183,7 +236,7 @@ class CoachBenchEngine:
             engine_version="0.1.0",
             offense_agent=offense_agent.name,
             defense_agent=defense_agent.name,
-            agent_garage_config=agent_garage_config or {},
+            agent_garage_config=replay_agent_garage_config,
             play_results=play_results,
             final_points=state.points,
             invalid_action_count=invalid_action_count,
@@ -195,3 +248,16 @@ class CoachBenchEngine:
             ),
             graph=self.graph,
         )
+        if matchup_traits and has_nonzero_trait_modifier(matchup_traits):
+            last_play = play_results[-1] if play_results else None
+            offense_belief = last_play["offense_observed"]["belief_after"] if last_play else {}
+            defense_belief = last_play["defense_observed"]["belief_after"] if last_play else {}
+            replay["inference_report"] = {
+                "report_id": f"inference_{replay['metadata']['episode_id']}",
+                "matchup_id": matchup_traits.matchup_id,
+                "offense_calibration": belief_calibration_error(matchup_traits, offense_belief),
+                "defense_calibration": belief_calibration_error(matchup_traits, defense_belief),
+                "scouting_used": bool(offense_scouting or defense_scouting),
+                "notes": "Calibration is observational, not a quality gate.",
+            }
+        return replay

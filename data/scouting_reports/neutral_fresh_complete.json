@@ -1,0 +1,25 @@
+{
+  "report_id": "scout_fictional_neutral_v0_fresh_0",
+  "label": "Neutral Hidden Traits Scouting",
+  "freshness": "fresh",
+  "completeness": 1.0,
+  "estimated_traits": {
+    "defense_disguise_quality": 0.5,
+    "defense_pressure_discipline": 0.5,
+    "defense_redzone_density": 0.5,
+    "matchup_volatility": 0.5,
+    "offense_explosive_propensity": 0.5,
+    "offense_run_commitment": 0.5,
+    "offense_screen_self_belief": 0.5
+  },
+  "confidence": {
+    "offense_explosive_propensity": "high",
+    "offense_screen_self_belief": "high",
+    "offense_run_commitment": "high",
+    "defense_disguise_quality": "high",
+    "defense_pressure_discipline": "high",
+    "defense_redzone_density": "high",
+    "matchup_volatility": "high"
+  },
+  "notes": "Fictional deterministic scouting estimate."
+}

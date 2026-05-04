@@ -5,5 +5,8 @@
   "defense_agent": "static",
   "offense_profile_key": null,
   "defense_profile_key": null,
+  "roster_path": null,
+  "matchup_traits_path": null,
+  "scouting_report_path": null,
   "notes": "Simple fixed-policy baseline for deterministic comparison."
 }

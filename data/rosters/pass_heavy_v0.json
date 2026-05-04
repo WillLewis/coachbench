@@ -1,0 +1,32 @@
+{
+  "roster_id": "pass_heavy_v0",
+  "label": "Pass Heavy",
+  "budget_points": 300,
+  "position_groups": {
+    "qb": {
+      "trait": "decision_making",
+      "value": 70
+    },
+    "running_backs": {
+      "trait": "run_power",
+      "value": 30
+    },
+    "receivers": {
+      "trait": "separation",
+      "value": 70
+    },
+    "offensive_line": {
+      "trait": "protection",
+      "value": 60
+    },
+    "front_seven": {
+      "trait": "rush_pressure",
+      "value": 35
+    },
+    "secondary": {
+      "trait": "coverage_tightness",
+      "value": 35
+    }
+  },
+  "notes": "Fictional roster budget emphasizing pass-game position groups while staying at 300 points."
+}

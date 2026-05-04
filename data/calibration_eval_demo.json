@@ -1,0 +1,64 @@
+{
+  "report_id": "calibration_eval_v0",
+  "team_a": {
+    "team_id": "team_a_static_baseline",
+    "label": "Team A \u2014 Static Baseline"
+  },
+  "team_b": {
+    "team_id": "team_b_adaptive_counter",
+    "label": "Team B \u2014 Adaptive Counter"
+  },
+  "matchup_traits": {
+    "matchup_id": "fictional_pass_heavy_offense_v0",
+    "label": "Pass Heavy Offense Edge"
+  },
+  "scouting": {
+    "offense_report_id": "scout_fictional_pass_heavy_offense_v0_stale_11",
+    "defense_report_id": null
+  },
+  "seeds": [
+    42,
+    99,
+    202
+  ],
+  "with_scouting": {
+    "offense_mae": 0.33,
+    "defense_mae": 0.3247,
+    "per_trait_offense_mae": {
+      "offense_explosive_propensity": 0.55,
+      "defense_disguise_quality": 0.15,
+      "defense_redzone_density": 0.2,
+      "offense_run_commitment": 0.2,
+      "offense_screen_self_belief": 0.55
+    },
+    "per_trait_defense_mae": {
+      "offense_explosive_propensity": 0.55,
+      "defense_disguise_quality": 0.15,
+      "defense_redzone_density": 0.1733,
+      "offense_run_commitment": 0.2,
+      "offense_screen_self_belief": 0.55
+    }
+  },
+  "without_scouting": {
+    "offense_mae": 0.33,
+    "defense_mae": 0.3247,
+    "per_trait_offense_mae": {
+      "offense_explosive_propensity": 0.55,
+      "defense_disguise_quality": 0.15,
+      "defense_redzone_density": 0.2,
+      "offense_run_commitment": 0.2,
+      "offense_screen_self_belief": 0.55
+    },
+    "per_trait_defense_mae": {
+      "offense_explosive_propensity": 0.55,
+      "defense_disguise_quality": 0.15,
+      "defense_redzone_density": 0.1733,
+      "offense_run_commitment": 0.2,
+      "offense_screen_self_belief": 0.55
+    }
+  },
+  "scouting_mae_lift": {
+    "offense": 0.0,
+    "defense": 0.0
+  }
+}

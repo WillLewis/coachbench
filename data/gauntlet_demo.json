@@ -1,0 +1,41 @@
+{
+  "gauntlet_id": "coachbench_gauntlet_v0",
+  "agent": "agents.example_agent.ExampleCustomOffense",
+  "side": "offense",
+  "seeds": [
+    42,
+    99,
+    202
+  ],
+  "opponents": [
+    {
+      "name": "Team A Static Defense",
+      "drives_played": 3,
+      "total_points": 0,
+      "mean_points": 0.0,
+      "touchdown_rate": 0.0,
+      "invalid_action_count_total": 0,
+      "validator_failures": []
+    },
+    {
+      "name": "Team B Adaptive Defense",
+      "drives_played": 3,
+      "total_points": 0,
+      "mean_points": 0.0,
+      "touchdown_rate": 0.0,
+      "invalid_action_count_total": 0,
+      "validator_failures": []
+    },
+    {
+      "name": "Team B Adaptive Defense - Disguise Specialist",
+      "drives_played": 3,
+      "total_points": 0,
+      "mean_points": 0.0,
+      "touchdown_rate": 0.0,
+      "invalid_action_count_total": 0,
+      "validator_failures": []
+    }
+  ],
+  "failures": [],
+  "passed": true
+}

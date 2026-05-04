@@ -1,0 +1,32 @@
+{
+  "roster_id": "balanced_v0",
+  "label": "Balanced",
+  "budget_points": 300,
+  "position_groups": {
+    "qb": {
+      "trait": "decision_making",
+      "value": 50
+    },
+    "running_backs": {
+      "trait": "run_power",
+      "value": 50
+    },
+    "receivers": {
+      "trait": "separation",
+      "value": 50
+    },
+    "offensive_line": {
+      "trait": "protection",
+      "value": 50
+    },
+    "front_seven": {
+      "trait": "rush_pressure",
+      "value": 50
+    },
+    "secondary": {
+      "trait": "coverage_tightness",
+      "value": 50
+    }
+  },
+  "notes": "Neutral fictional roster budget with every position group at the midpoint."
+}

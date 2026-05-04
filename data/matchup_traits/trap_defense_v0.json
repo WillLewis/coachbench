@@ -1,0 +1,14 @@
+{
+  "matchup_id": "fictional_trap_defense_v0",
+  "label": "Trap Defense Edge",
+  "values": {
+    "offense_explosive_propensity": 0.45,
+    "offense_screen_self_belief": 0.45,
+    "offense_run_commitment": 0.5,
+    "defense_disguise_quality": 0.85,
+    "defense_pressure_discipline": 0.8,
+    "defense_redzone_density": 0.7,
+    "matchup_volatility": 0.6
+  },
+  "notes": "Fictional hidden-trait fixture emphasizing disguise and pressure discipline."
+}

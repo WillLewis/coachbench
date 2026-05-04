@@ -12,6 +12,9 @@ from agents.static_defense import StaticDefense
 from agents.static_offense import StaticOffense
 from coachbench.contracts import validate_replay_contract
 from coachbench.engine import CoachBenchEngine
+from coachbench.matchup_traits import load_matchup_traits
+from coachbench.roster_budget import load_roster
+from coachbench.scouting import load_scouting_report
 
 
 def load_agent_garage_profiles():
@@ -55,6 +58,11 @@ def main() -> None:
     parser.add_argument("--defense", choices=["static", "adaptive"], default="adaptive")
     parser.add_argument("--out", default="data/demo_replay.json")
     parser.add_argument("--copy-ui", action="store_true")
+    parser.add_argument("--offense-roster", type=Path)
+    parser.add_argument("--defense-roster", type=Path)
+    parser.add_argument("--matchup-traits", type=Path)
+    parser.add_argument("--offense-scouting", type=Path)
+    parser.add_argument("--defense-scouting", type=Path)
     args = parser.parse_args()
 
     engine = CoachBenchEngine(seed=args.seed)
@@ -63,6 +71,11 @@ def main() -> None:
         offense_agent,
         defense_agent,
         agent_garage_config=garage_config,
+        offense_roster=load_roster(args.offense_roster) if args.offense_roster else None,
+        defense_roster=load_roster(args.defense_roster) if args.defense_roster else None,
+        matchup_traits=load_matchup_traits(args.matchup_traits) if args.matchup_traits else None,
+        offense_scouting=load_scouting_report(args.offense_scouting) if args.offense_scouting else None,
+        defense_scouting=load_scouting_report(args.defense_scouting) if args.defense_scouting else None,
     )
     validate_replay_contract(replay)
 

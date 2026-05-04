@@ -1,0 +1,14 @@
+{
+  "matchup_id": "fictional_pass_heavy_offense_v0",
+  "label": "Pass Heavy Offense Edge",
+  "values": {
+    "offense_explosive_propensity": 0.85,
+    "offense_screen_self_belief": 0.8,
+    "offense_run_commitment": 0.45,
+    "defense_disguise_quality": 0.45,
+    "defense_pressure_discipline": 0.5,
+    "defense_redzone_density": 0.5,
+    "matchup_volatility": 0.65
+  },
+  "notes": "Fictional hidden-trait fixture emphasizing explosive and screen confidence."
+}

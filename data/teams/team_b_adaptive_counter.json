@@ -5,5 +5,8 @@
   "defense_agent": "adaptive",
   "offense_profile_key": "misdirection_artist",
   "defense_profile_key": "disguise_specialist",
+  "roster_path": null,
+  "matchup_traits_path": null,
+  "scouting_report_path": null,
   "notes": "Tendency-aware counter team using visible Agent Garage profiles."
 }

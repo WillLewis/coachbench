@@ -1,0 +1,112 @@
+{
+  "report_id": "tournament_v0",
+  "teams": [
+    {
+      "team_id": "team_a_static_baseline",
+      "label": "Team A \u2014 Static Baseline"
+    },
+    {
+      "team_id": "team_b_adaptive_counter",
+      "label": "Team B \u2014 Adaptive Counter"
+    }
+  ],
+  "seeds": [
+    42,
+    99,
+    202
+  ],
+  "standings": [
+    {
+      "rank": 1,
+      "team_id": "team_a_static_baseline",
+      "label": "Team A \u2014 Static Baseline",
+      "games_played": 3,
+      "mean_points_per_drive": 4.6667,
+      "touchdown_rate": 0.6667,
+      "total_points": 14,
+      "validator_failures": [],
+      "head_to_head": {
+        "team_b_adaptive_counter": {
+          "wins": 2,
+          "losses": 0,
+          "ties": 1,
+          "mean_points_diff": 4.6667
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "team_id": "team_b_adaptive_counter",
+      "label": "Team B \u2014 Adaptive Counter",
+      "games_played": 3,
+      "mean_points_per_drive": 0.0,
+      "touchdown_rate": 0.0,
+      "total_points": 0,
+      "validator_failures": [],
+      "head_to_head": {
+        "team_a_static_baseline": {
+          "wins": 0,
+          "losses": 2,
+          "ties": 1,
+          "mean_points_diff": -4.6667
+        }
+      }
+    }
+  ],
+  "raw_drives": [
+    {
+      "seed": 42,
+      "team_id": "team_a_static_baseline",
+      "opponent_team_id": "team_b_adaptive_counter",
+      "direction": "team_a_static_baseline_oc_vs_team_b_adaptive_counter_dc",
+      "points": 7,
+      "result": "touchdown",
+      "plays": 6
+    },
+    {
+      "seed": 42,
+      "team_id": "team_b_adaptive_counter",
+      "opponent_team_id": "team_a_static_baseline",
+      "direction": "team_b_adaptive_counter_oc_vs_team_a_static_baseline_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 4
+    },
+    {
+      "seed": 99,
+      "team_id": "team_a_static_baseline",
+      "opponent_team_id": "team_b_adaptive_counter",
+      "direction": "team_a_static_baseline_oc_vs_team_b_adaptive_counter_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 7
+    },
+    {
+      "seed": 99,
+      "team_id": "team_b_adaptive_counter",
+      "opponent_team_id": "team_a_static_baseline",
+      "direction": "team_b_adaptive_counter_oc_vs_team_a_static_baseline_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 7
+    },
+    {
+      "seed": 202,
+      "team_id": "team_a_static_baseline",
+      "opponent_team_id": "team_b_adaptive_counter",
+      "direction": "team_a_static_baseline_oc_vs_team_b_adaptive_counter_dc",
+      "points": 7,
+      "result": "touchdown",
+      "plays": 6
+    },
+    {
+      "seed": 202,
+      "team_id": "team_b_adaptive_counter",
+      "opponent_team_id": "team_a_static_baseline",
+      "direction": "team_b_adaptive_counter_oc_vs_team_a_static_baseline_dc",
+      "points": 0,
+      "result": "stopped",
+      "plays": 3
+    }
+  ]
+}

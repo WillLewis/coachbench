@@ -1,0 +1,14 @@
+{
+  "matchup_id": "fictional_neutral_v0",
+  "label": "Neutral Hidden Traits",
+  "values": {
+    "offense_explosive_propensity": 0.5,
+    "offense_screen_self_belief": 0.5,
+    "offense_run_commitment": 0.5,
+    "defense_disguise_quality": 0.5,
+    "defense_pressure_discipline": 0.5,
+    "defense_redzone_density": 0.5,
+    "matchup_volatility": 0.5
+  },
+  "notes": "Fictional neutral hidden-trait fixture with zero modifiers."
+}

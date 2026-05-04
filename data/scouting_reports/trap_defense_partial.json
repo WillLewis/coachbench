@@ -1,0 +1,25 @@
+{
+  "report_id": "scout_fictional_trap_defense_v0_fresh_23",
+  "label": "Trap Defense Edge Scouting",
+  "freshness": "fresh",
+  "completeness": 0.4,
+  "estimated_traits": {
+    "defense_disguise_quality": null,
+    "defense_pressure_discipline": null,
+    "defense_redzone_density": null,
+    "matchup_volatility": null,
+    "offense_explosive_propensity": 0.4592,
+    "offense_run_commitment": 0.4924,
+    "offense_screen_self_belief": 0.453
+  },
+  "confidence": {
+    "offense_explosive_propensity": "high",
+    "offense_screen_self_belief": "high",
+    "offense_run_commitment": "high",
+    "defense_disguise_quality": "low",
+    "defense_pressure_discipline": "low",
+    "defense_redzone_density": "low",
+    "matchup_volatility": "low"
+  },
+  "notes": "Fictional deterministic scouting estimate."
+}

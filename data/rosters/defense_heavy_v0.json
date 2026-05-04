@@ -1,0 +1,32 @@
+{
+  "roster_id": "defense_heavy_v0",
+  "label": "Defense Heavy",
+  "budget_points": 300,
+  "position_groups": {
+    "qb": {
+      "trait": "decision_making",
+      "value": 35
+    },
+    "running_backs": {
+      "trait": "run_power",
+      "value": 45
+    },
+    "receivers": {
+      "trait": "separation",
+      "value": 35
+    },
+    "offensive_line": {
+      "trait": "protection",
+      "value": 45
+    },
+    "front_seven": {
+      "trait": "rush_pressure",
+      "value": 70
+    },
+    "secondary": {
+      "trait": "coverage_tightness",
+      "value": 70
+    }
+  },
+  "notes": "Fictional roster budget emphasizing front and coverage groups while staying at 300 points."
+}
