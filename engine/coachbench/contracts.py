@@ -72,6 +72,44 @@ OBSERVED_PLAY_FIELDS = {
     "belief_after",
 }
 
+PUBLIC_OBSERVATION_FIELDS = {
+    "play_index",
+    "offense_action",
+    "defense_action",
+    "yards_gained",
+    "expected_value_delta",
+    "success",
+    "terminal",
+    "terminal_reason",
+    "events",
+    "graph_card_ids",
+    "next_state",
+}
+
+OBSERVATION_ALLOWED_FIELDS = {
+    "offense": {
+        "pre_play": {
+            "side",
+            "game_state",
+            "legal_concepts",
+            "own_resource_remaining",
+        },
+        "post_play": OBSERVED_PLAY_FIELDS,
+    },
+    "defense": {
+        "pre_play": {
+            "side",
+            "game_state",
+            "legal_calls",
+            "own_resource_remaining",
+        },
+        "post_play": OBSERVED_PLAY_FIELDS,
+    },
+    "public": {
+        "post_play": PUBLIC_OBSERVATION_FIELDS,
+    },
+}
+
 FILM_ROOM_FIELDS = {
     "headline",
     "turning_point",
@@ -211,13 +249,41 @@ def validate_replay_contract(replay: Dict[str, Any]) -> None:
 
 
 def validate_match_matrix_report(report: Dict[str, Any]) -> None:
-    _require_fields(report, {"report_id", "seed_start", "cases"}, "match matrix report")
+    _require_fields(report, {"report_id", "seed_start", "cases", "questions"}, "match matrix report")
     for case in report["cases"]:
         _require_fields(
             case,
             {"case", "seed", "points", "result", "plays", "film_room_headline", "turning_point"},
             "match matrix case",
         )
+    required_question_ids = {
+        "adaptive_offense_lift_vs_same_defense",
+        "adaptive_defense_suppression_vs_same_offense",
+        "adaptive_vs_adaptive_nontrivial_sequencing",
+        "obvious_exploits_or_degenerate_strategies",
+    }
+    seen_question_ids = set()
+    for question in report["questions"]:
+        _require_fields(
+            question,
+            {
+                "id",
+                "question",
+                "baseline_case",
+                "comparison_case",
+                "metric",
+                "baseline_value",
+                "comparison_value",
+                "answer",
+            },
+            "match matrix question",
+        )
+        seen_question_ids.add(question["id"])
+        if question["answer"] not in {"yes", "no", "needs_review"}:
+            raise ContractValidationError(f"Unknown match matrix question answer: {question['answer']}")
+    missing = required_question_ids - seen_question_ids
+    if missing:
+        raise ContractValidationError(f"match matrix report missing PLAN 9.3 questions: {sorted(missing)}")
 
 
 def validate_daily_slate_report(report: Dict[str, Any]) -> None:

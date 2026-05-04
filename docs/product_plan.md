@@ -138,7 +138,7 @@ Layer 4 — Execution boundary
   Invalid third-party submissions are rejected before play resolution.
 ```
 
-Invalid actions should not become football penalties or odd simulated outcomes. Invalid-action rate can exist as a developer-quality metric, but not as a football scoring mechanic.
+Invalid actions should not become football penalties or unsupported simulated outcomes. Invalid-action rate can exist as a developer-quality metric, but not as a football scoring mechanic.
 
 For local third-party agents, invalid submissions are rejected before resolution, logged in `validation_result`, counted in `invalid_action_count`, and replaced by a deterministic validator-owned safe fallback from the current legal action set. The fallback is not treated as the agent's tactical truth; it is validation handling so the replay and metrics remain inspectable.
 
@@ -308,7 +308,7 @@ fatigue
 injuries
 franchise mode
 hosted third-party execution
-cash contests or wagering
+prohibited monetized contest mechanics
 ```
 
 This boundary keeps the first version from becoming a football game instead of an adversarial-agent benchmark and strategy arena.
@@ -610,7 +610,7 @@ meta report
 season standings
 ```
 
-Daily Slate must remain non-wagering and focused on strategy, learning, and benchmark comparison.
+Daily Slate must remain strategy-focused, local, and separate from prohibited monetized contest mechanics.
 
 ## 8. P0 action vocabulary
 
@@ -1059,6 +1059,8 @@ longer-form game modes
 season/tournament narratives
 casual story mode
 ```
+
+See `docs/episode_example.md` for a concrete fictional episode record covering the PLAN section 4.1 fields.
 
 Estimated effort: 12–25+ person-days.
 

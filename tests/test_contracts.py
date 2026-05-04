@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import json
+import re
+from pathlib import Path
+
 from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from coachbench.contracts import (
     ContractValidationError,
+    OBSERVATION_ALLOWED_FIELDS,
     validate_action_schema,
     validate_daily_slate_report,
     validate_film_room_is_event_derived,
@@ -14,14 +19,59 @@ from coachbench.contracts import (
 from coachbench.engine import CoachBenchEngine
 from coachbench.film_room import build_film_room, film_room_note_for_event, headline_for_terminal
 from coachbench.graph_loader import StrategyGraph
+from coachbench.observations import (
+    defense_observation_before_play,
+    offense_observation_before_play,
+    post_play_defense_observation,
+    post_play_offense_observation,
+    post_play_public_observation,
+)
+from coachbench.schema import AgentMemory, GameState
 from scripts.run_daily_slate import defense_agent, offense_agent, slate_entries
-from scripts.run_match_matrix import case_seed
+from scripts.run_match_matrix import case_seed, matrix_questions
 
 
 def test_generated_replay_satisfies_replay_contract() -> None:
     replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
 
     validate_replay_contract(replay)
+
+
+def test_episode_example_documents_plan_4_1_fields() -> None:
+    text = Path("docs/episode_example.md").read_text(encoding="utf-8")
+    payload = json.loads(re.search(r"```json\n(.*?)\n```", text, flags=re.DOTALL).group(1))
+
+    assert {
+        "episode_id",
+        "graph_version",
+        "engine_version",
+        "seed",
+        "start_yardline",
+        "max_plays",
+        "down",
+        "distance",
+        "score_mode",
+        "drive_terminal_condition",
+    } <= set(payload)
+
+
+def test_agent_garage_doc_lists_plan_5_2_controls() -> None:
+    text = Path("docs/agent_garage.md").read_text(encoding="utf-8")
+
+    for control in [
+        "offensive archetype",
+        "defensive archetype",
+        "risk tolerance",
+        "adaptation speed",
+        "pressure-punish threshold",
+        "screen trigger confidence",
+        "explosive-shot tolerance",
+        "run/pass tendency",
+        "disguise sensitivity",
+        "counter-repeat tolerance",
+        "resource conservation",
+    ]:
+        assert control in text
 
 
 def test_action_schema_validator_requires_contract_fields() -> None:
@@ -59,6 +109,38 @@ def test_observation_safety_validator_rejects_hidden_fields() -> None:
         raise AssertionError("Hidden opponent action was accepted in an observation")
 
 
+def test_observation_builders_only_return_allowlisted_fields() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense(), max_plays=1)
+    result = replay["plays"][0]["engine_internal"]
+    graph = StrategyGraph()
+    legal_sets = graph.constraints["drive_budgets"]
+
+    pre_offense = offense_observation_before_play(GameState(), ["inside_zone"], legal_sets["offense"])
+    pre_defense = defense_observation_before_play(GameState(), ["base_cover3"], legal_sets["defense"])
+
+    # Re-run a real resolution object through the post-play builders.
+    engine = CoachBenchEngine(seed=42)
+    legal = engine.legal
+    resolution = engine.resolution.resolve(
+        GameState(),
+        legal.build_offense_action(result["offense_action"]["concept_family"]),
+        legal.build_defense_action(result["defense_action"]["coverage_family"]),
+        AgentMemory(),
+        AgentMemory(),
+    )
+
+    observations = [
+        (pre_offense, OBSERVATION_ALLOWED_FIELDS["offense"]["pre_play"]),
+        (pre_defense, OBSERVATION_ALLOWED_FIELDS["defense"]["pre_play"]),
+        (post_play_offense_observation(resolution), OBSERVATION_ALLOWED_FIELDS["offense"]["post_play"]),
+        (post_play_defense_observation(resolution), OBSERVATION_ALLOWED_FIELDS["defense"]["post_play"]),
+        (post_play_public_observation(resolution), OBSERVATION_ALLOWED_FIELDS["public"]["post_play"]),
+    ]
+
+    for observation, allowed in observations:
+        assert set(observation) <= allowed
+
+
 def test_scoring_reports_satisfy_contracts() -> None:
     matrix_case = "A_static_offense_vs_A_static_defense"
     match_matrix_report = {
@@ -79,6 +161,48 @@ def test_scoring_reports_satisfy_contracts() -> None:
                     "metric": "largest_abs_expected_value_delta",
                 },
             }
+        ],
+        "questions": [
+            {
+                "id": "adaptive_offense_lift_vs_same_defense",
+                "question": "Does adaptive offense outperform static offense against the same defense?",
+                "baseline_case": "A_static_offense_vs_A_static_defense",
+                "comparison_case": "B_adaptive_offense_vs_A_static_defense",
+                "metric": "points",
+                "baseline_value": 0,
+                "comparison_value": 0,
+                "answer": "no",
+            },
+            {
+                "id": "adaptive_defense_suppression_vs_same_offense",
+                "question": "Does adaptive defense suppress static offense?",
+                "baseline_case": "A_static_offense_vs_A_static_defense",
+                "comparison_case": "A_static_offense_vs_B_adaptive_defense",
+                "metric": "opponent_points",
+                "baseline_value": 0,
+                "comparison_value": 7,
+                "answer": "no",
+            },
+            {
+                "id": "adaptive_vs_adaptive_nontrivial_sequencing",
+                "question": "Does adaptive-vs-adaptive produce nontrivial sequencing?",
+                "baseline_case": None,
+                "comparison_case": "B_adaptive_offense_vs_B_adaptive_defense",
+                "metric": "turning_point_graph_cards",
+                "baseline_value": None,
+                "comparison_value": ["redzone.play_action_after_run_tendency.v1"],
+                "answer": "yes",
+            },
+            {
+                "id": "obvious_exploits_or_degenerate_strategies",
+                "question": "Does the graph create obvious exploits or degenerate strategies?",
+                "baseline_case": None,
+                "comparison_case": "all_cases",
+                "metric": "case_points",
+                "baseline_value": None,
+                "comparison_value": {"A_static_offense_vs_A_static_defense": 0},
+                "answer": "needs_review",
+            },
         ],
     }
     validate_match_matrix_report(match_matrix_report)
@@ -114,6 +238,38 @@ def test_scoring_reports_satisfy_contracts() -> None:
             "suggested_review": "Compare each agent across the fixed Daily Slate entries before treating one result as robust.",
         },
     })
+
+
+def test_match_matrix_questions_answer_plan_9_3_without_implying_lift() -> None:
+    results = [
+        {
+            "case": "A_static_offense_vs_A_static_defense",
+            "points": 0,
+            "turning_point": {"graph_card_ids": []},
+        },
+        {
+            "case": "B_adaptive_offense_vs_A_static_defense",
+            "points": 0,
+            "turning_point": {"graph_card_ids": []},
+        },
+        {
+            "case": "A_static_offense_vs_B_adaptive_defense",
+            "points": 7,
+            "turning_point": {"graph_card_ids": ["redzone.bunch_mesh_vs_match.v1"]},
+        },
+        {
+            "case": "B_adaptive_offense_vs_B_adaptive_defense",
+            "points": 7,
+            "turning_point": {"graph_card_ids": ["redzone.play_action_after_run_tendency.v1"]},
+        },
+    ]
+
+    questions = {item["id"]: item for item in matrix_questions(results)}
+
+    assert questions["adaptive_offense_lift_vs_same_defense"]["answer"] == "no"
+    assert questions["adaptive_defense_suppression_vs_same_offense"]["answer"] == "no"
+    assert questions["adaptive_vs_adaptive_nontrivial_sequencing"]["answer"] == "yes"
+    assert questions["obvious_exploits_or_degenerate_strategies"]["answer"] == "needs_review"
 
 
 def test_film_room_notes_must_be_event_derived() -> None:
@@ -181,3 +337,27 @@ def test_film_room_turning_point_metric_is_declared() -> None:
     )
 
     assert film_room["turning_point"]["metric"] == "largest_abs_expected_value_delta"
+
+
+def test_validate_replay_contract_rejects_missing_top_level_partition() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    replay.pop("debug")
+
+    try:
+        validate_replay_contract(replay)
+    except ContractValidationError as exc:
+        assert "replay missing fields" in str(exc)
+    else:
+        raise AssertionError("Replay missing a top-level partition was accepted")
+
+
+def test_validate_replay_contract_rejects_nonempty_debug_partition() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    replay["debug"] = {"fields": ["private_trace"]}
+
+    try:
+        validate_replay_contract(replay)
+    except ContractValidationError as exc:
+        assert "debug partition" in str(exc)
+    else:
+        raise AssertionError("Replay with nonempty debug partition was accepted")

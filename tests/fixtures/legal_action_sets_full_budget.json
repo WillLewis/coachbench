@@ -1,0 +1,41 @@
+{
+  "fixture_id": "p0_full_budget_legal_action_sets_v0",
+  "offense_remaining": {
+    "protection": 14,
+    "spacing": 18,
+    "deception": 14,
+    "volatility": 14
+  },
+  "defense_remaining": {
+    "rush": 16,
+    "coverage": 20,
+    "box": 16,
+    "disguise": 14
+  },
+  "legal_action_sets": {
+    "offense": [
+      "inside_zone",
+      "outside_zone",
+      "power_counter",
+      "quick_game",
+      "bunch_mesh",
+      "rpo_glance",
+      "play_action_flood",
+      "vertical_shot",
+      "screen",
+      "bootleg"
+    ],
+    "defense": [
+      "base_cover3",
+      "cover3_match",
+      "quarters_match",
+      "cover1_man",
+      "two_high_shell",
+      "zero_pressure",
+      "simulated_pressure",
+      "bear_front",
+      "trap_coverage",
+      "redzone_bracket"
+    ]
+  }
+}

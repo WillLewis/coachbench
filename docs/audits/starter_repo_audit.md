@@ -59,6 +59,7 @@ Missing or partial:
 - No execution sandbox for arbitrary third-party code is implemented, which matches current safety constraints.
 - Replay validation is present but not published as a standalone schema artifact.
 - PLAN section 16 defines the headline P0/P1 success criterion. The seeded adaptive showcase now has a direct regression test, but it remains a starter proof rather than a broad adaptation benchmark.
+- PLAN section 9.3 defines four match-matrix questions. The matrix report now records answers to those questions, including negative answers where current seeds do not demonstrate adaptive lift.
 
 ## Acceptance Checklist Coverage
 
@@ -147,6 +148,21 @@ Covered by:
 
 Assessment: Covered as a starter seeded-demo regression. Still not a statistical or multi-seed adaptation benchmark.
 
+### PLAN §9.3 Match Matrix Questions
+
+Covered by:
+
+- `run_match_matrix.py` emits all four PLAN section 9.3 questions as explicit report data:
+  - adaptive offense lift against the same defense
+  - adaptive defense suppression against the same offense
+  - adaptive-vs-adaptive sequencing
+  - obvious exploit / degenerate-strategy review
+- `validate_match_matrix_report` requires the question section and all four question IDs.
+- Test:
+  - `test_match_matrix_questions_answer_plan_9_3_without_implying_lift`
+
+Assessment: Covered as transparent reporting. Current fixed seeds do not prove adaptive offense lift or adaptive defense suppression, and the audit should not claim that they do.
+
 ### Daily Slate Reproducibility
 
 Covered by:
@@ -177,7 +193,7 @@ Assessment: Covered for graph files. Broader repo-wide generated-output scanning
 - Film Room derivation tests cover current note vocabulary but not every possible future event tag.
 - Licensed-reference safety is strongest for graph JSON; a repo-wide text scan is not yet part of `pytest`.
 - Daily Slate tests validate shape and mismatched legacy arrays, but do not compare full report output against a golden fixture.
-- Match matrix reproducibility is tested at seed function level, but there is no golden report diff test.
+- Match matrix reproducibility is tested at script-output level and PLAN section 9.3 questions are reported, but there is no multi-seed statistical adaptation-lift test.
 - Resource depletion is tested with targeted budget examples, not with exhaustive per-drive legal-set transitions across all actions.
 - Agent Garage profile wiring is present for showcase adaptive agents, but tests do not yet assert every profile parameter has behavioral influence.
 - PLAN section 16 is covered by one seeded adaptive showcase regression, not by a matrix of agents/seeds.
@@ -188,7 +204,8 @@ Assessment: Covered for graph files. Broader repo-wide generated-output scanning
 2. Add a lightweight browser/UI smoke test that serves `ui/` and verifies the replay loads without JavaScript errors.
 3. Add repo-wide licensed/prohibited-reference scanning to `pytest`, covering docs, scripts, graph, data, and UI.
 4. Add golden output tests for showcase replay, match matrix, and Daily Slate reports using fixed seeds.
-5. Expand Film Room tests so every supported graph event tag is either mapped to a note/tweak or intentionally ignored.
-6. Add exhaustive action-validation tests for each offense and defense action field against graph-declared action fields.
-7. Add resource-transition tests across a multi-play drive to prove legal action sets shrink predictably after each resource spend.
-8. Add Agent Garage profile contract tests that verify visible config values compile into legal policy parameters without bypassing the legal action facade.
+5. Add a multi-seed adaptation-lift benchmark that can support or reject the PLAN section 9.3 Team B claims statistically.
+6. Expand Film Room tests so every supported graph event tag is either mapped to a note/tweak or intentionally ignored.
+7. Add exhaustive action-validation tests for each offense and defense action field against graph-declared action fields.
+8. Add resource-transition tests across a multi-play drive to prove legal action sets shrink predictably after each resource spend.
+9. Add Agent Garage profile contract tests that verify visible config values compile into legal policy parameters without bypassing the legal action facade.

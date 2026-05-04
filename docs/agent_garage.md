@@ -25,6 +25,7 @@ explosive-shot tolerance
 run/pass tendency
 disguise sensitivity
 counter-repeat tolerance
+resource conservation
 ```
 
 ## P0 output

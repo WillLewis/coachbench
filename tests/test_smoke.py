@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import random
+from pathlib import Path
 
 from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
@@ -186,6 +188,19 @@ def test_daily_slate_entries_are_explicit_and_legacy_lengths_are_validated() -> 
         assert "equal length" in str(exc)
     else:
         raise AssertionError("Mismatched legacy slate was not rejected")
+
+
+def test_legal_action_enumerator_matches_full_budget_snapshot() -> None:
+    graph = StrategyGraph()
+    legal = LegalActionEnumerator(graph)
+    fixture = json.loads(Path("tests/fixtures/legal_action_sets_full_budget.json").read_text(encoding="utf-8"))
+
+    assert fixture["offense_remaining"] == graph.constraints["drive_budgets"]["offense"]
+    assert fixture["defense_remaining"] == graph.constraints["drive_budgets"]["defense"]
+    assert legal.public_legal_sets(
+        fixture["offense_remaining"],
+        fixture["defense_remaining"],
+    ) == fixture["legal_action_sets"]
 
 
 def test_belief_values_serialize_without_float_drift() -> None:

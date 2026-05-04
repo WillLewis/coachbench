@@ -22,6 +22,57 @@ def case_seed(base_seed: int, case_label: str) -> int:
     return int(digest[:8], 16)
 
 
+def matrix_questions(results: list[dict]) -> list[dict]:
+    by_case = {item["case"]: item for item in results}
+    static_vs_static = by_case["A_static_offense_vs_A_static_defense"]
+    adaptive_offense_vs_static_defense = by_case["B_adaptive_offense_vs_A_static_defense"]
+    static_offense_vs_adaptive_defense = by_case["A_static_offense_vs_B_adaptive_defense"]
+    adaptive_vs_adaptive = by_case["B_adaptive_offense_vs_B_adaptive_defense"]
+
+    return [
+        {
+            "id": "adaptive_offense_lift_vs_same_defense",
+            "question": "Does adaptive offense outperform static offense against the same defense?",
+            "baseline_case": static_vs_static["case"],
+            "comparison_case": adaptive_offense_vs_static_defense["case"],
+            "metric": "points",
+            "baseline_value": static_vs_static["points"],
+            "comparison_value": adaptive_offense_vs_static_defense["points"],
+            "answer": "yes" if adaptive_offense_vs_static_defense["points"] > static_vs_static["points"] else "no",
+        },
+        {
+            "id": "adaptive_defense_suppression_vs_same_offense",
+            "question": "Does adaptive defense suppress static offense?",
+            "baseline_case": static_vs_static["case"],
+            "comparison_case": static_offense_vs_adaptive_defense["case"],
+            "metric": "opponent_points",
+            "baseline_value": static_vs_static["points"],
+            "comparison_value": static_offense_vs_adaptive_defense["points"],
+            "answer": "yes" if static_offense_vs_adaptive_defense["points"] < static_vs_static["points"] else "no",
+        },
+        {
+            "id": "adaptive_vs_adaptive_nontrivial_sequencing",
+            "question": "Does adaptive-vs-adaptive produce nontrivial sequencing?",
+            "baseline_case": None,
+            "comparison_case": adaptive_vs_adaptive["case"],
+            "metric": "turning_point_graph_cards",
+            "baseline_value": None,
+            "comparison_value": adaptive_vs_adaptive["turning_point"]["graph_card_ids"],
+            "answer": "yes" if adaptive_vs_adaptive["turning_point"]["graph_card_ids"] else "no",
+        },
+        {
+            "id": "obvious_exploits_or_degenerate_strategies",
+            "question": "Does the graph create obvious exploits or degenerate strategies?",
+            "baseline_case": None,
+            "comparison_case": "all_cases",
+            "metric": "case_points",
+            "baseline_value": None,
+            "comparison_value": {case["case"]: case["points"] for case in results},
+            "answer": "needs_review",
+        },
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run Team A/B interaction matrix.")
     parser.add_argument("--out", default="data/match_matrix_report.json")
@@ -54,6 +105,7 @@ def main() -> None:
         "report_id": "team-interaction-matrix-v0",
         "seed_start": args.seed,
         "cases": results,
+        "questions": matrix_questions(results),
     }
     validate_match_matrix_report(report)
     out = Path(args.out)

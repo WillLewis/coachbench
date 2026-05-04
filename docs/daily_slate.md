@@ -1,6 +1,6 @@
 # Daily Slate
 
-Daily Slate is a fixed-seed local challenge set. It gives players a repeatable reason to return without introducing wagering or hosted execution.
+Daily Slate is a fixed-seed local challenge set. It gives players a repeatable reason to return without introducing prohibited monetized contest mechanics or hosted execution.
 
 ## P0 local version
 

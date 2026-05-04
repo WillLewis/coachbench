@@ -7,6 +7,46 @@ from typing import Any
 
 
 GRAPH_DIR = Path("graph/redzone_v0")
+TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py", ".txt"}
+BANNED_LICENSED_OR_WAGERING_PATTERNS = [
+    r"\bnfl\b",
+    r"\bnflpa\b",
+    r"\bncaa\b",
+    r"\bsuper\s+bowl\b",
+    r"\bpro\s+bowl\b",
+    r"\bmadden\b",
+    r"\bpff\b",
+    r"\bnext\s+gen\s+stats\b",
+    r"\bodds?\b",
+    r"\bbet(?:s|ting)?\b",
+    r"\bwager(?:s|ing)?\b",
+    r"\bsportsbook\b",
+    r"\bpayouts?\b",
+    r"\bcash\s+contests?\b",
+    r"\bprize\s+pools?\b",
+    r"\bdfs\b",
+    r"\bdraftkings\b",
+    r"\bfanduel\b",
+    r"\bkansas\s+city\s+chiefs\b",
+    r"\bdallas\s+cowboys\b",
+    r"\bgreen\s+bay\s+packers\b",
+    r"\bnew\s+england\s+patriots\b",
+    r"\bpittsburgh\s+steelers\b",
+    r"\bsan\s+francisco\s+49ers\b",
+    r"\btom\s+brady\b",
+    r"\bpatrick\s+mahomes\b",
+]
+P0_SCOPE_BOUNDED_PATTERNS = [
+    r"weather",
+    r"fatigue",
+    r"injur",
+    r"11-player",
+    r"franchise",
+    r"substitution",
+    r"wager",
+    r"odds",
+    r"real team",
+]
 
 
 def _load_graph_json(name: str) -> dict[str, Any]:
@@ -95,36 +135,60 @@ def test_all_interaction_references_exist_in_concept_vocabularies() -> None:
         )
 
 
-def test_graph_contains_no_banned_licensed_or_wagering_terms() -> None:
+def test_graph_contains_no_banned_licensed_or_monetized_terms() -> None:
     graph_text = "\n".join(path.read_text(encoding="utf-8") for path in sorted(GRAPH_DIR.glob("*.json")))
-    banned_patterns = [
-        r"\bnfl\b",
-        r"\bnflpa\b",
-        r"\bncaa\b",
-        r"\bsuper\s+bowl\b",
-        r"\bpro\s+bowl\b",
-        r"\bmadden\b",
-        r"\bpff\b",
-        r"\bnext\s+gen\s+stats\b",
-        r"\bodds?\b",
-        r"\bbet(?:s|ting)?\b",
-        r"\bwager(?:s|ing)?\b",
-        r"\bsportsbook\b",
-        r"\bpayouts?\b",
-        r"\bcash\s+contests?\b",
-        r"\bprize\s+pools?\b",
-        r"\bdfs\b",
-        r"\bdraftkings\b",
-        r"\bfanduel\b",
-        r"\bkansas\s+city\s+chiefs\b",
-        r"\bdallas\s+cowboys\b",
-        r"\bgreen\s+bay\s+packers\b",
-        r"\bnew\s+england\s+patriots\b",
-        r"\bpittsburgh\s+steelers\b",
-        r"\bsan\s+francisco\s+49ers\b",
-        r"\btom\s+brady\b",
-        r"\bpatrick\s+mahomes\b",
+
+    for pattern in BANNED_LICENSED_OR_WAGERING_PATTERNS:
+        assert not re.search(pattern, graph_text, flags=re.IGNORECASE), f"Graph contains banned term pattern: {pattern}"
+
+
+def _text_files_under(*roots: str) -> list[Path]:
+    files: list[Path] = []
+    for root in roots:
+        for path in Path(root).rglob("*"):
+            if "__pycache__" in path.parts or path.is_dir() or path.suffix not in TEXT_SUFFIXES:
+                continue
+            files.append(path)
+    return sorted(files)
+
+
+def _regex_hits(paths: list[Path], patterns: list[str]) -> list[str]:
+    hits: list[str] = []
+    for path in paths:
+        text = path.read_text(encoding="utf-8")
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            for pattern in patterns:
+                if re.search(pattern, line, flags=re.IGNORECASE):
+                    hits.append(f"{path}:{line_number}: {pattern}: {line.strip()}")
+    return hits
+
+
+def test_repo_contains_no_banned_licensed_or_monetized_terms() -> None:
+    paths = _text_files_under("docs", "scripts", "ui", "data", "agents", "engine")
+
+    assert not _regex_hits(paths, BANNED_LICENSED_OR_WAGERING_PATTERNS)
+
+
+def test_p0_scope_terms_stay_inside_allowed_boundary_docs() -> None:
+    excluded = {
+        Path("AGENTS.md"),
+        Path("CLAUDE.md"),
+        Path("LICENSE_NOTES.md"),
+        Path("PLAN.md"),
+        Path("README.md"),
+        Path("docs/graph.md"),
+        Path("docs/product_plan.md"),
+    }
+    paths = [
+        path
+        for path in _text_files_under(".", "docs", "scripts", "ui", "data", "agents", "engine")
+        if ".git" not in path.parts
+        and ".claude" not in path.parts
+        and ".pytest_cache" not in path.parts
+        and "tests" not in path.parts
+        and "docs/audits" not in path.as_posix()
+        and "sandbox" not in path.parts
+        and path not in excluded
     ]
 
-    for pattern in banned_patterns:
-        assert not re.search(pattern, graph_text, flags=re.IGNORECASE), f"Graph contains banned term pattern: {pattern}"
+    assert not _regex_hits(paths, P0_SCOPE_BOUNDED_PATTERNS)
