@@ -1,4 +1,4 @@
-let replay, graphCards = {}, conceptLabels = {}, profiles = {}, selectedIndex = 0, garageState = {};
+let replay, graphCards = {}, conceptLabels = {}, profiles = {}, selectedIndex = 0, garageState = {}, auto = null;
 const $ = id => document.getElementById(id);
 const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -30,8 +30,10 @@ async function loadReplay() {
   renderDriveSummary();
   renderFilmRoom();
   setupOverlay();
+  setupAutoplay();
   selectPlay(0);
   mountRows(document);
+  if (!reduced()) auto.start();
 }
 
 function renderHeader() {
@@ -65,15 +67,21 @@ function renderTimeline() {
     btn.type = 'button';
     btn.role = 'tab';
     btn.textContent = `Play ${play.public.play_index}`;
-    btn.onclick = () => selectPlay(index);
+    btn.onclick = () => { auto?.stop(); selectPlay(index); };
     btn.onkeydown = event => handleTimelineKey(event, index);
     $('timeline').appendChild(btn);
   });
+  $('timeline').onkeydown = event => {
+    if (event.key === ' ') {
+      event.preventDefault();
+      auto?.toggle();
+    }
+  };
 }
 
 function handleTimelineKey(event, index) {
-  if (event.key === 'ArrowRight') { event.preventDefault(); focusPlay(Math.min(index + 1, replay.plays.length - 1)); }
-  if (event.key === 'ArrowLeft') { event.preventDefault(); focusPlay(Math.max(index - 1, 0)); }
+  if (event.key === 'ArrowRight') { event.preventDefault(); auto?.stop(); focusPlay(Math.min(index + 1, replay.plays.length - 1)); }
+  if (event.key === 'ArrowLeft') { event.preventDefault(); auto?.stop(); focusPlay(Math.max(index - 1, 0)); }
   if (event.key === 'Enter') { event.preventDefault(); selectPlay(index); }
 }
 
@@ -92,7 +100,8 @@ function selectPlay(index) {
     button.setAttribute('aria-selected', i === index ? 'true' : 'false');
   });
   moveIndicator();
-  renderBall(play.public.next_state.yardline);
+  restartAutoplayProgress();
+  renderBall(play.public.next_state.yardline, play.public.terminal_reason);
   $('driveState').textContent = `${play.public.next_state.down} & ${play.public.next_state.distance} at ${play.public.next_state.yardline}`;
   renderAction('offenseCall', play.public.offense_action);
   renderAction('defenseCall', play.public.defense_action);
@@ -113,11 +122,12 @@ function moveIndicator() {
   indicator.style.transform = `translateX(${active.offsetLeft}px)`;
 }
 
-function renderBall(yardline) {
+function renderBall(yardline, terminalReason) {
   const clamped = Math.max(0, Math.min(25, Number(yardline)));
-  const left = 8 + ((25 - clamped) / 25) * 76;
+  const left = 9 + (clamped / 25) * 82;
   const ball = $('ball');
   ball.style.left = `${left}%`;
+  ball.classList.toggle('touchdown', terminalReason === 'touchdown');
   if (!reduced()) {
     ball.classList.remove('move');
     void ball.offsetWidth;
@@ -193,21 +203,39 @@ function renderValidation(result) {
 function renderDriveSummary() {
   const last = replay.plays.at(-1).public;
   const points = replay.plays.map(play => Number(play.public.expected_value_delta || 0));
+  const best = replay.plays.reduce((winner, play) =>
+    Math.abs(play.public.expected_value_delta || 0) > Math.abs(winner.public.expected_value_delta || 0) ? play : winner
+  , replay.plays[0]);
+  const recap = `${label(replay.score.result)} on play ${last.play_index} after ${replay.plays.length} plays`;
   $('driveSummary').innerHTML = `
     <div class="kv"><span>Result</span><strong>${label(replay.score.result)}</strong></div>
     <div class="kv"><span>Points</span><span>${replay.score.points}</span></div>
     <div class="kv"><span>Plays Played</span><span>${replay.plays.length}</span></div>
     <div class="kv"><span>Terminal Reason</span><span>${value(label(last.terminal_reason))}</span></div>
-    <p class="muted compact">Drive ended at yardline ${last.next_state.yardline} after play ${last.play_index}.</p>
     ${sparkline(points)}
+    <div class="kv"><span>Best Play</span><span>Play ${best.public.play_index} (${Number(best.public.expected_value_delta).toFixed(2)})</span></div>
+    <div class="kv"><span>Drive Recap</span><span>${recap}</span></div>
   `;
 }
 
 function sparkline(values) {
   if (!values.length) return '';
   const min = Math.min(...values), max = Math.max(...values), range = max - min || 1;
-  const pts = values.map((v, i) => `${(i / Math.max(1, values.length - 1)) * 100},${58 - ((v - min) / range) * 48}`).join(' ');
-  return `<svg class="sparkline" viewBox="0 0 100 70" preserveAspectRatio="none"><path class="draw-on-mount" d="M${pts.replaceAll(' ', ' L')}" /></svg>`;
+  const x = i => 18 + (i / Math.max(1, values.length - 1)) * 172;
+  const y = v => 118 - ((v - min) / range) * 82;
+  const pts = values.map((v, i) => `${x(i)},${y(v)}`).join(' ');
+  const zeroY = min <= 0 && max >= 0 ? y(0) : y(min);
+  const bestIndex = values.reduce((winner, v, i) => Math.abs(v) > Math.abs(values[winner]) ? i : winner, 0);
+  const bestValue = values[bestIndex];
+  const ticks = values.map((_, i) => `<text class="spark-tick" x="${x(i)}" y="144" text-anchor="middle">${i + 1}</text>`).join('');
+  return `<div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 150" preserveAspectRatio="none">
+    <text class="spark-label" x="0" y="20">EP delta</text>
+    <line class="spark-axis" x1="16" x2="192" y1="${zeroY}" y2="${zeroY}"></line>
+    <path class="draw-on-mount" d="M${pts.replaceAll(' ', ' L')}" />
+    <circle class="spark-dot" cx="${x(bestIndex)}" cy="${y(bestValue)}" r="4"></circle>
+    <text class="spark-dot-label" x="${Math.min(172, x(bestIndex) + 6)}" y="${Math.max(12, y(bestValue) - 7)}">${bestValue >= 0 ? '+' : ''}${bestValue.toFixed(2)}</text>
+    ${ticks}
+  </svg></div>`;
 }
 
 function renderFilmRoom() {
@@ -268,7 +296,13 @@ async function renderDailySlate() {
 function slateCard(entry, index, results) {
   const match = entry.matchup || {};
   const result = results[index];
-  return `<div class="slate-card"><strong>${entry.seed || `Entry ${index + 1}`}</strong><span>${label(match.offense)} vs ${label(match.defense)}</span><p class="muted compact">preview not available in static proof</p>${result ? `<div class="kv"><span>Result</span><span>${label(result.result)}</span></div><div class="kv"><span>Points</span><span>${result.points}</span></div>` : ''}</div>`;
+  return `<div class="slate-card">
+    <strong class="slate-seed">${entry.seed || `Entry ${index + 1}`}</strong>
+    <span class="slate-matchup">${label(match.offense)} vs ${label(match.defense)}</span>
+    <div class="slate-result"><span class="slate-label">Result</span><span class="slate-value">${result ? label(result.result) : 'Preview Pending'}</span></div>
+    <div class="slate-points"><span class="slate-label">Points</span><span class="slate-value">${result ? result.points : '-'}</span></div>
+    <p class="slate-note">preview not available in static proof</p>
+  </div>`;
 }
 
 function setupOverlay() {
@@ -307,6 +341,53 @@ function flashScore(kind) {
   card.classList.remove('flash-good', 'flash-warn');
   void card.offsetWidth;
   card.classList.add(kind === 'good' ? 'flash-good' : 'flash-warn');
+}
+
+function createAutoplay({ count, intervalMs, onTick, onStateChange }) {
+  let timer = null;
+  let running = false;
+  const state = () => onStateChange?.(running);
+  const start = () => {
+    if (running || count < 2) return;
+    running = true;
+    state();
+    timer = setInterval(() => onTick((selectedIndex + 1) % count), intervalMs);
+  };
+  const stop = () => {
+    if (timer) clearInterval(timer);
+    timer = null;
+    running = false;
+    state();
+  };
+  return { start, stop, toggle: () => running ? stop() : start(), isRunning: () => running, dispose: stop };
+}
+
+function setupAutoplay() {
+  auto = createAutoplay({
+    count: replay.plays.length,
+    intervalMs: 3500,
+    onTick: i => selectPlay(i),
+    onStateChange: updatePlayPauseButton,
+  });
+  $('playPause').onclick = () => auto.toggle();
+}
+
+function updatePlayPauseButton(running) {
+  const button = $('playPause');
+  const progress = $('autoplayProgress');
+  button.textContent = running ? '❚❚' : '▶';
+  button.setAttribute('aria-label', running ? 'Pause autoplay' : 'Play autoplay');
+  progress.classList.remove('running');
+  void progress.offsetWidth;
+  if (running && !reduced()) progress.classList.add('running');
+}
+
+function restartAutoplayProgress() {
+  if (!auto?.isRunning()) return;
+  const progress = $('autoplayProgress');
+  progress.classList.remove('running');
+  void progress.offsetWidth;
+  if (!reduced()) progress.classList.add('running');
 }
 
 function mountPanels(ids) { ids.forEach(id => mountRows($(id))); }
