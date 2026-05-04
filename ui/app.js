@@ -4,6 +4,7 @@ let graphCards = {};
 const $ = id => document.getElementById(id);
 const label = key => key.replaceAll('_', ' ');
 const value = item => item === null || item === undefined || item === '' ? '-' : item;
+const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -39,16 +40,24 @@ function kvRows(obj, keys) {
   return keys.map(key => `<div class="kv"><span>${label(key)}</span><span>${value(obj[key])}</span></div>`).join('');
 }
 
+function profileRows(profile) {
+  const set = controls.filter(key => profile[key] !== undefined && profile[key] !== null && profile[key] !== '');
+  const missing = controls.filter(key => !set.includes(key)).map(label).join(', ');
+  return `
+    ${kvRows(profile, set)}
+    <p class="muted compact">Other PLAN §5.2 controls not set on this profile: ${missing || '-'}</p>
+  `;
+}
+
 function renderGarage() {
   const cfg = replay.agent_garage_config || {};
   const offense = cfg.offense_profile || {};
   const defense = cfg.defense_profile || {};
-  const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
   $('garage').innerHTML = `
     <div class="kv"><span>Offense</span><strong>${replay.agents.offense}</strong></div>
     <div class="kv"><span>Defense</span><strong>${replay.agents.defense}</strong></div>
-    <h3>Offense profile</h3>${kvRows(offense, controls)}
-    <h3>Defense profile</h3>${kvRows(defense, controls)}
+    <h3>Offense profile</h3>${profileRows(offense)}
+    <h3>Defense profile</h3>${profileRows(defense)}
   `;
 }
 
@@ -60,8 +69,9 @@ async function renderDailySlate() {
     target.innerHTML = entries.map((entry, index) => {
       const matchup = entry.matchup || {};
       const name = `${value(matchup.offense)} vs ${value(matchup.defense)}`;
-      return `<div class="kv"><span>${entry.seed || `Entry ${index + 1}`}</span><span>${name} - preview not available in static proof</span></div>`;
+      return `<div class="slate-chip"><strong>${entry.seed || `Entry ${index + 1}`}</strong><span>${name}</span><small>preview not available in static proof</small></div>`;
     }).join('') || '<p class="muted">Daily Slate sample not present</p>';
+    target.insertAdjacentHTML('afterbegin', '<p class="muted compact">Phase 0B preview only. Static proof does not fabricate slate results.</p>');
   } catch {
     target.innerHTML = '<p class="muted">Daily Slate sample not present</p>';
   }
@@ -113,24 +123,32 @@ function renderOutcome(play) {
   `;
 }
 
-function flattenResources(snapshot) {
-  const rows = [];
-  ['offense', 'defense'].forEach(side => {
-    ['before', 'cost', 'remaining'].forEach(kind => {
-      const values = snapshot[`${side}_${kind}`] || {};
-      Object.entries(values).forEach(([resource, amount]) => rows.push({ key: `${side}.${kind}.${resource}`, amount }));
-    });
+function resourceRows(snapshot, prior, side) {
+  const before = snapshot[`${side}_before`] || {};
+  const cost = snapshot[`${side}_cost`] || {};
+  const remaining = snapshot[`${side}_remaining`] || {};
+  const priorRemaining = prior ? prior[`${side}_remaining`] || {} : null;
+  return Object.keys(before).map(resource => {
+    const delta = priorRemaining ? remaining[resource] - priorRemaining[resource] : null;
+    return { resource, before: before[resource], cost: cost[resource] || 0, remaining: remaining[resource], delta };
   });
-  return rows;
+}
+
+function resourceTable(snapshot, prior, side) {
+  const rows = resourceRows(snapshot, prior, side);
+  return `
+    <div class="resource-card">
+      <h3>${side}</h3>
+      <table class="resource-table">
+        <thead><tr><th>resource</th><th>before</th><th>cost</th><th>remaining</th><th>Δ</th></tr></thead>
+        <tbody>${rows.map(row => `<tr><td>${row.resource}</td><td>${row.before}</td><td>${row.cost}</td><td>${row.remaining}</td><td>${row.delta === null ? '-' : row.delta}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 function renderResources(snapshot, prior) {
-  const previous = prior ? Object.fromEntries(flattenResources(prior).map(row => [row.key, row.amount])) : {};
-  $('resources').innerHTML = flattenResources(snapshot).map(row => {
-    const before = previous[row.key];
-    const delta = before === undefined ? 'new' : before === row.amount ? 'no change' : `${row.amount - before > 0 ? '+' : ''}${row.amount - before}`;
-    return `<div class="kv"><span>${row.key}</span><span>${row.amount} <small>${delta}</small></span></div>`;
-  }).join('');
+  $('resources').innerHTML = `<div class="resource-grid">${resourceTable(snapshot, prior, 'offense')}${resourceTable(snapshot, prior, 'defense')}</div>`;
 }
 
 function renderGraphCards(ids) {
@@ -182,11 +200,16 @@ function renderDriveSummary() {
 
 function renderFilmRoom() {
   const room = replay.film_room || {};
+  const list = items => {
+    const visible = (items || []).slice(0, 5).map(item => `<li>${item}</li>`).join('');
+    const extra = (items || []).length > 5 ? `<li class="muted">and ${(items || []).length - 5} more</li>` : '';
+    return visible + extra || '<li class="muted">-</li>';
+  };
   $('filmRoom').innerHTML = `
     <div class="kv"><span>Headline</span><strong>${room.headline || 'Film Room'}</strong></div>
     <div class="kv"><span>Turning point</span><span>Play ${(room.turning_point || {}).play_index || '-'}</span></div>
-    <h3>Notes</h3><ul>${(room.notes || []).map(note => `<li>${note}</li>`).join('')}</ul>
-    <h3>Suggested tweaks</h3><ul>${(room.suggested_tweaks || []).map(tweak => `<li>${tweak}</li>`).join('')}</ul>
+    <h3>Notes</h3><ul>${list(room.notes)}</ul>
+    <h3>Suggested tweaks</h3><ul>${list(room.suggested_tweaks)}</ul>
   `;
 }
 
