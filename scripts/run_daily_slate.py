@@ -75,6 +75,7 @@ def main() -> None:
         "summary": {
             "total_points": sum(item["points"] for item in results),
             "average_points": round(sum(item["points"] for item in results) / max(1, len(results)), 2),
+            "suggested_review": "Compare each agent across the fixed Daily Slate entries before treating one result as robust.",
         },
     }
     validate_daily_slate_report(report)

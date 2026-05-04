@@ -2531,15 +2531,22 @@
       "expected_value_delta": 0.76,
       "graph_card_ids": [
         "redzone.play_action_after_run_tendency.v1"
-      ]
+      ],
+      "metric": "largest_abs_expected_value_delta"
     },
     "notes": [
-      "The defense used front strength to constrain outside-zone looks.",
-      "The offense took underneath space conceded by safer coverage structure."
+      "Graph card \"Bear front constrains outside zone\" fired (wide_zone_constrained); see redzone.outside_zone_vs_bear.v1. Limitation: No full blocking surface model.",
+      "Graph card \"Bear front constrains outside zone\" fired (front_strength_declared); see redzone.outside_zone_vs_bear.v1. Limitation: No full blocking surface model.",
+      "Graph card \"Play-action gains value after credible run tendency\" fired (run_tendency_exploited); see redzone.play_action_after_run_tendency.v1. Limitation: Run tendency is counted by concept family in P0.",
+      "Graph card \"Play-action gains value after credible run tendency\" fired (second_level_conflict); see redzone.play_action_after_run_tendency.v1. Limitation: Run tendency is counted by concept family in P0.",
+      "Graph card \"Quick game can take conceded underneath space\" fired (underneath_space_taken); see redzone.quick_game_vs_two_high.v1. Limitation: Yards after catch modeled coarsely."
     ],
     "suggested_tweaks": [
-      "Pair outside-zone tendency with play-action flood or bootleg counters.",
-      "If explosives are capped, increase efficient quick-game calls."
+      "Review graph-listed counters for redzone.outside_zone_vs_bear.v1: quick_game, play_action_flood, bootleg.",
+      "Review graph-listed counters for redzone.outside_zone_vs_bear.v1: quick_game, play_action_flood, bootleg.",
+      "Review graph-listed counters for redzone.play_action_after_run_tendency.v1: edge_contain, two_high_shell, redzone_bracket.",
+      "Review graph-listed counters for redzone.play_action_after_run_tendency.v1: edge_contain, two_high_shell, redzone_bracket.",
+      "Review graph-listed counters for redzone.quick_game_vs_two_high.v1: trap_coverage, cover1_man."
     ]
   },
   "debug": {

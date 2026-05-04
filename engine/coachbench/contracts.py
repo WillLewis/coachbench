@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+from .film_room import film_room_note_for_event
+from .graph_loader import StrategyGraph
+
 
 OFFENSE_ACTION_FIELDS = {
     "personnel_family",
@@ -80,13 +83,6 @@ HIDDEN_OBSERVATION_FIELDS = {
     "opponent_action",
 }
 
-FILM_ROOM_EVENT_NOTES = {
-    "screen_baited": "The offense treated a pressure look as a screen opportunity, but the defense had enough coverage/disguise resources to bait it.",
-    "pressure_punished": "The offense successfully punished true pressure with space behind the rush.",
-    "coverage_switch_stress": "Bunch/mesh created communication stress against match-style coverage.",
-    "wide_zone_constrained": "The defense used front strength to constrain outside-zone looks.",
-    "underneath_space_taken": "The offense took underneath space conceded by safer coverage structure.",
-}
 NO_EVENT_FILM_ROOM_NOTE = "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
 
 
@@ -134,15 +130,17 @@ def validate_observation_safety(observation: Dict[str, Any], side: str) -> None:
 
 
 def validate_film_room_is_event_derived(replay: Dict[str, Any]) -> None:
-    event_tags = {
-        event["tag"]
+    cards_by_id = {card["id"]: card for card in StrategyGraph().interactions}
+    events = [
+        event
         for play in replay.get("plays", [])
         for event in _all_events_from_play(play)
-    }
+    ]
+    event_tags = {event["tag"] for event in events}
     allowed_notes = {
-        note
-        for tag, note in FILM_ROOM_EVENT_NOTES.items()
-        if tag in event_tags
+        film_room_note_for_event(event, cards_by_id[event["graph_card_id"]])
+        for event in events
+        if event.get("graph_card_id") in cards_by_id
     }
     if not event_tags:
         allowed_notes.add(NO_EVENT_FILM_ROOM_NOTE)

@@ -193,4 +193,5 @@ class CoachBenchEngine:
                 self.graph.constraints["drive_budgets"]["offense"],
                 self.graph.constraints["drive_budgets"]["defense"],
             ),
+            graph=self.graph,
         )

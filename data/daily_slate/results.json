@@ -11,17 +11,18 @@
       "result": "stopped",
       "plays": 4,
       "film_room": {
-        "headline": "Drive stopped",
+        "headline": "Turnover on downs",
         "turning_point": {
           "play_index": 3,
           "expected_value_delta": 0.5,
-          "graph_card_ids": []
+          "graph_card_ids": [],
+          "metric": "largest_abs_expected_value_delta"
         },
         "notes": [
           "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
         ],
         "suggested_tweaks": [
-          "Run the same agent across the Daily Slate to check whether the result is robust."
+          "Review call sequencing, resource use, and risk level against nearby fixed seeds."
         ]
       }
     },
@@ -35,21 +36,28 @@
       "result": "stopped",
       "plays": 7,
       "film_room": {
-        "headline": "Drive stopped",
+        "headline": "Turnover on downs",
         "turning_point": {
           "play_index": 2,
           "expected_value_delta": 0.76,
           "graph_card_ids": [
             "redzone.play_action_after_run_tendency.v1"
-          ]
+          ],
+          "metric": "largest_abs_expected_value_delta"
         },
         "notes": [
-          "The defense used front strength to constrain outside-zone looks.",
-          "The offense took underneath space conceded by safer coverage structure."
+          "Graph card \"Bear front constrains outside zone\" fired (wide_zone_constrained); see redzone.outside_zone_vs_bear.v1. Limitation: No full blocking surface model.",
+          "Graph card \"Bear front constrains outside zone\" fired (front_strength_declared); see redzone.outside_zone_vs_bear.v1. Limitation: No full blocking surface model.",
+          "Graph card \"Play-action gains value after credible run tendency\" fired (run_tendency_exploited); see redzone.play_action_after_run_tendency.v1. Limitation: Run tendency is counted by concept family in P0.",
+          "Graph card \"Play-action gains value after credible run tendency\" fired (second_level_conflict); see redzone.play_action_after_run_tendency.v1. Limitation: Run tendency is counted by concept family in P0.",
+          "Graph card \"Quick game can take conceded underneath space\" fired (underneath_space_taken); see redzone.quick_game_vs_two_high.v1. Limitation: Yards after catch modeled coarsely."
         ],
         "suggested_tweaks": [
-          "Pair outside-zone tendency with play-action flood or bootleg counters.",
-          "If explosives are capped, increase efficient quick-game calls."
+          "Review graph-listed counters for redzone.outside_zone_vs_bear.v1: quick_game, play_action_flood, bootleg.",
+          "Review graph-listed counters for redzone.outside_zone_vs_bear.v1: quick_game, play_action_flood, bootleg.",
+          "Review graph-listed counters for redzone.play_action_after_run_tendency.v1: edge_contain, two_high_shell, redzone_bracket.",
+          "Review graph-listed counters for redzone.play_action_after_run_tendency.v1: edge_contain, two_high_shell, redzone_bracket.",
+          "Review graph-listed counters for redzone.quick_game_vs_two_high.v1: trap_coverage, cover1_man."
         ]
       }
     },
@@ -69,19 +77,23 @@
           "expected_value_delta": 0.85,
           "graph_card_ids": [
             "redzone.bunch_mesh_vs_match.v1"
-          ]
+          ],
+          "metric": "largest_abs_expected_value_delta"
         },
         "notes": [
-          "Bunch/mesh created communication stress against match-style coverage."
+          "Graph card \"Bunch mesh stresses match coverage communication\" fired (coverage_switch_stress); see redzone.bunch_mesh_vs_match.v1. Limitation: Symbolic spacing only; no full route geometry.",
+          "Graph card \"Bunch mesh stresses match coverage communication\" fired (nickel_passoff_test); see redzone.bunch_mesh_vs_match.v1. Limitation: Symbolic spacing only; no full route geometry."
         ],
         "suggested_tweaks": [
-          "Increase bunch/mesh use when match coverage stress confidence rises."
+          "Review graph-listed counters for redzone.bunch_mesh_vs_match.v1: redzone_bracket, trap_coverage.",
+          "Review graph-listed counters for redzone.bunch_mesh_vs_match.v1: redzone_bracket, trap_coverage."
         ]
       }
     }
   ],
   "summary": {
     "total_points": 7,
-    "average_points": 2.33
+    "average_points": 2.33,
+    "suggested_review": "Compare each agent across the fixed Daily Slate entries before treating one result as robust."
   }
 }

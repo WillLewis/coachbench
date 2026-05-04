@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+from .graph_loader import StrategyGraph
+
 
 def _public_play(play: Dict[str, Any]) -> Dict[str, Any]:
     return play.get("public", play)
@@ -22,7 +24,42 @@ def _observed_events(play: Dict[str, Any]) -> List[Dict[str, Any]]:
     return list(events_by_tag.values())
 
 
-def build_film_room(play_results: List[Dict[str, Any]], points: int) -> Dict[str, Any]:
+def _graph_cards_by_id(graph: StrategyGraph | None = None) -> Dict[str, Dict[str, Any]]:
+    graph = graph or StrategyGraph()
+    return {card["id"]: card for card in graph.interactions}
+
+
+def film_room_note_for_event(event: Dict[str, Any], card: Dict[str, Any]) -> str:
+    limitations = card.get("limitations", [])
+    limitation_text = f" Limitation: {limitations[0]}" if limitations else ""
+    return (
+        f"Graph card \"{card['name']}\" fired ({event['tag']}); "
+        f"see {card['id']}.{limitation_text}"
+    )
+
+
+def film_room_tweak_for_card(card: Dict[str, Any]) -> str:
+    counters = card.get("counters", [])
+    if counters:
+        return f"Review graph-listed counters for {card['id']}: {', '.join(counters)}."
+    return f"Review sequencing around graph card {card['id']}."
+
+
+def headline_for_terminal(points: int, terminal_reason: str | None) -> str:
+    if terminal_reason == "touchdown" or points >= 7:
+        return "Touchdown drive"
+    if terminal_reason == "turnover":
+        return "Turnover"
+    if terminal_reason == "turnover_on_downs":
+        return "Turnover on downs"
+    if terminal_reason == "max_plays_reached":
+        return "Stopped - out of plays" if points == 0 else "Field-position drive"
+    if points == 3:
+        return "Field-position drive"
+    return "Drive stopped"
+
+
+def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: StrategyGraph | None = None) -> Dict[str, Any]:
     if not play_results:
         return {
             "headline": "No plays were resolved.",
@@ -32,38 +69,39 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int) -> Dict[str
         }
 
     turning = max(play_results, key=lambda p: abs(float(_internal_play(p).get("expected_value_delta", 0.0))))
-    tags = [event["tag"] for play in play_results for event in _observed_events(play)]
+    cards_by_id = _graph_cards_by_id(graph)
     notes: List[str] = []
     tweaks: List[str] = []
+    seen_pairs: set[tuple[str, str]] = set()
 
-    if "screen_baited" in tags:
-        notes.append("The offense treated a pressure look as a screen opportunity, but the defense had enough coverage/disguise resources to bait it.")
-        tweaks.append("Lower screen trigger confidence until pressure is confirmed by multiple signals.")
-    if "pressure_punished" in tags:
-        notes.append("The offense successfully punished true pressure with space behind the rush.")
-        tweaks.append("Keep pressure-punish calls available, but avoid repeating them after a failed attempt.")
-    if "coverage_switch_stress" in tags:
-        notes.append("Bunch/mesh created communication stress against match-style coverage.")
-        tweaks.append("Increase bunch/mesh use when match coverage stress confidence rises.")
-    if "wide_zone_constrained" in tags:
-        notes.append("The defense used front strength to constrain outside-zone looks.")
-        tweaks.append("Pair outside-zone tendency with play-action flood or bootleg counters.")
-    if "underneath_space_taken" in tags:
-        notes.append("The offense took underneath space conceded by safer coverage structure.")
-        tweaks.append("If explosives are capped, increase efficient quick-game calls.")
+    for play in play_results:
+        for event in _observed_events(play):
+            card_id = event.get("graph_card_id")
+            if not card_id:
+                continue
+            pair = (str(card_id), str(event.get("tag", "")))
+            if pair in seen_pairs:
+                continue
+            seen_pairs.add(pair)
+            card = cards_by_id.get(str(card_id))
+            if not card:
+                continue
+            notes.append(film_room_note_for_event(event, card))
+            tweaks.append(film_room_tweak_for_card(card))
 
     if not notes:
         notes.append("No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds.")
-        tweaks.append("Run the same agent across the Daily Slate to check whether the result is robust.")
+        tweaks.append("Review call sequencing, resource use, and risk level against nearby fixed seeds.")
 
-    headline = "Touchdown drive" if points >= 7 else "Field-position drive" if points == 3 else "Drive stopped"
+    terminal_reason = _public_play(play_results[-1]).get("terminal_reason")
 
     return {
-        "headline": headline,
+        "headline": headline_for_terminal(points, terminal_reason),
         "turning_point": {
             "play_index": _public_play(turning).get("play_index"),
             "expected_value_delta": _internal_play(turning).get("expected_value_delta"),
             "graph_card_ids": _public_play(turning).get("graph_card_ids", []),
+            "metric": "largest_abs_expected_value_delta",
         },
         "notes": notes,
         "suggested_tweaks": tweaks,

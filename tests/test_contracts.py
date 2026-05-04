@@ -12,6 +12,7 @@ from coachbench.contracts import (
     validate_replay_contract,
 )
 from coachbench.engine import CoachBenchEngine
+from coachbench.film_room import build_film_room, headline_for_terminal
 from scripts.run_daily_slate import defense_agent, offense_agent, slate_entries
 from scripts.run_match_matrix import case_seed
 
@@ -104,6 +105,7 @@ def test_scoring_reports_satisfy_contracts() -> None:
         "summary": {
             "total_points": sum(item["points"] for item in results),
             "average_points": round(sum(item["points"] for item in results) / len(results), 2),
+            "suggested_review": "Compare each agent across the fixed Daily Slate entries before treating one result as robust.",
         },
     })
 
@@ -118,3 +120,37 @@ def test_film_room_notes_must_be_event_derived() -> None:
         assert "Film Room note" in str(exc)
     else:
         raise AssertionError("Unsupported Film Room note was accepted")
+
+
+def test_film_room_notes_use_graph_cards_not_agent_intent_claims() -> None:
+    replay = CoachBenchEngine(seed=42).run_drive(AdaptiveOffense(), AdaptiveDefense())
+    notes = replay["film_room"]["notes"]
+    tweaks = replay["film_room"]["suggested_tweaks"]
+
+    assert notes
+    assert all(note.startswith("Graph card \"") or note.startswith("No high-leverage") for note in notes)
+    assert all("treated a pressure look" not in note for note in notes)
+    assert all("space behind the rush" not in note for note in notes)
+    assert all("Daily Slate" not in tweak for tweak in tweaks)
+
+
+def test_film_room_headline_uses_terminal_reason() -> None:
+    assert headline_for_terminal(0, "turnover") == "Turnover"
+    assert headline_for_terminal(0, "turnover_on_downs") == "Turnover on downs"
+    assert headline_for_terminal(0, "max_plays_reached") == "Stopped - out of plays"
+
+
+def test_film_room_turning_point_metric_is_declared() -> None:
+    film_room = build_film_room(
+        [
+            {
+                "public": {"play_index": 1, "terminal_reason": "max_plays_reached", "graph_card_ids": []},
+                "engine_internal": {"expected_value_delta": -0.2},
+                "offense_observed": {"events": []},
+                "defense_observed": {"events": []},
+            }
+        ],
+        points=0,
+    )
+
+    assert film_room["turning_point"]["metric"] == "largest_abs_expected_value_delta"

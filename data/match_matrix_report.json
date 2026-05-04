@@ -8,13 +8,14 @@
       "points": 0,
       "result": "stopped",
       "plays": 6,
-      "film_room_headline": "Drive stopped",
+      "film_room_headline": "Turnover on downs",
       "turning_point": {
         "play_index": 2,
         "expected_value_delta": 0.85,
         "graph_card_ids": [
           "redzone.bunch_mesh_vs_match.v1"
-        ]
+        ],
+        "metric": "largest_abs_expected_value_delta"
       }
     },
     {
@@ -23,11 +24,12 @@
       "points": 0,
       "result": "stopped",
       "plays": 7,
-      "film_room_headline": "Drive stopped",
+      "film_room_headline": "Turnover",
       "turning_point": {
         "play_index": 2,
         "expected_value_delta": 0.42,
-        "graph_card_ids": []
+        "graph_card_ids": [],
+        "metric": "largest_abs_expected_value_delta"
       }
     },
     {
@@ -42,7 +44,8 @@
         "expected_value_delta": 0.85,
         "graph_card_ids": [
           "redzone.bunch_mesh_vs_match.v1"
-        ]
+        ],
+        "metric": "largest_abs_expected_value_delta"
       }
     },
     {
@@ -57,7 +60,8 @@
         "expected_value_delta": 0.76,
         "graph_card_ids": [
           "redzone.play_action_after_run_tendency.v1"
-        ]
+        ],
+        "metric": "largest_abs_expected_value_delta"
       }
     }
   ]

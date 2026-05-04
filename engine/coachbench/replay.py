@@ -4,6 +4,7 @@ import hashlib
 from typing import Any, Dict, List
 
 from .film_room import build_film_room
+from .graph_loader import StrategyGraph
 
 
 def seed_hash(seed: int) -> str:
@@ -29,8 +30,9 @@ def build_replay(
     touchdown_points: int,
     field_goal_points: int,
     legal_sets: Dict[str, List[str]],
+    graph: StrategyGraph | None = None,
 ) -> Dict[str, Any]:
-    film_room = build_film_room(play_results, final_points)
+    film_room = build_film_room(play_results, final_points, graph)
     return {
         "metadata": {
             "episode_id": f"showcase-{seed_hash(seed)}",
