@@ -1,0 +1,9 @@
+{
+  "team_id": "team_b_adaptive_counter",
+  "label": "Team B — Adaptive Counter",
+  "offense_agent": "adaptive",
+  "defense_agent": "adaptive",
+  "offense_profile_key": "misdirection_artist",
+  "defense_profile_key": "disguise_specialist",
+  "notes": "Tendency-aware counter team using visible Agent Garage profiles."
+}

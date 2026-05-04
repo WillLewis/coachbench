@@ -1,0 +1,64 @@
+{
+  "report_id": "comparison_report_v0",
+  "team_a": {
+    "team_id": "team_a_static_baseline",
+    "label": "Team A \u2014 Static Baseline"
+  },
+  "team_b": {
+    "team_id": "team_b_adaptive_counter",
+    "label": "Team B \u2014 Adaptive Counter"
+  },
+  "seeds": [
+    42,
+    99,
+    202
+  ],
+  "cases": [
+    {
+      "case": "a_oc_vs_a_dc",
+      "mean_points": 7.0,
+      "mean_plays": 6.0,
+      "results": {
+        "touchdown": 3
+      }
+    },
+    {
+      "case": "b_oc_vs_a_dc",
+      "mean_points": 0.0,
+      "mean_plays": 4.6667,
+      "results": {
+        "stopped": 3
+      }
+    },
+    {
+      "case": "a_oc_vs_b_dc",
+      "mean_points": 4.6667,
+      "mean_plays": 6.3333,
+      "results": {
+        "touchdown": 2,
+        "stopped": 1
+      }
+    },
+    {
+      "case": "b_oc_vs_b_dc",
+      "mean_points": 4.6667,
+      "mean_plays": 6.0,
+      "results": {
+        "touchdown": 2,
+        "stopped": 1
+      }
+    }
+  ],
+  "answers": {
+    "adaptive_offense_outperforms_static_offense": false,
+    "adaptive_defense_suppresses_static_offense": true,
+    "adaptive_vs_adaptive_has_nontrivial_sequencing": false,
+    "graph_creates_no_obvious_degeneracies": true
+  },
+  "metrics": {
+    "adaptation_lift_offense": -7.0,
+    "suppression_lift_defense": 2.3333,
+    "sequencing_diversity_b_vs_b": 0.1667,
+    "degenerate_strategy_flags": []
+  }
+}

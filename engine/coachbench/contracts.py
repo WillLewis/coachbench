@@ -303,3 +303,58 @@ def validate_daily_slate_report(report: Dict[str, Any]) -> None:
     _require_fields(report["summary"], {"total_points", "average_points"}, "daily slate summary")
     for result in report["results"]:
         _require_fields(result, {"seed_hash", "matchup", "points", "result", "plays", "film_room"}, "daily slate result")
+
+
+def validate_best_of_n_report(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"report_id", "team_a", "team_b", "seeds", "drives"}, "best-of-N report")
+    for team_key in ("team_a", "team_b"):
+        _require_fields(
+            report[team_key],
+            {
+                "team_id",
+                "label",
+                "games_played",
+                "total_points",
+                "mean_points_per_drive",
+                "touchdown_rate",
+                "field_goal_rate",
+                "stopped_rate",
+                "mean_plays_per_drive",
+                "invalid_action_count_total",
+            },
+            f"best-of-N {team_key}",
+        )
+    for drive in report["drives"]:
+        _require_fields(
+            drive,
+            {"seed", "direction", "points", "result", "plays", "film_room_headline"},
+            "best-of-N drive",
+        )
+
+
+def validate_comparison_report(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"report_id", "team_a", "team_b", "seeds", "cases", "answers", "metrics"}, "comparison report")
+    _require_fields(report["team_a"], {"team_id", "label"}, "comparison team_a")
+    _require_fields(report["team_b"], {"team_id", "label"}, "comparison team_b")
+    for case in report["cases"]:
+        _require_fields(case, {"case", "mean_points", "mean_plays"}, "comparison case")
+    _require_fields(
+        report["answers"],
+        {
+            "adaptive_offense_outperforms_static_offense",
+            "adaptive_defense_suppresses_static_offense",
+            "adaptive_vs_adaptive_has_nontrivial_sequencing",
+            "graph_creates_no_obvious_degeneracies",
+        },
+        "comparison answers",
+    )
+    _require_fields(
+        report["metrics"],
+        {
+            "adaptation_lift_offense",
+            "suppression_lift_defense",
+            "sequencing_diversity_b_vs_b",
+            "degenerate_strategy_flags",
+        },
+        "comparison metrics",
+    )

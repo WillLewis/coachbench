@@ -1,0 +1,9 @@
+{
+  "team_id": "team_a_static_baseline",
+  "label": "Team A — Static Baseline",
+  "offense_agent": "static",
+  "defense_agent": "static",
+  "offense_profile_key": null,
+  "defense_profile_key": null,
+  "notes": "Simple fixed-policy baseline for deterministic comparison."
+}
