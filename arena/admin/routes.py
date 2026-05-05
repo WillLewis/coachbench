@@ -5,7 +5,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from arena.api.app import ADMIN_TOKEN, db, error
+from arena.api.deps import ADMIN_TOKEN, error
 from arena.storage.registry import ban_submission, get_submission, list_submissions, set_qualification_result
 
 
@@ -32,6 +32,7 @@ def require_admin_token(token: str | None) -> None:
 
 def register_admin_routes(app) -> None:
     from fastapi import Header
+    from arena.api.app import db
 
     @app.post("/v1/admin/agents/{agent_id}/approve")
     def approve(agent_id: str, x_admin_token: str | None = Header(default=None)):
@@ -66,5 +67,10 @@ def register_admin_routes(app) -> None:
     @app.get("/v1/admin/jobs")
     def jobs(status: str | None = None, x_admin_token: str | None = Header(default=None)):
         require_admin_token(x_admin_token)
-        _ = status
-        return {"jobs": []}
+        from arena.worker.queue import list_jobs
+        return {"jobs": list_jobs(db(), status)}
+
+    @app.get("/v1/admin/agents")
+    def agents(x_admin_token: str | None = Header(default=None)):
+        require_admin_token(x_admin_token)
+        return {"agents": list_submissions(db())}

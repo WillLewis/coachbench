@@ -12,6 +12,7 @@ def test_registry_public_functions(tmp_path) -> None:
     agent_id = register_submission(conn, "owner", "agent", "v1", source, "offense", "Agent Label")
     row = get_submission(conn, agent_id)
     assert row and row["qualification_status"] == "pending"
+    assert row["access_tier"] == "sandboxed_code"
     assert list_submissions(conn, "pending")[0]["agent_id"] == agent_id
     set_qualification_result(conn, agent_id, "passed", tmp_path / "report.json")
     assert get_submission(conn, agent_id)["qualification_status"] == "passed"

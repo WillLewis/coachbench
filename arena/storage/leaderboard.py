@@ -16,8 +16,10 @@ CREATE TABLE IF NOT EXISTS leaderboard_seasons (
   seed_set_hash TEXT NOT NULL,
   max_plays INTEGER NOT NULL,
   opponent_kind TEXT NOT NULL,
+  league TEXT NOT NULL DEFAULT 'sandbox',
   created_at TEXT NOT NULL,
-  closed_at TEXT
+  closed_at TEXT,
+  CHECK(league IN ('rookie','policy','endpoint','sandbox','research'))
 );
 CREATE TABLE IF NOT EXISTS leaderboard_runs (
   run_id TEXT PRIMARY KEY,
@@ -27,6 +29,7 @@ CREATE TABLE IF NOT EXISTS leaderboard_runs (
   points INTEGER NOT NULL,
   result TEXT NOT NULL,
   plays INTEGER NOT NULL,
+  access_tier TEXT NOT NULL DEFAULT 'sandboxed_code',
   created_at TEXT NOT NULL,
   UNIQUE(season_id, agent_id, seed_hash)
 );
@@ -35,7 +38,19 @@ CREATE TABLE IF NOT EXISTS leaderboard_runs (
 
 def init(conn: sqlite3.Connection) -> None:
     conn.executescript(SCHEMA)
+    _migrate(conn)
     conn.commit()
+
+
+def _columns(conn: sqlite3.Connection, table: str) -> set[str]:
+    return {row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    if "league" in _columns(conn, "leaderboard_seasons") and "access_tier" in _columns(conn, "leaderboard_runs"):
+        return
+    sql = (Path(__file__).parent / "migrations" / "0002_pr1_leaderboard_columns.sql").read_text(encoding="utf-8")
+    conn.executescript(sql)
 
 
 def seed_hash(seed: int) -> str:
@@ -46,12 +61,12 @@ def seed_set_hash(seeds: list[int]) -> str:
     return hashlib.sha256(json.dumps(sorted(seeds)).encode()).hexdigest()
 
 
-def create_season(conn: sqlite3.Connection, label: str, seeds: list[int], max_plays: int, opponent_kind: str, secrets_dir: Path) -> str:
+def create_season(conn: sqlite3.Connection, label: str, seeds: list[int], max_plays: int, opponent_kind: str, secrets_dir: Path, league: str = "sandbox") -> str:
     init(conn)
     season_id = secrets.token_hex(8)
     conn.execute(
-        "INSERT INTO leaderboard_seasons VALUES (?, ?, ?, ?, ?, ?, NULL)",
-        (season_id, label, seed_set_hash(seeds), max_plays, opponent_kind, datetime.now(timezone.utc).isoformat()),
+        "INSERT INTO leaderboard_seasons VALUES (?, ?, ?, ?, ?, ?, ?, NULL)",
+        (season_id, label, seed_set_hash(seeds), max_plays, opponent_kind, league, datetime.now(timezone.utc).isoformat()),
     )
     secrets_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     secret_path = secrets_dir / f"{season_id}.json"
@@ -61,19 +76,22 @@ def create_season(conn: sqlite3.Connection, label: str, seeds: list[int], max_pl
     return season_id
 
 
-def add_run(conn: sqlite3.Connection, season_id: str, agent_id: str, seed: int, points: int, result: str, plays: int) -> None:
+def add_run(conn: sqlite3.Connection, season_id: str, agent_id: str, seed: int, points: int, result: str, plays: int, access_tier: str = "sandboxed_code") -> None:
     init(conn)
     conn.execute(
-        "INSERT OR REPLACE INTO leaderboard_runs VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (secrets.token_hex(8), season_id, agent_id, seed_hash(seed), points, result, plays, datetime.now(timezone.utc).isoformat()),
+        "INSERT OR REPLACE INTO leaderboard_runs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (secrets.token_hex(8), season_id, agent_id, seed_hash(seed), points, result, plays, access_tier, datetime.now(timezone.utc).isoformat()),
     )
     conn.commit()
 
 
-def snapshot(conn: sqlite3.Connection, season_id: str, labels: dict[str, str] | None = None) -> dict[str, Any]:
+def snapshot(conn: sqlite3.Connection, season_id: str, labels: dict[str, str] | None = None, include_sandboxed: bool = True) -> dict[str, Any]:
     init(conn)
     season = conn.execute("SELECT * FROM leaderboard_seasons WHERE season_id=?", (season_id,)).fetchone()
-    rows = conn.execute("SELECT * FROM leaderboard_runs WHERE season_id=?", (season_id,)).fetchall()
+    if include_sandboxed:
+        rows = conn.execute("SELECT * FROM leaderboard_runs WHERE season_id=?", (season_id,)).fetchall()
+    else:
+        rows = conn.execute("SELECT * FROM leaderboard_runs WHERE season_id=? AND access_tier != 'sandboxed_code'", (season_id,)).fetchall()
     grouped: dict[str, list[sqlite3.Row]] = {}
     for row in rows:
         grouped.setdefault(row["agent_id"], []).append(row)

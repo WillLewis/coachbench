@@ -18,3 +18,5 @@ def test_leaderboard_snapshot_hides_raw_seeds_and_is_deterministic(tmp_path) -> 
     assert first == second
     assert first["standings"][0]["agent_id"] == "agent_a"
     assert "42" not in str(first)
+    secret_file = next((tmp_path / "secrets").glob("*.json"))
+    assert oct(secret_file.stat().st_mode & 0o777) == "0o600"

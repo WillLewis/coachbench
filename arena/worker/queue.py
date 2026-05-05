@@ -59,3 +59,12 @@ def finish(conn: sqlite3.Connection, job_id: str, status: str, error: str | None
         (status, error, datetime.now(timezone.utc).isoformat(), job_id),
     )
     conn.commit()
+
+
+def list_jobs(conn: sqlite3.Connection, status: str | None = None) -> list[dict[str, Any]]:
+    init(conn)
+    if status:
+        rows = conn.execute("SELECT * FROM jobs WHERE status=? ORDER BY created_at", (status,)).fetchall()
+    else:
+        rows = conn.execute("SELECT * FROM jobs ORDER BY created_at").fetchall()
+    return [dict(row) for row in rows]

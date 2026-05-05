@@ -21,7 +21,13 @@ CREATE TABLE IF NOT EXISTS agent_submissions (
   qualification_report_path TEXT,
   label TEXT NOT NULL,
   banned_reason TEXT,
-  UNIQUE(owner_id, name, version)
+  access_tier TEXT NOT NULL DEFAULT 'sandboxed_code',
+  tier_config_path TEXT,
+  endpoint_url_hash TEXT,
+  UNIQUE(owner_id, name, version),
+  CHECK(access_tier IN ('declarative', 'prompt_policy',
+                        'remote_endpoint',
+                        'sandboxed_code'))
 );
 CREATE INDEX IF NOT EXISTS idx_status ON agent_submissions(qualification_status);
 """
@@ -31,24 +37,66 @@ def connect(path: str | Path = ":memory:") -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    _migrate(conn)
     return conn
+
+
+def _columns(conn: sqlite3.Connection) -> set[str]:
+    return {row[1] for row in conn.execute("PRAGMA table_info(agent_submissions)").fetchall()}
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    if "access_tier" in _columns(conn):
+        return
+    sql = (Path(__file__).parent / "migrations" / "0001_pr1_tier_columns.sql").read_text(encoding="utf-8")
+    conn.executescript(sql)
+    conn.commit()
 
 
 def _row(row: sqlite3.Row | None) -> dict[str, Any] | None:
     return dict(row) if row else None
 
 
-def register_submission(conn: sqlite3.Connection, owner_id: str, name: str, version: str, source_path: Path, side: str, label: str) -> str:
+def register_submission(
+    conn: sqlite3.Connection,
+    owner_id: str,
+    name: str,
+    version: str,
+    source_path: Path,
+    side: str,
+    label: str,
+    access_tier: str = "sandboxed_code",
+    is_admin: bool = False,
+    tier_config_path: str | None = None,
+    endpoint_url_hash: str | None = None,
+) -> str:
+    if access_tier != "sandboxed_code" and not is_admin:
+        raise PermissionError("Only admin callers may register non-sandbox tiers")
     source = source_path.read_bytes()
     source_hash = hashlib.sha256(source).hexdigest()
     agent_id = hashlib.sha256(f"{owner_id}:{name}:{version}:{source_hash}".encode()).hexdigest()[:16]
     conn.execute(
         """
         INSERT INTO agent_submissions
-        (agent_id, owner_id, name, version, source_hash, source_path, side, submitted_at, qualification_status, label)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (agent_id, owner_id, name, version, source_hash, source_path, side, submitted_at,
+         qualification_status, label, access_tier, tier_config_path, endpoint_url_hash)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (agent_id, owner_id, name, version, source_hash, str(source_path), side, datetime.now(timezone.utc).isoformat(), "pending", label),
+        (
+            agent_id,
+            owner_id,
+            name,
+            version,
+            source_hash,
+            str(source_path),
+            side,
+            datetime.now(timezone.utc).isoformat(),
+            "pending",
+            label,
+            access_tier,
+            tier_config_path,
+            endpoint_url_hash,
+        ),
     )
     conn.commit()
     return agent_id
