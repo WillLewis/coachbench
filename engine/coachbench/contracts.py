@@ -545,3 +545,35 @@ def validate_calibration_report(report: Dict[str, Any]) -> None:
         "invalid_action_rate",
     ):
         _require_fields(report["ranges"].get(metric, {}), {"min", "max"}, f"calibration range {metric}")
+
+
+def validate_tier_config(payload: Dict[str, Any]) -> None:
+    _require_fields(payload, {"agent_name", "side", "access_tier"}, "tier config")
+    if payload["access_tier"] not in {"declarative", "prompt_policy", "remote_endpoint"}:
+        raise ContractValidationError("tier config access_tier must be declarative, prompt_policy, or remote_endpoint")
+    if payload["side"] not in {"offense", "defense"}:
+        raise ContractValidationError("tier config side must be offense or defense")
+    if payload["access_tier"] == "declarative":
+        _require_fields(payload, {"preferred_concepts", "constraints"}, "tier0 config")
+    if payload["access_tier"] == "prompt_policy":
+        _require_fields(payload, {"strategy_prompt", "constraints", "rules"}, "tier1 config")
+        if payload["constraints"].get("require_legal_action") is not True:
+            raise ContractValidationError("tier1 config must require legal actions")
+
+
+def validate_remote_endpoint_response(payload: Dict[str, Any], legal_actions: list[str] | None = None) -> None:
+    _require_fields(payload, {"action"}, "remote endpoint response")
+    if not isinstance(payload["action"], str) or not payload["action"]:
+        raise ContractValidationError("remote endpoint action must be a non-empty string")
+    if legal_actions is not None and payload["action"] not in legal_actions:
+        raise ContractValidationError("remote endpoint action must be in legal_actions")
+    rationale = payload.get("rationale")
+    if rationale is not None and (not isinstance(rationale, str) or len(rationale) > 280):
+        raise ContractValidationError("remote endpoint rationale must be <= 280 chars")
+
+
+def validate_tier_challenge_report(report: Dict[str, Any]) -> None:
+    _require_fields(report, {"challenge_id", "agent_id", "access_tier", "league", "seeds", "summary", "replay_paths"}, "tier challenge report")
+    if report["access_tier"] not in {"declarative", "prompt_policy", "remote_endpoint", "sandboxed_code"}:
+        raise ContractValidationError("tier challenge report has unknown access_tier")
+    _require_fields(report["summary"], {"games_played", "mean_points_per_drive", "touchdown_rate"}, "tier challenge summary")

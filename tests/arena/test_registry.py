@@ -9,7 +9,7 @@ def test_registry_public_functions(tmp_path) -> None:
     conn = connect(":memory:")
     source = tmp_path / "agent.py"
     source.write_text("class Agent: pass\n", encoding="utf-8")
-    agent_id = register_submission(conn, "owner", "agent", "v1", source, "offense", "Agent Label")
+    agent_id = register_submission(conn, "owner", "agent", "v1", source, "offense", "Agent Label", is_admin=True)
     row = get_submission(conn, agent_id)
     assert row and row["qualification_status"] == "pending"
     assert row["access_tier"] == "sandboxed_code"

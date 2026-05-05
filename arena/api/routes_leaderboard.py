@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 from fastapi import APIRouter, Depends, Header
 from pydantic import BaseModel
 
 from arena.api.deps import ADMIN_TOKEN, ROOT, error, require_admin_token
-from arena.storage.leaderboard import add_run, create_season, snapshot
-from arena.storage.registry import list_submissions
+from arena.storage.leaderboard import create_season, public_leaderboard as public_leaderboard_snapshot
 from arena.worker.queue import enqueue
 
 
@@ -41,7 +37,7 @@ def admin_create_season(payload: SeasonRequest, _: None = Depends(require_admin_
         ROOT / "secrets" / "seasons",
         payload.league,
     )
-    season = snapshot(_db(), season_id)
+    season = public_leaderboard_snapshot(_db(), season_id, is_admin=True)
     return {"season_id": season_id, "seed_set_hash": season["seed_set_hash"], "league": payload.league}
 
 
@@ -53,8 +49,7 @@ def admin_run_season(season_id: str, _: None = Depends(require_admin_token)) -> 
 
 @router.get("/v1/seasons/{season_id}/leaderboard")
 def public_leaderboard(season_id: str, x_admin_token: str | None = Header(default=None)) -> dict:
-    include_sandboxed = x_admin_token == ADMIN_TOKEN
-    return snapshot(_db(), season_id, include_sandboxed=include_sandboxed)
+    return public_leaderboard_snapshot(_db(), season_id, is_admin=x_admin_token == ADMIN_TOKEN)
 
 
 @router.get("/v1/seasons/{season_id}/runs/{agent_id}")

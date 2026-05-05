@@ -1,0 +1,25 @@
+{
+  "agent_name": "Efficiency Optimizer",
+  "side": "offense",
+  "access_tier": "declarative",
+  "risk_tolerance": "medium",
+  "red_zone": {
+    "default": "quick_game"
+  },
+  "third_down": {
+    "default": "quick_game"
+  },
+  "preferred_concepts": [
+    "quick_game",
+    "inside_zone",
+    "rpo_glance"
+  ],
+  "avoided_concepts": [
+    "vertical_shot"
+  ],
+  "adaptation_speed": 0.4,
+  "tendency_break_rate": 0.15,
+  "constraints": {
+    "max_vertical_shot_rate": 0.0
+  }
+}

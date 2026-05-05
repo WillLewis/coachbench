@@ -108,3 +108,10 @@ def snapshot(conn: sqlite3.Connection, season_id: str, labels: dict[str, str] | 
         })
     standings.sort(key=lambda row: (-row["mean_points_per_drive"], row["agent_id"]))
     return {"season_id": season_id, "seed_set_hash": season["seed_set_hash"] if season else "", "standings": standings}
+
+
+def public_leaderboard(conn: sqlite3.Connection, season_id: str, is_admin: bool = False) -> dict[str, Any]:
+    init(conn)
+    season = conn.execute("SELECT league FROM leaderboard_seasons WHERE season_id=?", (season_id,)).fetchone()
+    include_sandboxed = bool(is_admin and season and season["league"] in {"sandbox", "research"})
+    return snapshot(conn, season_id, include_sandboxed=include_sandboxed)

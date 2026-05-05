@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from arena.tiers.remote_endpoint import endpoint_url_hash as hash_endpoint_url
+from arena.tiers.remote_endpoint import normalize_endpoint_url
 
 
 SCHEMA = """
@@ -69,9 +73,15 @@ def register_submission(
     is_admin: bool = False,
     tier_config_path: str | None = None,
     endpoint_url_hash: str | None = None,
+    endpoint_url: str | None = None,
+    api_key: str | None = None,
+    secrets_dir: Path | None = None,
 ) -> str:
-    if access_tier != "sandboxed_code" and not is_admin:
-        raise PermissionError("Only admin callers may register non-sandbox tiers")
+    if access_tier == "sandboxed_code" and not is_admin:
+        raise PermissionError("Only admin callers may register sandboxed-code agents")
+    if endpoint_url:
+        normalized_url = normalize_endpoint_url(endpoint_url)
+        endpoint_url_hash = hash_endpoint_url(normalized_url)
     source = source_path.read_bytes()
     source_hash = hashlib.sha256(source).hexdigest()
     agent_id = hashlib.sha256(f"{owner_id}:{name}:{version}:{source_hash}".encode()).hexdigest()[:16]
@@ -98,6 +108,12 @@ def register_submission(
             endpoint_url_hash,
         ),
     )
+    if endpoint_url:
+        secret_root = secrets_dir or Path("arena/storage/secrets/endpoints")
+        secret_root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        secret_path = secret_root / f"{agent_id}.json"
+        secret_path.write_text(json.dumps({"endpoint_url": normalized_url, "api_key": api_key}) + "\n", encoding="utf-8")
+        secret_path.chmod(0o600)
     conn.commit()
     return agent_id
 

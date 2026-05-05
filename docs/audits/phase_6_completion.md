@@ -22,3 +22,16 @@ Invariant locks:
 - Public leaderboard reads exclude `sandboxed_code` rows.
 - Raw seeds are stored only in mode-0600 local secrets files.
 - User-uploaded code flows through static validation, qualification, and sandbox execution.
+
+## Phase 6A PR 2 Core Public Access Pivot
+
+PR 2 adds public Tier 0-2 adapters while keeping Tier 3 private/admin-only. Full docs and hardening remain PR 3 scope.
+
+- Tier vocabulary: `arena/tiers/__init__.py`; `tests/arena/test_tier_constants.py`.
+- Tier storage and endpoint secrets: `arena/storage/registry.py`; `tests/arena/test_tier_registry.py`.
+- Sanitized observation bridge: `arena/tiers/base.py`, `arena/tiers/bridge.py`, `arena/tiers/sanitized_observation.py`; `tests/arena/test_tier_bridge.py`, `tests/arena/test_observation_sanitization.py`.
+- Tier 0 declarative adapter: `arena/tiers/declarative.py`, `data/agent_configs/tier0_efficiency_optimizer.json`; `tests/arena/test_tier0_declarative.py`.
+- Tier 1 deterministic prompt-policy adapter: `arena/tiers/prompt_policy.py`, `data/agent_configs/tier1_constraint_setter.json`; `tests/arena/test_tier1_prompt_policy.py`.
+- Tier 2 remote endpoint adapter: `arena/tiers/remote_endpoint.py`, `data/agent_configs/tier2_endpoint_example.json`; `tests/arena/test_tier2_remote_endpoint.py`.
+- League eligibility and safety badges: `arena/tiers/league.py`, `arena/tiers/badges.py`; `tests/arena/test_league_eligibility.py`, `tests/arena/test_safety_badges.py`.
+- Tier-aware API dispatch: `arena/api/routes_agents.py`, `arena/api/routes_challenges.py`, `arena/api/routes_leaderboard.py`; `tests/arena/test_tier_dispatch.py`.

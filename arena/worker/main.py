@@ -53,6 +53,8 @@ def _process_qualification(conn, payload: dict) -> None:
 
 
 def _run_agent_drive(row: dict, seed: int) -> dict:
+    if row.get("access_tier") in {"declarative", "prompt_policy", "remote_endpoint"}:
+        return _run_tiered_drive(row, seed)
     from scripts._evaluation import load_agent, run_validated_drive
 
     side = row["side"]
@@ -67,6 +69,31 @@ def _run_agent_drive(row: dict, seed: int) -> dict:
     )
     if failures:
         raise ValueError("agent failed validation during arena run")
+    return replay
+
+
+def _run_tiered_drive(row: dict, seed: int) -> dict:
+    from agents.static_defense import StaticDefense
+    from agents.static_offense import StaticOffense
+    from arena.api.deps import ROOT
+    from arena.tiers.factory import tiered_agent_from_submission
+    from coachbench.contracts import validate_replay_contract
+    from coachbench.engine import CoachBenchEngine
+
+    agent = tiered_agent_from_submission(row, ROOT / "secrets" / "endpoints")
+    if row["side"] == "offense":
+        replay = CoachBenchEngine(seed=seed).run_drive(agent, StaticDefense())
+    else:
+        replay = CoachBenchEngine(seed=seed).run_drive(StaticOffense(), agent)
+    replay.setdefault("agent_garage_config", {})
+    replay["agent_garage_config"]["tier_metadata"] = {
+        "agent_id": row["agent_id"],
+        "access_tier": row["access_tier"],
+        "endpoint_url_hash": row.get("endpoint_url_hash") if row["access_tier"] == "remote_endpoint" else None,
+        "fallback_count": getattr(agent, "fallback_count", 0),
+        "fallback_reasons": list(getattr(agent, "fallback_reasons", [])),
+    }
+    validate_replay_contract(replay)
     return replay
 
 
@@ -89,6 +116,8 @@ def _process_challenge(conn, payload: dict) -> None:
     report = {
         "challenge_id": payload["challenge_id"],
         "agent_id": payload["agent_id"],
+        "access_tier": row["access_tier"],
+        "league": payload.get("league", "sandbox"),
         "opponent_kind": payload.get("opponent_kind", "static"),
         "seeds": [hashlib.sha256(str(seed).encode()).hexdigest()[:12] for seed in payload["seeds"]],
         "summary": {

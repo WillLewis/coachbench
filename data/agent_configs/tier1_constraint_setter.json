@@ -1,0 +1,31 @@
+{
+  "agent_name": "Constraint Setter",
+  "side": "offense",
+  "access_tier": "prompt_policy",
+  "strategy_prompt": "Use quick game early, then take a measured shot only when the rule set allows it.",
+  "constraints": {
+    "require_legal_action": true,
+    "max_vertical_shot_rate": 0.25,
+    "max_turnover_risk": "medium",
+    "prefer_concepts": [
+      "quick_game",
+      "rpo_glance",
+      "bunch_mesh"
+    ],
+    "avoid_concepts": []
+  },
+  "rules": [
+    {
+      "if": {
+        "down": 3
+      },
+      "then": "quick_game"
+    },
+    {
+      "if": {
+        "belief.match_coverage_stress": 0.5
+      },
+      "then": "bunch_mesh"
+    }
+  ]
+}

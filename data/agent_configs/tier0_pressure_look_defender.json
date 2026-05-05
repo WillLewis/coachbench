@@ -1,0 +1,23 @@
+{
+  "agent_name": "Pressure Look Defender",
+  "side": "defense",
+  "access_tier": "declarative",
+  "risk_tolerance": "medium",
+  "red_zone": {
+    "default": "redzone_bracket"
+  },
+  "third_down": {
+    "default": "simulated_pressure"
+  },
+  "preferred_concepts": [
+    "simulated_pressure",
+    "cover3_match",
+    "redzone_bracket"
+  ],
+  "avoided_concepts": [
+    "zero_pressure"
+  ],
+  "adaptation_speed": 0.5,
+  "tendency_break_rate": 0.2,
+  "constraints": {}
+}

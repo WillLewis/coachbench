@@ -1,0 +1,8 @@
+{
+  "agent_name": "Endpoint Example",
+  "side": "offense",
+  "access_tier": "remote_endpoint",
+  "timeout_ms": 800,
+  "api_key_secret_id": null,
+  "rate_limit_per_minute": 60
+}

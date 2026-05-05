@@ -74,3 +74,17 @@ def register_admin_routes(app) -> None:
     def agents(x_admin_token: str | None = Header(default=None)):
         require_admin_token(x_admin_token)
         return {"agents": list_submissions(db())}
+
+    @app.post("/v1/admin/agents/{agent_id}/promote_to_league")
+    def promote_to_league(agent_id: str, body: dict, x_admin_token: str | None = Header(default=None)):
+        require_admin_token(x_admin_token)
+        row = get_submission(db(), agent_id)
+        if not row:
+            error("not_found", "agent not found", 404)
+        from arena.tiers.league import is_eligible
+
+        league = body.get("league")
+        if not is_eligible(league, row["access_tier"]):
+            error("ineligible_league", "agent tier is not eligible for this league", 422)
+        _audit("promote_to_league", x_admin_token or "", agent_id)
+        return {"agent_id": agent_id, "league": league, "eligible": True}

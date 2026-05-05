@@ -20,14 +20,14 @@ def test_fresh_registry_has_tier_columns_and_check(tmp_path) -> None:
         register_submission(conn, "o", "bad", "v1", source, "offense", "Bad", access_tier="bad", is_admin=True)
 
 
-def test_non_admin_may_only_register_sandboxed_code(tmp_path) -> None:
+def test_non_admin_may_register_public_tiers_but_not_sandboxed_code(tmp_path) -> None:
     conn = connect(":memory:")
     source = tmp_path / "a.py"
     source.write_text("x = 1\n", encoding="utf-8")
+    agent_id = register_submission(conn, "o", "agent", "v1", source, "offense", "Agent", access_tier="declarative")
+    assert get_submission(conn, agent_id)["access_tier"] == "declarative"
     with pytest.raises(PermissionError):
-        register_submission(conn, "o", "agent", "v1", source, "offense", "Agent", access_tier="declarative")
-    agent_id = register_submission(conn, "o", "agent", "v1", source, "offense", "Agent", access_tier="sandboxed_code")
-    assert get_submission(conn, agent_id)["access_tier"] == "sandboxed_code"
+        register_submission(conn, "o", "agent2", "v1", source, "offense", "Agent", access_tier="sandboxed_code")
 
 
 def test_admin_forward_compat_tier_insert_succeeds(tmp_path) -> None:

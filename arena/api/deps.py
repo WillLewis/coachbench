@@ -35,5 +35,12 @@ def moderate(text: str) -> None:
 
 
 def public_submission(row: dict) -> dict:
-    hidden = {"source_path", "qualification_report_path", "banned_reason", "qualification_status"}
-    return {key: value for key, value in row.items() if key not in hidden}
+    hidden = {"source_path", "qualification_report_path", "banned_reason", "endpoint_url_hash", "tier_config_path"}
+    result = {key: value for key, value in row.items() if key not in hidden}
+    try:
+        from arena.tiers.badges import derive_badges
+
+        result["safety_badges"] = derive_badges(row)
+    except Exception:
+        result["safety_badges"] = []
+    return result
