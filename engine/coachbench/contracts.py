@@ -305,9 +305,17 @@ def validate_match_matrix_report(report: Dict[str, Any]) -> None:
 
 def validate_daily_slate_report(report: Dict[str, Any]) -> None:
     _require_fields(report, {"slate_id", "results", "summary"}, "daily slate report")
-    _require_fields(report["summary"], {"total_points", "average_points"}, "daily slate summary")
+    _require_fields(
+        report["summary"],
+        {"total_points", "average_points", "touchdown_rate", "field_goal_rate", "stopped_rate", "mean_plays_per_drive"},
+        "daily slate summary",
+    )
     for result in report["results"]:
-        _require_fields(result, {"seed_hash", "matchup", "points", "result", "plays", "film_room"}, "daily slate result")
+        _require_fields(
+            result,
+            {"seed", "seed_hash", "matchup", "offense_label", "defense_label", "points", "result", "plays", "replay_path", "film_room"},
+            "daily slate result",
+        )
 
 
 def validate_best_of_n_report(report: Dict[str, Any]) -> None:

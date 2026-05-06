@@ -220,21 +220,31 @@ def test_scoring_reports_satisfy_contracts() -> None:
             offense_agent(matchup["offense"]),
             defense_agent(matchup["defense"]),
         )
+        seed = int(entry["seed"])
         results.append({
+            "seed": seed,
             "seed_hash": replay["metadata"]["seed_hash"],
             "matchup": matchup,
+            "offense_label": offense_agent(matchup["offense"]).name,
+            "defense_label": defense_agent(matchup["defense"]).name,
             "points": replay["score"]["points"],
             "result": replay["score"]["result"],
             "plays": len(replay["plays"]),
+            "replay_path": f"data/daily_slate/replays/{slate['slate_id']}_{seed}.json",
             "film_room": replay["film_room"],
         })
 
+    total_points = sum(item["points"] for item in results)
     validate_daily_slate_report({
         "slate_id": slate["slate_id"],
         "results": results,
         "summary": {
-            "total_points": sum(item["points"] for item in results),
-            "average_points": round(sum(item["points"] for item in results) / len(results), 2),
+            "total_points": total_points,
+            "average_points": round(total_points / len(results), 2),
+            "touchdown_rate": round(sum(1 for item in results if item["result"] == "touchdown") / len(results), 4),
+            "field_goal_rate": round(sum(1 for item in results if item["result"] == "field_goal") / len(results), 4),
+            "stopped_rate": round(sum(1 for item in results if item["result"] == "stopped") / len(results), 4),
+            "mean_plays_per_drive": round(sum(item["plays"] for item in results) / len(results), 2),
             "suggested_review": "Compare each agent across the fixed Daily Slate entries before treating one result as robust.",
         },
     })

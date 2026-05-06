@@ -1,0 +1,28 @@
+{
+  "qualification_id": "59f095f5fd794499",
+  "agent_path": "agents.example_agent.ExampleCustomOffense",
+  "side": "offense",
+  "submitted_at": "2026-05-06T00:21:13.139233+00:00",
+  "static_validation": {
+    "errors": [],
+    "warnings": []
+  },
+  "gauntlet": {
+    "seeds": [
+      42
+    ],
+    "runs": [
+      {
+        "seed_hash": "73475cb40a56",
+        "ok": true,
+        "reason": null,
+        "points": 0,
+        "result": "stopped",
+        "fallback_used": false
+      }
+    ],
+    "failures": []
+  },
+  "passed": true,
+  "reasons": []
+}

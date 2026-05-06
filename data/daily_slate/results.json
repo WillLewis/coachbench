@@ -2,14 +2,18 @@
   "slate_id": "daily-slate-local-v0",
   "results": [
     {
+      "seed": 42,
       "seed_hash": "73475cb40a56",
       "matchup": {
         "offense": "adaptive",
         "defense": "static"
       },
+      "offense_label": "Team B Adaptive Offense",
+      "defense_label": "Team A Static Defense",
       "points": 0,
       "result": "stopped",
       "plays": 4,
+      "replay_path": "data/daily_slate/replays/daily-slate-local-v0_42.json",
       "film_room": {
         "headline": "Turnover on downs",
         "turning_point": {
@@ -27,14 +31,18 @@
       }
     },
     {
+      "seed": 99,
       "seed_hash": "8c1f1046219d",
       "matchup": {
         "offense": "adaptive",
         "defense": "adaptive"
       },
+      "offense_label": "Team B Adaptive Offense",
+      "defense_label": "Team B Adaptive Defense",
       "points": 0,
       "result": "stopped",
       "plays": 7,
+      "replay_path": "data/daily_slate/replays/daily-slate-local-v0_99.json",
       "film_room": {
         "headline": "Turnover on downs",
         "turning_point": {
@@ -62,14 +70,18 @@
       }
     },
     {
+      "seed": 202,
       "seed_hash": "c17edaae86e4",
       "matchup": {
         "offense": "static",
         "defense": "adaptive"
       },
+      "offense_label": "Team A Static Offense",
+      "defense_label": "Team B Adaptive Defense",
       "points": 7,
       "result": "touchdown",
       "plays": 6,
+      "replay_path": "data/daily_slate/replays/daily-slate-local-v0_202.json",
       "film_room": {
         "headline": "Touchdown drive",
         "turning_point": {
@@ -94,6 +106,10 @@
   "summary": {
     "total_points": 7,
     "average_points": 2.33,
+    "touchdown_rate": 0.3333,
+    "field_goal_rate": 0.0,
+    "stopped_rate": 0.6667,
+    "mean_plays_per_drive": 5.67,
     "suggested_review": "Compare each agent across the fixed Daily Slate entries before treating one result as robust."
   }
 }
