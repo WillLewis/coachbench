@@ -2162,13 +2162,49 @@
       "metric": "largest_abs_expected_value_delta"
     },
     "notes": [
-      "Graph card \"Bunch mesh stresses match coverage communication\" fired (coverage_switch_stress); see redzone.bunch_mesh_vs_match.v1. Limitation: Symbolic spacing only; no full route geometry.",
-      "Graph card \"Bunch mesh stresses match coverage communication\" fired (nickel_passoff_test); see redzone.bunch_mesh_vs_match.v1. Limitation: Symbolic spacing only; no full route geometry."
+      "Bunch mesh stresses match coverage communication (Coverage Switch Stress) - see Bunch mesh stresses match coverage communication. Limitation: Symbolic spacing only; no full route geometry.",
+      "Bunch mesh stresses match coverage communication (Nickel Passoff Test) - see Bunch mesh stresses match coverage communication. Limitation: Symbolic spacing only; no full route geometry."
     ],
     "suggested_tweaks": [
-      "Review graph-listed counters for redzone.bunch_mesh_vs_match.v1: redzone_bracket, trap_coverage.",
-      "Review graph-listed counters for redzone.bunch_mesh_vs_match.v1: redzone_bracket, trap_coverage."
-    ]
+      "Try Red-Zone Bracket, Trap Coverage against Bunch mesh stresses match coverage communication."
+    ],
+    "adaptation_chain": [
+      {
+        "play_index": 2,
+        "trigger_event": "Coverage Switch Stress",
+        "graph_card_id": "redzone.bunch_mesh_vs_match.v1",
+        "card_label": "Bunch mesh stresses match coverage communication",
+        "offense_call": "Bunch Mesh",
+        "defense_call": "Cover 3 Match",
+        "belief_shift": {
+          "match_coverage_stress": 0.4
+        },
+        "resource_remaining": {
+          "protection": 12,
+          "spacing": 14,
+          "deception": 13,
+          "volatility": 12
+        }
+      },
+      {
+        "play_index": 2,
+        "trigger_event": "Nickel Passoff Test",
+        "graph_card_id": "redzone.bunch_mesh_vs_match.v1",
+        "card_label": "Bunch mesh stresses match coverage communication",
+        "offense_call": "Bunch Mesh",
+        "defense_call": "Cover 3 Match",
+        "belief_shift": {
+          "match_coverage_stress": 0.4
+        },
+        "resource_remaining": {
+          "protection": 12,
+          "spacing": 14,
+          "deception": 13,
+          "volatility": 12
+        }
+      }
+    ],
+    "next_adjustment": "Next try: Red-Zone Bracket to counter Bunch mesh stresses match coverage communication."
   },
   "debug": {
     "fields": []

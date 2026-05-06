@@ -352,7 +352,8 @@ def test_film_room_notes_use_graph_cards_not_agent_intent_claims() -> None:
     tweaks = replay["film_room"]["suggested_tweaks"]
 
     assert notes
-    assert all(note.startswith("Graph card \"") or note.startswith("No high-leverage") for note in notes)
+    assert all(" - see " in note or note.startswith("No high-leverage") for note in notes)
+    assert all("redzone." not in note for note in notes)
     assert all("treated a pressure look" not in note for note in notes)
     assert all("space behind the rush" not in note for note in notes)
     assert all("Daily Slate" not in tweak for tweak in tweaks)

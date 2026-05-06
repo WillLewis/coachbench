@@ -13,7 +13,7 @@ async function fetchJson(url) {
 }
 
 async function loadReplay() {
-  replay = await fetchJson('static_proof_replay.json').catch(() => fetchJson('demo_replay.json'));
+  replay = await fetchJson('demo_replay.json').catch(() => fetchJson('static_proof_replay.json'));
   const [graph, concepts, loadedProfiles] = await Promise.all([
     fetchJson('../graph/redzone_v0/interactions.json').catch(() => ({ interactions: [] })),
     fetchJson('../graph/redzone_v0/concepts.json').catch(() => ({ offense: [], defense: [] })),
@@ -30,6 +30,7 @@ async function loadReplay() {
   renderTimeline();
   renderDriveSummary();
   renderFilmRoom();
+  renderAdaptationChain();
   setupOverlay();
   setupAutoplay();
   selectPlay(0);
@@ -197,6 +198,27 @@ function renderEvents(play) {
     : '<p class="muted">No public graph event on this play.</p>';
 }
 
+function renderAdaptationChain() {
+  const chain = replay.film_room?.adaptation_chain || [];
+  if (!chain.length) {
+    $('adaptationChain').innerHTML = '<p class="muted">No high-leverage adaptation on this drive.</p>';
+    return;
+  }
+  $('adaptationChain').innerHTML = chain.map(entry => {
+    const shifts = Object.entries(entry.belief_shift || {});
+    const largest = shifts.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0];
+    const shiftLine = largest ? `<p class="adaptation-meta">${label(largest[0])} ${largest[1] >= 0 ? '+' : ''}${Math.round(largest[1] * 100)}pp</p>` : '';
+    const resources = Object.entries(entry.resource_remaining || {}).map(([key, raw]) => `${label(key)} ${raw}`).join(' / ');
+    return `<div class="adaptation-entry">
+      <span class="adaptation-pill">Play ${entry.play_index}</span>
+      <strong class="adaptation-headline">${entry.card_label}</strong>
+      <p class="adaptation-meta">${entry.offense_call} vs ${entry.defense_call} - fired ${entry.trigger_event}</p>
+      ${shiftLine}
+      ${resources ? `<p class="adaptation-meta">Remaining: ${resources}</p>` : ''}
+    </div>`;
+  }).join('');
+}
+
 function renderValidation(result) {
   $('validation').innerHTML = result ? `<div class="kv"><span>Validation</span><span>${result.ok ? 'Accepted' : 'Rejected'}</span></div>` : '';
 }
@@ -242,7 +264,8 @@ function sparkline(values) {
 function renderFilmRoom() {
   const room = replay.film_room || {};
   const list = items => ((items || []).slice(0, 5).map(item => `<li>${item}</li>`).join('') || '<li class="muted">-</li>') + ((items || []).length > 5 ? `<li class="muted">and ${(items || []).length - 5} more</li>` : '');
-  $('filmRoom').innerHTML = `<div class="kv"><span>Headline</span><strong>${room.headline || 'Film Room'}</strong></div><div class="kv"><span>Turning Point</span><span>Play ${room.turning_point?.play_index || '-'}</span></div><h3>Notes</h3><ul>${list(room.notes)}</ul><h3>Suggested Tweaks</h3><ul>${list(room.suggested_tweaks)}</ul>`;
+  const next = room.next_adjustment ? `<p class="next-adjustment">${room.next_adjustment}</p>` : '';
+  $('filmRoom').innerHTML = `<div class="kv"><span>Headline</span><strong>${room.headline || 'Film Room'}</strong></div><div class="kv"><span>Turning Point</span><span>Play ${room.turning_point?.play_index || '-'}</span></div>${next}<h3>Notes</h3><ul>${list(room.notes)}</ul><h3>Suggested Tweaks</h3><ul>${list(room.suggested_tweaks)}</ul>`;
 }
 
 function renderGarage() {
@@ -422,7 +445,7 @@ function restartAutoplayProgress() {
 
 function mountPanels(ids) { ids.forEach(id => mountRows($(id))); }
 function mountRows(root) {
-  root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel, #offenseCall, #defenseCall, #playOutcome, #resources, #events, #graphCards, #beliefs').forEach(panel => {
+  root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel, #offenseCall, #defenseCall, #playOutcome, #resources, #events, #graphCards, #beliefs, #adaptationChain').forEach(panel => {
     panel.classList.remove('mount');
     [...panel.children].slice(0, 6).forEach((child, i) => child.style.animationDelay = `${Math.min(i, 6) * 40}ms`);
     void panel.offsetWidth;

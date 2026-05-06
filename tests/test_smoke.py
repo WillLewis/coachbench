@@ -60,8 +60,11 @@ def test_plan_final_success_seeded_demo_shows_adaptation_loop() -> None:
     film_room = replay["film_room"]
     assert film_room["notes"]
     assert film_room["suggested_tweaks"]
-    assert all(note.startswith("Graph card \"") for note in film_room["notes"])
-    assert any(tweak.startswith("Review graph-listed counters") for tweak in film_room["suggested_tweaks"])
+    assert all(" - see " in note for note in film_room["notes"])
+    assert all("redzone." not in note for note in film_room["notes"])
+    assert any(tweak.startswith("Try ") for tweak in film_room["suggested_tweaks"])
+    assert film_room["adaptation_chain"]
+    assert film_room["next_adjustment"].startswith("Next try: ")
 
 
 def test_legal_action_enumerator_rejects_invalid_action() -> None:

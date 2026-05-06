@@ -283,6 +283,36 @@ button.play.active { color: var(--accent); background: var(--accent-soft); }
   background: var(--bg-elev-1);
   margin-top: 10px;
 }
+.adaptation-panel { align-content: start; }
+.adaptation-entry {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-elev-1);
+}
+.adaptation-pill {
+  justify-self: start;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-pill);
+  color: var(--accent);
+  font-size: 12px;
+}
+.adaptation-headline { font-size: 15px; line-height: 1.25; }
+.adaptation-meta { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.4; }
+.next-adjustment {
+  display: inline-flex;
+  margin: 10px 0 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  color: var(--text);
+  line-height: 1.35;
+}
 .slate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: stretch; }
 .slate-card {
   display: grid;

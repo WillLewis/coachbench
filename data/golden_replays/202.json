@@ -2122,19 +2122,110 @@
       "metric": "largest_abs_expected_value_delta"
     },
     "notes": [
-      "Graph card \"Bear front constrains outside zone\" fired (wide_zone_constrained); see redzone.outside_zone_vs_bear.v1. Limitation: No full blocking surface model.",
-      "Graph card \"Bear front constrains outside zone\" fired (front_strength_declared); see redzone.outside_zone_vs_bear.v1. Limitation: No full blocking surface model.",
-      "Graph card \"Play-action gains value after credible run tendency\" fired (run_tendency_exploited); see redzone.play_action_after_run_tendency.v1. Limitation: Run tendency is counted by concept family in P0.",
-      "Graph card \"Play-action gains value after credible run tendency\" fired (second_level_conflict); see redzone.play_action_after_run_tendency.v1. Limitation: Run tendency is counted by concept family in P0.",
-      "Graph card \"Quick game can take conceded underneath space\" fired (underneath_space_taken); see redzone.quick_game_vs_two_high.v1. Limitation: Yards after catch modeled coarsely."
+      "Bear front constrains outside zone (Wide Zone Constrained) - see Bear front constrains outside zone. Limitation: No full blocking surface model.",
+      "Bear front constrains outside zone (Front Strength Declared) - see Bear front constrains outside zone. Limitation: No full blocking surface model.",
+      "Play-action gains value after credible run tendency (Run Tendency Exploited) - see Play-action gains value after credible run tendency. Limitation: Run tendency is counted by concept family in P0.",
+      "Play-action gains value after credible run tendency (Second Level Conflict) - see Play-action gains value after credible run tendency. Limitation: Run tendency is counted by concept family in P0.",
+      "Quick game can take conceded underneath space (Underneath Space Taken) - see Quick game can take conceded underneath space. Limitation: Yards after catch modeled coarsely."
     ],
     "suggested_tweaks": [
-      "Review graph-listed counters for redzone.outside_zone_vs_bear.v1: quick_game, play_action_flood, bootleg.",
-      "Review graph-listed counters for redzone.outside_zone_vs_bear.v1: quick_game, play_action_flood, bootleg.",
-      "Review graph-listed counters for redzone.play_action_after_run_tendency.v1: edge_contain, two_high_shell, redzone_bracket.",
-      "Review graph-listed counters for redzone.play_action_after_run_tendency.v1: edge_contain, two_high_shell, redzone_bracket.",
-      "Review graph-listed counters for redzone.quick_game_vs_two_high.v1: trap_coverage, cover1_man."
-    ]
+      "Try Bootleg, Play-Action Flood, Quick Game against Bear front constrains outside zone.",
+      "Try Red-Zone Bracket, Two-High Shell against Play-action gains value after credible run tendency.",
+      "Try Cover 1 Man, Trap Coverage against Quick game can take conceded underneath space."
+    ],
+    "adaptation_chain": [
+      {
+        "play_index": 2,
+        "trigger_event": "Run Tendency Exploited",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 11,
+          "spacing": 15,
+          "deception": 10,
+          "volatility": 11
+        }
+      },
+      {
+        "play_index": 2,
+        "trigger_event": "Second Level Conflict",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 11,
+          "spacing": 15,
+          "deception": 10,
+          "volatility": 11
+        }
+      },
+      {
+        "play_index": 3,
+        "trigger_event": "Run Tendency Exploited",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 9,
+          "spacing": 13,
+          "deception": 7,
+          "volatility": 9
+        }
+      },
+      {
+        "play_index": 3,
+        "trigger_event": "Second Level Conflict",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 9,
+          "spacing": 13,
+          "deception": 7,
+          "volatility": 9
+        }
+      },
+      {
+        "play_index": 4,
+        "trigger_event": "Underneath Space Taken",
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+        "card_label": "Quick game can take conceded underneath space",
+        "offense_call": "Quick Game",
+        "defense_call": "Red-Zone Bracket",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 8,
+          "spacing": 11,
+          "deception": 7,
+          "volatility": 8
+        }
+      },
+      {
+        "play_index": 5,
+        "trigger_event": "Underneath Space Taken",
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+        "card_label": "Quick game can take conceded underneath space",
+        "offense_call": "Quick Game",
+        "defense_call": "Red-Zone Bracket",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 7,
+          "spacing": 9,
+          "deception": 7,
+          "volatility": 7
+        }
+      }
+    ],
+    "next_adjustment": "Next try: Quick Game to counter Bear front constrains outside zone."
   },
   "debug": {
     "fields": []

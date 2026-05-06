@@ -120,6 +120,8 @@ FILM_ROOM_FIELDS = {
     "turning_point",
     "notes",
     "suggested_tweaks",
+    "adaptation_chain",
+    "next_adjustment",
 }
 
 TURNING_POINT_FIELDS = {
@@ -161,6 +163,22 @@ def _all_events_from_play(play: Dict[str, Any]) -> List[Dict[str, Any]]:
     return list(events_by_tag.values())
 
 
+def _legacy_film_room_note_for_event(event: Dict[str, Any], card: Dict[str, Any]) -> str:
+    limitations = card.get("limitations", [])
+    limitation_text = f" Limitation: {limitations[0]}" if limitations else ""
+    return (
+        f"Graph card \"{card['name']}\" fired ({event['tag']}); "
+        f"see {card['id']}.{limitation_text}"
+    )
+
+
+def _legacy_film_room_tweak_for_card(card: Dict[str, Any]) -> str:
+    counters = card.get("counters", [])
+    if counters:
+        return f"Review graph-listed counters for {card['id']}: {', '.join(counters)}."
+    return f"Review sequencing around graph card {card['id']}."
+
+
 def validate_action_schema(action: Dict[str, Any], side: str) -> None:
     if side == "offense":
         _require_fields(action, OFFENSE_ACTION_FIELDS, "offense_action")
@@ -188,6 +206,8 @@ def validate_observation_safety(observation: Dict[str, Any], side: str) -> None:
 
 def validate_film_room_is_event_derived(replay: Dict[str, Any]) -> None:
     cards_by_id = {card["id"]: card for card in StrategyGraph().interactions}
+    graph_card_ids = set(cards_by_id)
+    static_proof_mode = replay.get("metadata", {}).get("mode") == "static_proof"
     events = [
         event
         for play in replay.get("plays", [])
@@ -200,10 +220,23 @@ def validate_film_room_is_event_derived(replay: Dict[str, Any]) -> None:
         if event.get("graph_card_id") in cards_by_id
     }
     allowed_tweaks = {
-        film_room_tweak_for_card(cards_by_id[event["graph_card_id"]])
+        tweak
         for event in events
         if event.get("graph_card_id") in cards_by_id
+        for tweak in [film_room_tweak_for_card(cards_by_id[event["graph_card_id"]])]
+        if tweak is not None
     }
+    if static_proof_mode:
+        allowed_notes.update({
+            _legacy_film_room_note_for_event(event, cards_by_id[event["graph_card_id"]])
+            for event in events
+            if event.get("graph_card_id") in cards_by_id
+        })
+        allowed_tweaks.update({
+            _legacy_film_room_tweak_for_card(cards_by_id[event["graph_card_id"]])
+            for event in events
+            if event.get("graph_card_id") in cards_by_id
+        })
     if not event_tags:
         allowed_notes.add(NO_EVENT_FILM_ROOM_NOTE)
         allowed_tweaks.add(NO_EVENT_FILM_ROOM_TWEAK)
@@ -217,14 +250,24 @@ def validate_film_room_is_event_derived(replay: Dict[str, Any]) -> None:
     for tweak in replay.get("film_room", {}).get("suggested_tweaks", []):
         if tweak not in allowed_tweaks:
             raise ContractValidationError(f"Film Room tweak is not graph-derived: {tweak}")
+    for entry in replay.get("film_room", {}).get("adaptation_chain", []):
+        if entry.get("graph_card_id") not in graph_card_ids:
+            raise ContractValidationError(f"Film Room adaptation entry is not graph-derived: {entry}")
 
 
-def validate_film_room_schema(film_room: Dict[str, Any]) -> None:
-    _require_fields(film_room, FILM_ROOM_FIELDS, "film_room")
+def validate_film_room_schema(film_room: Dict[str, Any], *, require_enriched: bool = True) -> None:
+    fields = FILM_ROOM_FIELDS if require_enriched else FILM_ROOM_FIELDS - {"adaptation_chain", "next_adjustment"}
+    _require_fields(film_room, fields, "film_room")
     if not isinstance(film_room["notes"], list):
         raise ContractValidationError("film_room notes must be a list")
     if not isinstance(film_room["suggested_tweaks"], list):
         raise ContractValidationError("film_room suggested_tweaks must be a list")
+    if require_enriched and not isinstance(film_room["adaptation_chain"], list):
+        raise ContractValidationError("film_room adaptation_chain must be a list")
+    if require_enriched and not isinstance(film_room["next_adjustment"], str):
+        raise ContractValidationError("film_room next_adjustment must be a string")
+    if require_enriched and not film_room["next_adjustment"]:
+        raise ContractValidationError("film_room next_adjustment must be non-empty")
 
     turning_point = film_room["turning_point"]
     if turning_point is not None:
@@ -240,7 +283,7 @@ def validate_replay_contract(replay: Dict[str, Any]) -> None:
         raise ContractValidationError("metadata must not expose raw seed")
     if replay["debug"] != {"fields": []}:
         raise ContractValidationError("P0 debug partition must be present and empty")
-    validate_film_room_schema(replay["film_room"])
+    validate_film_room_schema(replay["film_room"], require_enriched=replay["metadata"].get("mode") != "static_proof")
 
     _require_fields(replay["score"], {"points", "result", "invalid_action_count"}, "score")
     if replay["score"]["result"] not in {"touchdown", "field_goal", "stopped"}:
