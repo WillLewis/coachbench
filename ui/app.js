@@ -17,7 +17,8 @@ const garageControlSections = {
 };
 const numericControls = new Set(['adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'disguise_sensitivity', 'counter_repeat_tolerance']);
 const garageDraftPrefix = 'coachbench.garageDraft.';
-const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motionQuery = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+const reduced = () => typeof document !== 'undefined' && document.documentElement.classList.contains('reduced-motion');
 const label = key => runtime.conceptLabels[key] || String(key || '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
 const value = item => item === null || item === undefined || item === '' ? '-' : item;
 const pct = raw => Math.round(Number(raw || 0) * 100);
@@ -104,6 +105,23 @@ function renderAll() {
   selectPlay(CBState.get().selectedIndex, { syncHash: false, scroll: false, source: 'route' });
   mountRows(document);
   if (!reduced()) runtime.auto.start();
+}
+
+function syncMotionPreference() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.toggle('reduced-motion', motionQuery.matches);
+  if (motionQuery.matches) {
+    runtime.auto?.stop();
+    CBState.set({ autoplay: false });
+  }
+}
+
+function motionMs(token) {
+  if (typeof document === 'undefined' || typeof getComputedStyle !== 'function') return 0;
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+  if (raw.endsWith('ms')) return Number(raw.slice(0, -2)) || 0;
+  if (raw.endsWith('s')) return (Number(raw.slice(0, -1)) || 0) * 1000;
+  return 0;
 }
 
 function setActiveRoute(route) {
@@ -370,7 +388,7 @@ function scrollFeedCard(index) {
   if (!card) return;
   runtime.autoScrolling = true;
   card.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'nearest' });
-  setTimeout(() => { runtime.autoScrolling = false; }, reduced() ? 0 : 260);
+  setTimeout(() => { runtime.autoScrolling = false; }, motionMs('--motion-belief-pulse'));
 }
 
 function renderBall(yardline, terminalReason) {
@@ -1064,7 +1082,7 @@ function renderGraphExplorer() {
 function morphText(el, next) {
   if (el.textContent === next) return;
   el.style.opacity = '0';
-  setTimeout(() => { el.textContent = next; el.style.opacity = '1'; }, reduced() ? 0 : 150);
+  setTimeout(() => { el.textContent = next; el.style.opacity = '1'; }, motionMs('--motion-outcome'));
 }
 
 function flashScore(kind) {
@@ -1079,7 +1097,7 @@ function createAutoplay({ count, intervalMs, onTick, onStateChange }) {
   let running = false;
   const state = () => onStateChange?.(running);
   const start = () => {
-    if (running || count < 2) return;
+    if (reduced() || running || count < 2 || intervalMs <= 0) return;
     running = true;
     CBState.set({ autoplay: true });
     state();
@@ -1096,10 +1114,7 @@ function createAutoplay({ count, intervalMs, onTick, onStateChange }) {
 }
 
 function autoplayIntervalMs() {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue('--autoplay-interval').trim();
-  if (raw.endsWith('ms')) return Number(raw.replace('ms', '')) || 3500;
-  if (raw.endsWith('s')) return Number(raw.replace('s', '')) * 1000 || 3500;
-  return 3500;
+  return motionMs('--autoplay-interval');
 }
 
 function setupFeedAutoplay() {
@@ -1141,12 +1156,18 @@ function restartAutoplayProgress() {
 function mountRows(root) {
   root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel').forEach(panel => {
     panel.classList.remove('mount');
-    [...panel.children].slice(0, 6).forEach((child, i) => child.style.animationDelay = `${Math.min(i, 6) * 40}ms`);
+    [...panel.children].slice(0, 6).forEach(child => child.style.animationDelay = 'var(--motion-card-swap)');
     void panel.offsetWidth;
     panel.classList.add('mount');
   }) : null;
 }
 
+syncMotionPreference();
+if (typeof motionQuery.addEventListener === 'function') {
+  motionQuery.addEventListener('change', syncMotionPreference);
+} else if (typeof motionQuery.addListener === 'function') {
+  motionQuery.addListener(syncMotionPreference);
+}
 CBRouter.subscribe(route => handleRoute(route).catch(error => {
   document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
 }));
