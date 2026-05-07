@@ -5,6 +5,7 @@
     garageState: {},
     pinnedForCompare: [],
     autoplay: true,
+    activeInspectorTab: 'outcome',
   };
   const subscribers = new Set();
 

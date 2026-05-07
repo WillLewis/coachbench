@@ -61,18 +61,23 @@
               </div>
             </article>
 
-            <section class="inspector-grid">
-              <article class="panel"><h2>Offense Call</h2><div id="offenseCall"></div></article>
-              <article class="panel"><h2>Defense Call</h2><div id="defenseCall"></div></article>
-              <article class="panel"><h2>Play Outcome</h2><div id="playOutcome"></div><div id="validation"></div></article>
-              <article class="panel"><h2>Beliefs</h2><div id="beliefs"></div></article>
-              <article class="panel"><h2>Graph Events + Cards</h2><div id="events"></div><div id="graphCards"></div></article>
-              <article class="panel summary-panel"><h2>Post-Drive Summary</h2><div id="driveSummary"></div></article>
+            <section class="panel inspector-panel" aria-labelledby="inspectorTitle">
+              <div class="panel-title">
+                <h2 id="inspectorTitle">Play Inspector</h2>
+                <span id="inspectorPlayLabel">Play 1</span>
+              </div>
+              <div id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Play inspector tabs">
+                <button id="inspector-tab-outcome" class="inspector-tab active" type="button" role="tab" aria-selected="true" aria-controls="inspectorPanel" data-inspector-tab="outcome">Outcome</button>
+                <button id="inspector-tab-resources" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="resources" tabindex="-1">Resources</button>
+                <button id="inspector-tab-beliefs" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="beliefs" tabindex="-1">Beliefs</button>
+                <button id="inspector-tab-graph" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="graph" tabindex="-1">Graph Evidence</button>
+              </div>
+              <div id="inspectorPanel" class="inspector-content" role="tabpanel" tabindex="0" aria-labelledby="inspector-tab-outcome" data-active-tab="outcome"></div>
             </section>
 
-            <section class="panel row-mount">
-              <h2>Resource Tradeoffs</h2>
-              <div id="resources"></div>
+            <section class="panel summary-panel row-mount">
+              <h2>Post-Drive Summary</h2>
+              <div id="driveSummary"></div>
             </section>
 
             <section class="panel row-mount">

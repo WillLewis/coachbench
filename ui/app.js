@@ -5,6 +5,12 @@ const fallbackReplaySources = {
   'seed-42': 'demo_replay.json',
   'static-proof': 'static_proof_replay.json',
 };
+const inspectorTabs = [
+  { id: 'outcome', label: 'Outcome' },
+  { id: 'resources', label: 'Resources' },
+  { id: 'beliefs', label: 'Beliefs' },
+  { id: 'graph', label: 'Graph Evidence' },
+];
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const label = key => runtime.conceptLabels[key] || String(key || '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
 const value = item => item === null || item === undefined || item === '' ? '-' : item;
@@ -86,6 +92,7 @@ function renderAll() {
   renderPlayFeed();
   renderDriveSummary();
   renderFilmRoom();
+  renderInspectorTabs();
   setupOverlay();
   setupFeedAutoplay();
   selectPlay(CBState.get().selectedIndex, { syncHash: false, scroll: false, source: 'route' });
@@ -341,15 +348,8 @@ function selectPlay(index, options = {}) {
   restartAutoplayProgress();
   renderBall(play.public.next_state.yardline, play.public.terminal_reason);
   $('driveState').textContent = `${play.public.next_state.down} & ${play.public.next_state.distance} at ${play.public.next_state.yardline}`;
-  renderAction('offenseCall', play.public.offense_action);
-  renderAction('defenseCall', play.public.defense_action);
-  renderOutcome(play.public);
-  renderResources(play.public.resource_budget_snapshot, prior && prior.public.resource_budget_snapshot);
-  renderEvents(play);
-  renderGraphCards(play.public.graph_card_ids || []);
-  renderBeliefs(play, prior);
-  renderValidation(play.public.validation_result);
-  mountPanels(['offenseCall', 'defenseCall', 'playOutcome', 'resources', 'events', 'graphCards', 'beliefs']);
+  $('inspectorPlayLabel').textContent = `Play ${play.public.play_index}`;
+  renderInspectorPanel(play, prior);
   if (scroll) scrollFeedCard(index);
   if (syncHash) {
     runtime.skipNextRouteScroll = source === 'click';
@@ -378,19 +378,102 @@ function renderBall(yardline, terminalReason) {
   }
 }
 
-function renderAction(target, action) {
-  $(target).innerHTML = kvRows(action, Object.keys(action));
+function activeInspectorTab() {
+  const current = CBState.get().activeInspectorTab;
+  return inspectorTabs.some(tab => tab.id === current) ? current : 'outcome';
+}
+
+function renderInspectorTabs() {
+  document.querySelectorAll('[data-inspector-tab]').forEach((button, index) => {
+    button.onclick = () => activateInspectorTab(button.dataset.inspectorTab);
+    button.onkeydown = event => handleInspectorKey(event, index);
+  });
+  updateInspectorTabs();
+}
+
+function activateInspectorTab(tabId) {
+  if (!inspectorTabs.some(tab => tab.id === tabId)) return;
+  CBState.set({ activeInspectorTab: tabId });
+  updateInspectorTabs();
+  const replay = currentReplay();
+  if (!replay) return;
+  const index = CBState.get().selectedIndex;
+  renderInspectorPanel(replay.plays[index], index > 0 ? replay.plays[index - 1] : null);
+}
+
+function handleInspectorKey(event, index) {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter', ' '].includes(event.key)) return;
+  event.preventDefault();
+  if (event.key === 'Enter' || event.key === ' ') {
+    activateInspectorTab(event.currentTarget.dataset.inspectorTab);
+    return;
+  }
+  const nextIndex = event.key === 'Home'
+    ? 0
+    : event.key === 'End'
+      ? inspectorTabs.length - 1
+      : (index + (event.key === 'ArrowRight' ? 1 : -1) + inspectorTabs.length) % inspectorTabs.length;
+  document.querySelector(`[data-inspector-tab="${inspectorTabs[nextIndex].id}"]`)?.focus();
+}
+
+function updateInspectorTabs() {
+  const active = activeInspectorTab();
+  document.querySelectorAll('[data-inspector-tab]').forEach(button => {
+    const selected = button.dataset.inspectorTab === active;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-selected', selected ? 'true' : 'false');
+    button.tabIndex = selected ? 0 : -1;
+  });
+  const panel = $('inspectorPanel');
+  if (panel) {
+    panel.dataset.activeTab = active;
+    panel.setAttribute('aria-labelledby', `inspector-tab-${active}`);
+  }
+}
+
+function renderInspectorPanel(play, prior) {
+  const panel = $('inspectorPanel');
+  if (!panel || !play) return;
+  const tab = activeInspectorTab();
+  const pub = play.public;
+  const views = {
+    outcome: () => renderOutcome(play, prior),
+    resources: () => renderResources(pub.resource_budget_snapshot, prior && prior.public.resource_budget_snapshot),
+    beliefs: () => renderBeliefs(play, prior),
+    graph: () => renderGraphCards(pub.graph_card_ids || []),
+  };
+  panel.classList.remove('inspector-fade');
+  panel.innerHTML = (views[tab] || views.outcome)();
+  panel.dataset.activeTab = tab;
+  panel.setAttribute('aria-labelledby', `inspector-tab-${tab}`);
+  if (!reduced()) {
+    void panel.offsetWidth;
+    panel.classList.add('inspector-fade');
+  }
 }
 
 function renderOutcome(play) {
-  $('playOutcome').innerHTML = `
-    <div class="kv"><span>Yards Gained</span><strong>${play.yards_gained}</strong></div>
-    <div class="kv"><span>Expected Value Delta</span><span>${play.expected_value_delta}</span></div>
-    <div class="kv"><span>Success</span><span>${play.success ? 'Yes' : 'No'}</span></div>
-    <div class="kv"><span>Terminal</span><span>${play.terminal ? 'Yes' : 'No'}</span></div>
-    <div class="kv"><span>Terminal Reason</span><span>${value(label(play.terminal_reason))}</span></div>
-    <div class="kv"><span>Next State</span><span>${play.next_state.down} & ${play.next_state.distance} at ${play.next_state.yardline}</span></div>
-  `;
+  const pub = play.public || play;
+  const result = pub.validation_result;
+  const yardText = `${Number(pub.yards_gained || 0) >= 0 ? '+' : ''}${pub.yards_gained || 0} yd`;
+  return `<div class="outcome-stack">
+    <div class="outcome-hero">
+      <div>
+        <p class="eyebrow">${pub.success ? 'Success' : 'No success'}</p>
+        <strong>${yardText}</strong>
+      </div>
+      <span class="validation-badge ${result?.ok ? 'is-ok' : 'is-warn'}">${result ? (result.ok ? 'Accepted' : 'Rejected') : 'No validation data'}</span>
+    </div>
+    <div class="outcome-grid">
+      <div><h3>Offense Call</h3>${kvRows(pub.offense_action, Object.keys(pub.offense_action || {}))}</div>
+      <div><h3>Defense Call</h3>${kvRows(pub.defense_action, Object.keys(pub.defense_action || {}))}</div>
+    </div>
+    <div class="kv"><span>Expected Value Delta</span><span>${pub.expected_value_delta}</span></div>
+    <div class="kv"><span>Terminal Reason</span><span>${value(label(pub.terminal_reason))}</span></div>
+    <div class="kv"><span>Next State</span><span>${pub.next_state.down} & ${pub.next_state.distance} at ${pub.next_state.yardline}</span></div>
+    <h3>Events</h3>
+    ${renderEvents(pub.events || [])}
+  </div>`;
 }
 
 function resourceRows(snapshot, prior, side) {
@@ -409,11 +492,11 @@ function resourceTable(snapshot, prior, side) {
 }
 
 function renderResources(snapshot, prior) {
-  $('resources').innerHTML = `<div class="resource-grid">${resourceTable(snapshot, prior, 'offense')}${resourceTable(snapshot, prior, 'defense')}</div>`;
+  return `<div class="resource-grid">${resourceTable(snapshot, prior, 'offense')}${resourceTable(snapshot, prior, 'defense')}</div>`;
 }
 
 function renderGraphCards(ids) {
-  $('graphCards').innerHTML = ids.map(id => graphCardHtml(runtime.graphCards[id], id)).join('') || `<p class="muted">${CBEmptyStates.emptyGraphEvidence()}</p>`;
+  return ids.map(id => graphEvidenceHtml(runtime.graphCards[id], id)).join('') || `<p class="muted">${CBEmptyStates.emptyGraphEvidence()}</p>`;
 }
 
 function graphCardHtml(card, id) {
@@ -422,25 +505,32 @@ function graphCardHtml(card, id) {
   return `<div class="card-ref"><h3>${card.name}</h3>${kvRows({ id: card.id, counters: card.counters || [], limitations: (card.limitations || []).join(' '), events: tags }, ['id', 'counters', 'limitations', 'events'])}</div>`;
 }
 
+function graphEvidenceHtml(card, id) {
+  if (!card) return `<p class="muted">Card not found: ${id}</p>`;
+  const counters = (card.counters || []).map(label).join(', ') || '-';
+  return `<div class="graph-evidence-card">
+    <h3>${escapeHtml(card.name || label(id))}</h3>
+    <div class="kv"><span>Card Id</span><span><code>${escapeHtml(card.id || id)}</code></span></div>
+    <div class="kv"><span>Counters</span><span>${escapeHtml(counters)}</span></div>
+  </div>`;
+}
+
 function renderBeliefs(play, prior) {
-  const beliefs = play.offense_observed?.belief_after || {};
-  const priorBeliefs = prior?.offense_observed?.belief_after || {};
-  $('beliefs').innerHTML = Object.entries(beliefs).map(([key, raw]) => {
+  const beliefs = playBeliefs(play);
+  const priorBeliefs = prior ? playBeliefs(prior) : {};
+  return Object.entries(beliefs).map(([key, raw]) => {
     const percent = pct(raw);
-    const changed = Math.abs(percent - pct(priorBeliefs[key])) >= 10;
-    return `<div class="bar"><label><span>${label(key)}</span><span>${percent}%</span></label><div class="meter"><div class="fill ${changed ? 'glow' : ''}" style="width:${percent}%"></div></div></div>`;
+    const delta = prior ? percent - pct(priorBeliefs[key]) : null;
+    const changed = delta !== null && Math.abs(delta) >= 10;
+    const deltaText = delta === null ? '' : ` · <span class="${delta < 0 ? 'delta-neg' : delta > 0 ? 'delta-pos' : ''}">${delta >= 0 ? '+' : ''}${delta}pp</span>`;
+    return `<div class="bar"><label><span>${label(key)}</span><span>${percent}%${deltaText}</span></label><div class="meter"><div class="fill ${changed ? 'glow' : ''}" style="width:${percent}%"></div></div></div>`;
   }).join('') || '<p class="muted">No belief data on this play.</p>';
 }
 
-function renderEvents(play) {
-  const events = play.public.events || [];
-  $('events').innerHTML = events.length
+function renderEvents(events) {
+  return events.length
     ? events.map(event => `<div class="event-block"><span class="chip">${label(event.tag)}</span><p><strong>${event.graph_card_id}</strong><br>${event.description || ''}</p></div>`).join('')
     : '<p class="muted">No public graph event on this play.</p>';
-}
-
-function renderValidation(result) {
-  $('validation').innerHTML = result ? `<div class="kv"><span>Validation</span><span>${result.ok ? 'Accepted' : 'Rejected'}</span></div>` : '';
 }
 
 function renderDriveSummary() {
@@ -688,9 +778,8 @@ function restartAutoplayProgress() {
   if (!reduced()) progress.classList.add('running');
 }
 
-function mountPanels(ids) { ids.forEach(id => mountRows($(id))); }
 function mountRows(root) {
-  root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel, #offenseCall, #defenseCall, #playOutcome, #resources, #events, #graphCards, #beliefs').forEach(panel => {
+  root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel').forEach(panel => {
     panel.classList.remove('mount');
     [...panel.children].slice(0, 6).forEach((child, i) => child.style.animationDelay = `${Math.min(i, 6) * 40}ms`);
     void panel.offsetWidth;
