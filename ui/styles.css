@@ -112,6 +112,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--text-muted);
   background: var(--bg-elev-1);
   font-size: 13px;
+  animation: badgeEnter var(--motion-inspector) var(--ease-out) var(--motion-inspector) both;
 }
 .mode-banner::before {
   content: "";
@@ -573,15 +574,52 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   background: var(--bg-elev-1);
   margin-top: 10px;
 }
-.next-adjustment {
-  display: inline-flex;
-  margin: 10px 0 4px;
-  padding: 8px 10px;
+.film-room-panel { display: grid; gap: 14px; }
+.film-compressed { display: grid; gap: 14px; }
+.film-line {
+  display: grid;
+  gap: 4px;
+}
+.film-line h3, .film-next h3, .film-evidence h3 {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.film-line p, .film-next p { margin: 0; line-height: 1.45; }
+.film-next {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   background: var(--accent-soft);
-  color: var(--text);
-  line-height: 1.35;
+  animation: filmNext var(--motion-outcome) var(--ease-out) both;
+}
+.film-next p { font-size: 18px; color: var(--text); }
+.film-evidence {
+  display: grid;
+  gap: 8px;
+}
+.film-evidence-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  animation: filmEvidence calc(var(--motion-belief-pulse) - var(--motion-outcome)) var(--ease-out) var(--motion-outcome) both;
+}
+.film-notes summary {
+  width: max-content;
+  color: var(--accent);
+  font-size: 13px;
+}
+.film-notes-scroll {
+  max-height: 260px;
+  overflow: auto;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
 .slate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: stretch; }
 .slate-card {
@@ -689,6 +727,9 @@ code { color: var(--accent); }
 @keyframes autoplayFill { from { width: 0%; } to { width: 100%; } }
 @keyframes gallerySweep { from { stroke-dasharray: 120; stroke-dashoffset: 120; } to { stroke-dasharray: 120; stroke-dashoffset: 0; } }
 @keyframes inspectorFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes filmNext { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes filmEvidence { from { opacity: 0; } to { opacity: 1; } }
+@keyframes badgeEnter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (min-width: 1024px) {
   .replay-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }

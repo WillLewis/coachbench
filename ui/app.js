@@ -574,10 +574,105 @@ function sparkline(values) {
 
 function renderFilmRoom() {
   const replay = currentReplay();
+  $('filmRoom').innerHTML = renderFilmRoomHtml(replay);
+}
+
+function renderFilmRoomHtml(replay) {
   const room = replay.film_room || {};
-  const list = items => ((items || []).slice(0, 5).map(item => `<li>${item}</li>`).join('') || '<li class="muted">-</li>') + ((items || []).length > 5 ? `<li class="muted">and ${(items || []).length - 5} more</li>` : '');
-  const next = room.next_adjustment ? `<p class="next-adjustment">${room.next_adjustment}</p>` : '';
-  $('filmRoom').innerHTML = `<div class="kv"><span>Headline</span><strong>${room.headline || 'Film Room'}</strong></div><div class="kv"><span>Turning Point</span><span>Play ${room.turning_point?.play_index || '-'}</span></div>${next}<h3>Notes</h3><ul>${list(room.notes)}</ul><h3>Suggested Tweaks</h3><ul>${list(room.suggested_tweaks)}</ul>`;
+  const nextTry = room.next_try || room.next_adjustment;
+  if (!room.turning_point || !nextTry) {
+    return '<p class="muted">No turning point this drive.</p>';
+  }
+  const turningCards = room.turning_point.graph_card_ids || [];
+  const primaryCardId = turningCards[0];
+  const evidence = filmRoomEvidence(replay, nextTry);
+  return `<section class="film-compressed">
+    <div class="film-line">
+      <h3>Turning Point</h3>
+      <p>Play ${room.turning_point.play_index} · ${escapeHtml(shortCardLabel(primaryCardId))}</p>
+    </div>
+    <div class="film-line">
+      <h3>Why It Mattered</h3>
+      <p>${escapeHtml(filmRoomWhyItMattered(room, primaryCardId))}</p>
+    </div>
+    <div class="film-next">
+      <h3>Next Try</h3>
+      <p>${escapeHtml(displayNextTry(nextTry))}</p>
+    </div>
+    <div class="film-evidence">
+      <h3>Evidence</h3>
+      ${evidence.hasDirectCounter ? '' : '<p class="muted compact">Recommendation derived from sequencing — no direct counter card.</p>'}
+      <ul class="film-evidence-list">${evidence.items.map(item => `<li title="${escapeHtml(item.card_id)}">${escapeHtml(item.label)} · play ${item.play_index}</li>`).join('')}</ul>
+    </div>
+    <details class="film-notes">
+      <summary>View full notes</summary>
+      <div class="film-notes-scroll">${filmRoomFullNotes(room)}</div>
+    </details>
+  </section>`;
+}
+
+function displayNextTry(raw) {
+  return String(raw || '').replace(/^Next try:\s*/i, '');
+}
+
+function recommendedCounterLabel(raw) {
+  return displayNextTry(raw).split(' to counter ')[0].trim();
+}
+
+function filmRoomWhyItMattered(room, cardId) {
+  if (room.why_it_mattered) return room.why_it_mattered;
+  const cardName = cardLabel(cardId);
+  return (room.notes || []).find(note => String(note).includes(cardName)) || (room.notes || [])[0] || room.headline || 'Film Room feedback unavailable.';
+}
+
+function shortCardLabel(cardId) {
+  const full = cardLabel(cardId);
+  return full.length > 56 ? `${full.slice(0, 55)}…` : full;
+}
+
+function filmRoomEvidence(replay, nextTry) {
+  const room = replay.film_room || {};
+  const recommended = recommendedCounterLabel(nextTry);
+  const records = new Map();
+  const playByIndex = new Map((replay.plays || []).map(play => [Number(play.public?.play_index), play]));
+  const addRecord = (cardId, playIndex) => {
+    if (!cardId || !runtime.graphCards[cardId]) return;
+    const play = playByIndex.get(Number(playIndex));
+    const leverage = Math.abs(Number(play?.public?.expected_value_delta || 0));
+    const record = records.get(cardId) || { card_id: cardId, play_index: Number(playIndex) || 0, max_leverage: 0 };
+    record.play_index = Math.min(record.play_index || Number(playIndex) || 0, Number(playIndex) || record.play_index || 0);
+    record.max_leverage = Math.max(record.max_leverage, leverage);
+    records.set(cardId, record);
+  };
+  (room.adaptation_chain || []).forEach(entry => addRecord(entry.graph_card_id, entry.play_index));
+  (replay.plays || []).forEach(play => (play.public?.graph_card_ids || []).forEach(cardId => addRecord(cardId, play.public.play_index)));
+  const all = [...records.values()].map(record => ({
+    ...record,
+    label: cardLabel(record.card_id),
+    direct: cardCountersContain(record.card_id, recommended),
+  }));
+  const direct = all.filter(item => item.direct);
+  const hasDirectCounter = direct.length > 0;
+  const candidates = hasDirectCounter
+    ? all
+    : all.filter(item => (room.turning_point?.graph_card_ids || []).includes(item.card_id));
+  const ranked = (candidates.length ? candidates : all)
+    .sort((a, b) => Number(b.direct) - Number(a.direct) || b.max_leverage - a.max_leverage || a.play_index - b.play_index)
+    .slice(0, 4)
+    .sort((a, b) => Number(b.direct) - Number(a.direct) || a.play_index - b.play_index);
+  return { hasDirectCounter, items: ranked };
+}
+
+function cardCountersContain(cardId, recommended) {
+  if (!recommended) return false;
+  return (runtime.graphCards[cardId]?.counters || []).some(counter => counter === recommended || label(counter) === recommended);
+}
+
+function filmRoomFullNotes(room) {
+  const chain = (room.adaptation_chain || []).map(entry => `<li><strong>Play ${entry.play_index}</strong> · ${escapeHtml(entry.card_label || cardLabel(entry.graph_card_id))}<br><span class="muted">${escapeHtml(entry.offense_call || '-')} vs ${escapeHtml(entry.defense_call || '-')} · ${escapeHtml(entry.trigger_event || '-')}</span></li>`).join('');
+  const notes = (room.notes || []).map(note => `<li>${escapeHtml(note)}</li>`).join('');
+  const tweaks = (room.suggested_tweaks || []).map(tweak => `<li>${escapeHtml(tweak)}</li>`).join('');
+  return `<h3>Adaptation Chain</h3><ul>${chain || '<li class="muted">No adaptation chain entries.</li>'}</ul><h3>Notes</h3><ul>${notes || '<li class="muted">-</li>'}</ul><h3>Suggested Tweaks</h3><ul>${tweaks || '<li class="muted">-</li>'}</ul>`;
 }
 
 function renderGarage() {
