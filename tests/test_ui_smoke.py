@@ -69,5 +69,7 @@ def test_agent_garage_shell_has_plan_5_2_controls_or_dash_fallback() -> None:
 def test_ui_defaults_to_demo_replay_before_static_fallback() -> None:
     script = Path("ui/app.js").read_text(encoding="utf-8")
 
-    assert "demo_replay.json').catch(() => fetchJson('static_proof_replay.json')" in script
+    assert "'seed-42': 'demo_replay.json'" in script
+    assert "'static-proof': 'static_proof_replay.json'" in script
+    assert "if (id === 'seed-42') return fetchJson(replaySources['static-proof']);" in script
     assert "Phase 0B static schema/UI proof" in script
