@@ -1,0 +1,76 @@
+[
+  {
+    "id": "seed-42",
+    "path": "demo_replay.json",
+    "matchup": "Team A vs Team B",
+    "seed": 42,
+    "result": "Team A 7 \u2014 Team B 0",
+    "outcome_chip": "Team A converted drive",
+    "plays": 6,
+    "top_graph_event": "Play-action gains value after credible run tendency",
+    "invalid_actions": 0,
+    "tier_offense": 0,
+    "tier_defense": 0,
+    "offense_label": "Team B Adaptive Offense",
+    "defense_label": "Team B Adaptive Defense",
+    "sparkline": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      7
+    ],
+    "generated_at": "2026-05-06T00:00:00Z",
+    "terminal_result": "touchdown"
+  },
+  {
+    "id": "static-proof",
+    "path": "static_proof_replay.json",
+    "matchup": "Team A vs Team B",
+    "seed": 0,
+    "result": "Team A 7 \u2014 Team B 0",
+    "outcome_chip": "Team A converted drive",
+    "plays": 4,
+    "top_graph_event": "Bear front constrains outside zone",
+    "invalid_actions": 0,
+    "tier_offense": 0,
+    "tier_defense": 0,
+    "offense_label": "Team B Adaptive Counter",
+    "defense_label": "Team A Static Baseline",
+    "sparkline": [
+      0,
+      0,
+      0,
+      7
+    ],
+    "generated_at": "2026-05-06T00:00:00Z",
+    "terminal_result": "touchdown"
+  },
+  {
+    "id": "seed-99",
+    "path": "../data/seed_99_replay.json",
+    "matchup": "Team A vs Team B",
+    "seed": 99,
+    "result": "Team A 0 \u2014 Team B 0",
+    "outcome_chip": "Team B stopped drive",
+    "plays": 7,
+    "top_graph_event": "Play-action gains value after credible run tendency",
+    "invalid_actions": 0,
+    "tier_offense": 0,
+    "tier_defense": 0,
+    "offense_label": "Team B Adaptive Offense",
+    "defense_label": "Team B Adaptive Defense",
+    "sparkline": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "generated_at": "2026-05-06T00:00:00Z",
+    "terminal_result": "stopped"
+  }
+]

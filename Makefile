@@ -1,4 +1,4 @@
-.PHONY: demo test golden-update baseline-update showcase
+.PHONY: demo test golden-update baseline-update showcase replay-index
 
 demo:
 	python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui && python scripts/run_match_matrix.py --out data/match_matrix_report.json && python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --out data/daily_slate/results.json && python -m http.server 8000
@@ -14,3 +14,6 @@ baseline-update:
 
 showcase:
 	python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui
+
+replay-index:
+	python scripts/build_replay_index.py

@@ -1,7 +1,7 @@
-const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, sharedLoaded: false, replayId: null };
+const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null };
 const $ = id => document.getElementById(id);
 const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
-const replaySources = {
+const fallbackReplaySources = {
   'seed-42': 'demo_replay.json',
   'static-proof': 'static_proof_replay.json',
 };
@@ -10,11 +10,24 @@ const label = key => runtime.conceptLabels[key] || String(key || '').replaceAll(
 const value = item => item === null || item === undefined || item === '' ? '-' : item;
 const pct = raw => Math.round(Number(raw || 0) * 100);
 const currentReplay = () => CBState.get().replay;
+const escapeHtml = raw => String(raw ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+const truncate = (raw, max = 64) => String(raw || '').length > max ? `${String(raw).slice(0, max - 1)}…` : String(raw || '');
 
 async function fetchJson(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${url} ${response.status}`);
   return response.json();
+}
+
+async function loadReplayIndex() {
+  if (runtime.replayIndex) return runtime.replayIndex;
+  const index = await fetchJson('replay_index.json').catch(() => []);
+  runtime.replayIndex = Array.isArray(index) ? index : [];
+  runtime.replaySources = {
+    ...fallbackReplaySources,
+    ...Object.fromEntries(runtime.replayIndex.map(item => [item.id, item.path])),
+  };
+  return runtime.replayIndex;
 }
 
 async function loadSharedData() {
@@ -33,13 +46,14 @@ async function loadSharedData() {
 
 async function loadReplay(id) {
   await loadSharedData();
-  const source = replaySources[id];
+  await loadReplayIndex();
+  const source = runtime.replaySources[id] || fallbackReplaySources[id];
   if (!source) {
     renderReplayNotFound(id);
     return;
   }
   const replay = await fetchJson(source).catch(error => {
-    if (id === 'seed-42') return fetchJson(replaySources['static-proof']);
+    if (id === 'seed-42') return fetchJson(fallbackReplaySources['static-proof']);
     throw error;
   });
   runtime.replayId = id;
@@ -94,31 +108,97 @@ async function handleRoute(route) {
   setActiveRoute(route);
   if (route.name !== 'replay-detail') runtime.auto?.stop();
   if (route.name === 'replays') {
-    renderGallery();
+    await renderGallery();
   } else if (route.name === 'replay-detail') {
     await loadReplay(route.params.id);
   } else if (route.name === 'garage') {
     renderRouteStub('garageRouteCopy', 'Coming in Pass 6. ' + CBEmptyStates.emptyAgents());
   } else if (route.name === 'reports') {
-    renderRouteStub('reportsRouteCopy', 'Coming in Pass 7.');
+    renderReports(route.params.compare);
   } else if (route.name === 'arena') {
     renderRouteStub('arenaRouteCopy', 'Coming in Pass 8.');
   }
+  renderCompareTray();
 }
 
-function renderGallery() {
+async function renderGallery() {
   const target = $('replayGallery');
   if (!target) return;
-  target.innerHTML = `<a class="replay-card panel" href="#/replays/seed-42">
-    <span class="eyebrow">Engine-generated replay</span>
-    <strong>Seed 42 showcase</strong>
-    <p>Team A coordinator agent vs Team B coordinator agent.</p>
-    <span class="btn">Open replay</span>
-  </a>`;
+  const index = await loadReplayIndex();
+  if (!index.length) {
+    target.innerHTML = `<div class="panel empty-state"><p class="subhead">${CBEmptyStates.emptyReplays()}</p><code>python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui</code></div>`;
+    return;
+  }
+  target.innerHTML = index.map(renderReplayCard).join('');
+  target.querySelectorAll('[data-compare-id]').forEach(button => {
+    button.onclick = event => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleCompare(button.dataset.compareId);
+    };
+  });
+  mountRows(target);
 }
 
 function renderRouteStub(id, copy) {
   $(id).textContent = copy;
+}
+
+function renderReports(compare) {
+  const ids = String(compare || '').split(',').filter(Boolean);
+  renderRouteStub('reportsRouteCopy', ids.length ? `Coming in Pass 7. Reserved comparison: ${ids.join(', ')}.` : 'Coming in Pass 7.');
+}
+
+function renderReplayCard(item) {
+  const pinned = CBState.get().pinnedForCompare.includes(item.id);
+  const seed = item.id === 'static-proof' ? 'STATIC PROOF' : `SEED ${item.seed}`;
+  return `<article class="replay-card panel" data-gallery-card="${escapeHtml(item.id)}">
+    <button class="compare-toggle" type="button" data-compare-id="${escapeHtml(item.id)}" aria-pressed="${pinned}">${pinned ? 'Pinned' : '+ Compare'}</button>
+    <a class="replay-card-main" href="#/replays/${encodeURIComponent(item.id)}">
+      <span class="eyebrow" data-card-field="eyebrow">${seed} · RED ZONE · ${item.plays} PLAYS</span>
+      <strong data-card-field="matchup">${escapeHtml(item.matchup)}</strong>
+      <span class="result-row" data-card-field="result"><span>${escapeHtml(item.result)}</span><em>${escapeHtml(item.outcome_chip || label(item.terminal_result))}</em></span>
+      <span class="tier-row"><span class="tier-chip" data-tier-chip="offense">${escapeHtml(item.offense_label || 'Team A coordinator agent')} · Tier ${item.tier_offense}</span><span class="tier-chip" data-tier-chip="defense">${escapeHtml(item.defense_label || 'Team B coordinator agent')} · Tier ${item.tier_defense}</span></span>
+      ${gallerySparkline(item.sparkline || [])}
+      <span class="metric-row"><span data-card-field="invalid_actions">${item.invalid_actions} invalid actions</span><span data-card-field="top_graph_event">${escapeHtml(truncate(item.top_graph_event))}</span></span>
+    </a>
+  </article>`;
+}
+
+function gallerySparkline(values) {
+  const nums = values.length ? values.map(Number) : [0];
+  const min = Math.min(...nums), max = Math.max(...nums), range = max - min || 1;
+  const x = i => nums.length === 1 ? 4 : 4 + (i / (nums.length - 1)) * 88;
+  const y = raw => 20 - ((raw - min) / range) * 16;
+  const points = nums.map((raw, i) => `${x(i).toFixed(2)},${y(raw).toFixed(2)}`).join(' ');
+  return `<svg class="gallery-sparkline" width="96" height="24" viewBox="0 0 96 24" aria-hidden="true" data-card-field="sparkline"><path class="gallery-spark-line" d="M${points.replaceAll(' ', ' L')}"></path></svg>`;
+}
+
+function toggleCompare(id) {
+  const pins = CBState.get().pinnedForCompare;
+  const next = pins.includes(id) ? pins.filter(item => item !== id) : [...pins, id].slice(0, 4);
+  CBState.set({ pinnedForCompare: next });
+  renderGallery();
+  renderCompareTray();
+}
+
+function removeCompare(id) {
+  CBState.set({ pinnedForCompare: CBState.get().pinnedForCompare.filter(item => item !== id) });
+  renderGallery();
+  renderCompareTray();
+}
+
+function renderCompareTray() {
+  const tray = $('compareTray');
+  if (!tray) return;
+  const pins = CBState.get().pinnedForCompare;
+  tray.hidden = !pins.length;
+  const disabled = pins.length < 2;
+  tray.innerHTML = `<div class="compare-pins">${pins.map(id => `<span class="pin-chip">${escapeHtml(id)}<button type="button" data-unpin="${escapeHtml(id)}" aria-label="Remove ${escapeHtml(id)}">×</button></span>`).join('')}</div>
+    <button id="compareAction" class="btn" type="button" ${disabled ? 'disabled title="Pin at least two replays to compare."' : ''}>Compare ${pins.length}</button>`;
+  tray.querySelectorAll('[data-unpin]').forEach(button => button.onclick = () => removeCompare(button.dataset.unpin));
+  const action = $('compareAction');
+  if (action) action.onclick = () => { if (!disabled) CBRouter.go('reports', { compare: pins.join(',') }); };
 }
 
 function renderHeader() {
