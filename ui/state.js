@@ -8,7 +8,7 @@
     activeInspectorTab: 'outcome',
     garageTier: 'declarative',
     garageRules: [],
-    garageDraftName: 'coachbench-draft',
+    garageDraftName: 'coachdraft',
     garageDrafts: [],
   };
   const subscribers = new Set();

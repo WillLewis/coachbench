@@ -25,6 +25,15 @@ const pct = raw => Math.round(Number(raw || 0) * 100);
 const currentReplay = () => CBState.get().replay;
 const escapeHtml = raw => String(raw ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const truncate = (raw, max = 64) => String(raw || '').length > max ? `${String(raw).slice(0, max - 1)}…` : String(raw || '');
+const toHandle = raw => {
+  if (!raw) return '';
+  const cleaned = String(raw).toLowerCase().replace(/[^a-z0-9]/g, '');
+  return cleaned.length > 16 ? cleaned.slice(0, 16) : cleaned;
+};
+const displayHandle = raw => {
+  const handle = toHandle(raw);
+  return handle.replace(/^team[ab]/, '').replace(/^team/, '') || handle;
+};
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -93,7 +102,7 @@ function renderReplayNotFound(id) {
   CBState.set({ replay: null, selectedIndex: 0, garageState: {}, autoplay: false });
   $('replayDetailContent').hidden = true;
   $('replayNotFound').hidden = false;
-  $('replayNotFound').innerHTML = `<div class="panel"><h1>Replay not found</h1><p class="subhead">${CBEmptyStates.notFoundReplay(id)}</p><a class="btn" href="#/replays">Back to replays</a></div>`;
+  $('replayNotFound').innerHTML = `<div class="panel"><h1>Replay not found</h1><p class="subhead">${CBEmptyStates.notFoundReplay(id)}</p><a class="btn btn--primary" href="#/replays">Back to replays</a></div>`;
 }
 
 function renderAll() {
@@ -196,13 +205,15 @@ function renderReports(compare) {
 function renderReplayCard(item) {
   const pinned = CBState.get().pinnedForCompare.includes(item.id);
   const seed = item.id === 'static-proof' ? 'STATIC PROOF' : `SEED ${item.seed}`;
+  const offenseLabel = displayHandle(item.offense_label || 'Team A coordinator agent') || 'coordinatoragent';
+  const defenseLabel = displayHandle(item.defense_label || 'Team B coordinator agent') || 'coordinatoragent';
   return `<article class="replay-card panel" data-gallery-card="${escapeHtml(item.id)}">
     <button class="compare-toggle" type="button" data-compare-id="${escapeHtml(item.id)}" aria-pressed="${pinned}">${pinned ? 'Pinned' : '+ Compare'}</button>
     <a class="replay-card-main" href="#/replays/${encodeURIComponent(item.id)}">
       <span class="eyebrow" data-card-field="eyebrow">${seed} · RED ZONE · ${item.plays} PLAYS</span>
       <strong data-card-field="matchup">${escapeHtml(item.matchup)}</strong>
       <span class="result-row" data-card-field="result"><span>${escapeHtml(item.result)}</span><em>${escapeHtml(item.outcome_chip || label(item.terminal_result))}</em></span>
-      <span class="tier-row"><span class="tier-chip" data-tier-chip="offense">${escapeHtml(item.offense_label || 'Team A coordinator agent')} · Tier ${item.tier_offense}</span><span class="tier-chip" data-tier-chip="defense">${escapeHtml(item.defense_label || 'Team B coordinator agent')} · Tier ${item.tier_defense}</span></span>
+      <span class="tier-row"><span class="tier-chip" data-tier-chip="offense">${escapeHtml(offenseLabel)} · Tier ${item.tier_offense}</span><span class="tier-chip" data-tier-chip="defense">${escapeHtml(defenseLabel)} · Tier ${item.tier_defense}</span></span>
       ${gallerySparkline(item.sparkline || [])}
       <span class="metric-row"><span data-card-field="invalid_actions">${item.invalid_actions} invalid actions</span><span data-card-field="top_graph_event">${escapeHtml(truncate(item.top_graph_event))}</span></span>
     </a>
@@ -346,15 +357,23 @@ function feedCard(play, index) {
   const yards = Number(pub.yards_gained || 0);
   const yardText = `${yards >= 0 ? '+' : ''}${yards} yd`;
   const outcome = `${pub.success ? 'Success' : 'No success'} · ${yardText}${pub.terminal_reason ? ` · ${label(pub.terminal_reason)}` : ''}`;
-  const cards = (pub.graph_card_ids || []).map(id => `<span class="chip" title="${escapeHtml(id)}">${escapeHtml(cardLabel(id))}</span>`).join('');
   const turningPoint = currentReplay().film_room?.turning_point?.play_index === pub.play_index;
   const adaptation = play.is_adaptation;
+  const cards = (pub.graph_card_ids || []).map(id => `<span class="${graphChipClass(id, adaptation)}" title="${escapeHtml(id)}">${escapeHtml(cardLabel(id))}</span>`).join('');
   return `<button class="feed-card ${adaptation ? 'is-adaptation' : ''}" type="button" role="listitem" data-feed-index="${index}" aria-current="false">
     <span class="feed-eyebrow">${adaptation ? `ADAPTATION · PLAY ${pub.play_index}` : `PLAY ${pub.play_index} · ${offense} vs ${defense}`}${turningPoint ? ' · ★ TURNING POINT' : ''}</span>
     <span class="feed-body">${outcome}</span>
     ${adaptation ? `<span class="feed-causal">${causalLine(play)}</span>` : ''}
     <span class="feed-tags">${cards || '<span class="muted">No graph card</span>'}</span>
   </button>`;
+}
+
+function graphChipClass(cardId, isAdaptation) {
+  if (isAdaptation) return 'chip chip--insight';
+  const side = runtime.graphCards[cardId]?.side;
+  if (side === 'offense') return 'chip chip--offense';
+  if (side === 'defense') return 'chip chip--defense';
+  return 'chip';
 }
 
 function causalLine(play) {
@@ -711,7 +730,7 @@ function renderCompactAgentCard() {
   target.innerHTML = `<div class="agent-card-compact">
     <div>
       <p class="eyebrow">Read-only replay config</p>
-      <h3>${escapeHtml(offense.label || 'Static Baseline')} / ${escapeHtml(defense.label || 'Adaptive Counter')}</h3>
+      <h3>${escapeHtml(displayHandle(offense.label || 'Static Baseline'))} / ${escapeHtml(displayHandle(defense.label || 'Adaptive Counter'))}</h3>
     </div>
     <span class="tier-chip">Tier 0</span>
     <p class="compact">${differences.length ? differences.map(item => `${label(item.key)} ${item.delta}`).join(' · ') : 'No local tuning over profile defaults.'}</p>
@@ -957,18 +976,22 @@ function garageIsValid() {
 function renderGarageDrafts() {
   const drafts = loadGarageDrafts();
   CBState.set({ garageDrafts: drafts });
-  $('garageDraftName').value = CBState.get().garageDraftName;
-  $('garageDraftName').oninput = event => CBState.set({ garageDraftName: event.target.value || 'coachbench-draft' });
+  $('garageDraftName').value = toHandle(CBState.get().garageDraftName) || 'coachdraft';
+  $('garageDraftName').oninput = event => {
+    const next = toHandle(event.target.value) || 'coachdraft';
+    event.target.value = next;
+    CBState.set({ garageDraftName: next });
+  };
   $('saveGarageDraft').onclick = saveGarageDraft;
   $('garageDrafts').innerHTML = drafts.length
-    ? drafts.map(draft => `<div class="draft-row"><span>${escapeHtml(draft.name)}</span><button type="button" data-draft-load="${escapeHtml(draft.name)}">Load</button><button type="button" data-draft-delete="${escapeHtml(draft.name)}">Delete</button></div>`).join('')
+    ? drafts.map(draft => `<div class="draft-row"><span>${escapeHtml(toHandle(draft.name))}</span><button type="button" data-draft-load="${escapeHtml(draft.name)}">Load</button><button type="button" data-draft-delete="${escapeHtml(draft.name)}">Delete</button></div>`).join('')
     : '<p class="muted compact">No saved drafts in this browser.</p>';
   $('garageDrafts').querySelectorAll('[data-draft-load]').forEach(button => button.onclick = loadGarageDraft);
   $('garageDrafts').querySelectorAll('[data-draft-delete]').forEach(button => button.onclick = deleteGarageDraft);
 }
 
 function saveGarageDraft() {
-  const name = (CBState.get().garageDraftName || 'coachbench-draft').replace(/[^a-z0-9_-]/gi, '-').toLowerCase();
+  const name = toHandle(CBState.get().garageDraftName) || 'coachdraft';
   const payload = { name, garageState: CBState.get().garageState, garageTier: CBState.get().garageTier, garageRules: CBState.get().garageRules || [] };
   try { localStorage.setItem(`${garageDraftPrefix}${name}`, JSON.stringify(payload)); } catch {}
   CBState.set({ garageDraftName: name });
@@ -989,7 +1012,7 @@ function loadGarageDrafts() {
 function loadGarageDraft(event) {
   const draft = loadGarageDrafts().find(item => item.name === event.target.dataset.draftLoad);
   if (!draft) return;
-  CBState.set({ garageState: draft.garageState, garageTier: draft.garageTier, garageRules: draft.garageRules || [], garageDraftName: draft.name });
+  CBState.set({ garageState: draft.garageState, garageTier: draft.garageTier, garageRules: draft.garageRules || [], garageDraftName: toHandle(draft.name) || 'coachdraft' });
   renderGaragePage(CBRouter.current().params);
 }
 
@@ -1016,7 +1039,7 @@ function slateCard(entry, index, results) {
   const result = results[index];
   return `<div class="slate-card">
     <strong class="slate-seed">${entry.seed || `Entry ${index + 1}`}</strong>
-    <span class="slate-matchup">${label(match.offense)} vs ${label(match.defense)}</span>
+    <span class="slate-matchup">${escapeHtml(displayHandle(match.offense) || 'offense')} vs ${escapeHtml(displayHandle(match.defense) || 'defense')}</span>
     <div class="slate-result"><span class="slate-label">Result</span><span class="slate-value">${result ? label(result.result) : 'Preview Pending'}</span></div>
     <div class="slate-points"><span class="slate-label">Points</span><span class="slate-value">${result ? result.points : '-'}</span></div>
     <p class="slate-note">preview not available in static proof</p>
