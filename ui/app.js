@@ -1,6 +1,5 @@
 const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null };
 const $ = id => document.getElementById(id);
-const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
 const fallbackReplaySources = {
   'seed-42': 'demo_replay.json',
   'static-proof': 'static_proof_replay.json',
@@ -11,6 +10,13 @@ const inspectorTabs = [
   { id: 'beliefs', label: 'Beliefs' },
   { id: 'graph', label: 'Graph Evidence' },
 ];
+const garageControlSections = {
+  identity: ['offensive_archetype', 'defensive_archetype'],
+  strategy: ['risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance'],
+  resource: ['resource_conservation'],
+};
+const numericControls = new Set(['adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'disguise_sensitivity', 'counter_repeat_tolerance']);
+const garageDraftPrefix = 'coachbench.garageDraft.';
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const label = key => runtime.conceptLabels[key] || String(key || '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
 const value = item => item === null || item === undefined || item === '' ? '-' : item;
@@ -86,7 +92,7 @@ function renderReplayNotFound(id) {
 
 function renderAll() {
   renderHeader();
-  renderGarage();
+  renderCompactAgentCard();
   renderDailySlate();
   renderRosterStrengths();
   renderPlayFeed();
@@ -125,7 +131,9 @@ async function handleRoute(route) {
       await loadReplay(route.params.id, route.params.play);
     }
   } else if (route.name === 'garage') {
-    renderRouteStub('garageRouteCopy', 'Coming in Pass 6. ' + CBEmptyStates.emptyAgents());
+    await loadSharedData();
+    ensureGarageDefaults();
+    renderGaragePage(route.params);
   } else if (route.name === 'reports') {
     renderReports(route.params.compare);
   } else if (route.name === 'arena') {
@@ -675,47 +683,304 @@ function filmRoomFullNotes(room) {
   return `<h3>Adaptation Chain</h3><ul>${chain || '<li class="muted">No adaptation chain entries.</li>'}</ul><h3>Notes</h3><ul>${notes || '<li class="muted">-</li>'}</ul><h3>Suggested Tweaks</h3><ul>${tweaks || '<li class="muted">-</li>'}</ul>`;
 }
 
-function renderGarage() {
-  const { replay, garageState } = CBState.get();
-  $('garage').innerHTML = `<div class="kv"><span>Offense</span><strong>${replay.agents.offense}</strong></div><div class="kv"><span>Defense</span><strong>${replay.agents.defense}</strong></div><div class="garage-edit-grid">${profileEditor('offense_profile')}${profileEditor('defense_profile')}</div><button id="copyGarage" class="ghost-button" type="button">Copy Profile Payload</button><textarea id="garagePayload" readonly>${garagePayload()}</textarea>`;
-  $('copyGarage').onclick = () => navigator.clipboard?.writeText($('garagePayload').value);
-  document.querySelectorAll('[data-profile]').forEach(input => input.oninput = updateGarage);
+function renderCompactAgentCard() {
+  const target = $('agentCard');
+  const replay = currentReplay();
+  if (!target || !replay) return;
+  const garageState = replay.agent_garage_config || {};
+  const offense = garageState.offense_profile || {};
+  const defense = garageState.defense_profile || {};
+  const differences = compactProfileDiffs(garageState).slice(0, 3);
+  target.innerHTML = `<div class="agent-card-compact">
+    <div>
+      <p class="eyebrow">Read-only replay config</p>
+      <h3>${escapeHtml(offense.label || 'Static Baseline')} / ${escapeHtml(defense.label || 'Adaptive Counter')}</h3>
+    </div>
+    <span class="tier-chip">Tier 0</span>
+    <p class="compact">${differences.length ? differences.map(item => `${label(item.key)} ${item.delta}`).join(' · ') : 'No local tuning over profile defaults.'}</p>
+    <button id="tuneAgent" class="ghost-button" type="button">Tune Agent →</button>
+  </div>`;
+  $('tuneAgent').onclick = () => CBRouter.go('garage', { from: runtime.replayId || 'seed-42' });
 }
 
-function profileEditor(profileKey) {
-  const garageState = CBState.get().garageState;
-  const profile = garageState[profileKey] || {};
-  const set = controls.filter(key => profile[key] !== undefined && profile[key] !== null && profile[key] !== '');
-  const missing = controls.filter(key => !set.includes(key)).map(label).join(', ');
-  return `<div class="profile-editor"><h3>${label(profileKey)}</h3>${set.map(key => controlInput(profileKey, key, profile[key])).join('')}<p class="muted compact">Other PLAN §5.2 controls not set on this profile: ${missing || '-'}</p></div>`;
+function compactProfileDiffs(garageState) {
+  return ['offense_profile', 'defense_profile'].flatMap(profileKey => {
+    const profile = garageState[profileKey] || {};
+    const defaults = profileDefaults(profileKey, profile.profile_key);
+    return Object.entries(profile)
+      .filter(([key, raw]) => defaults[key] !== undefined && key !== 'profile_key' && key !== 'label' && raw !== defaults[key])
+      .map(([key, raw]) => ({ key, delta: typeof raw === 'number' ? `${raw > defaults[key] ? '+' : ''}${(raw - defaults[key]).toFixed(2)}` : `${label(defaults[key])} → ${label(raw)}` }));
+  });
 }
 
-function controlInput(profileKey, key, current) {
-  const numeric = typeof current === 'number';
-  if (numeric) return `<label><span class="label">${label(key)}: ${current}</span><input data-profile="${profileKey}" data-key="${key}" type="range" min="0" max="1" step="0.01" value="${current}"></label>`;
-  const options = optionValues(key, current).map(item => `<option ${item === current ? 'selected' : ''}>${item}</option>`).join('');
-  return `<label><span class="label">${label(key)}</span><select data-profile="${profileKey}" data-key="${key}">${options}</select></label>`;
+function profileDefaults(profileKey, key) {
+  const bucket = profileKey === 'defense_profile' ? 'defense_archetypes' : 'offense_archetypes';
+  return runtime.profiles[bucket]?.[key] || {};
 }
 
-function optionValues(key, current) {
-  const profiles = runtime.profiles;
-  if (key.includes('archetype')) return [...new Set([current, ...(profiles.offense_archetypes ? Object.values(profiles.offense_archetypes).map(p => p.label) : []), ...(profiles.defense_archetypes ? Object.values(profiles.defense_archetypes).map(p => p.label) : [])])];
-  if (key === 'risk_tolerance') return [...new Set([current, 'low', 'medium_low', 'medium', 'medium_high', 'high'])];
-  if (key === 'resource_conservation') return [...new Set([current, 'low', 'balanced', 'high'])];
-  return [current];
+function ensureGarageDefaults() {
+  const state = CBState.get();
+  const existing = state.garageState || {};
+  if (existing.offense_profile && existing.defense_profile) {
+    CBState.set({ garageDrafts: loadGarageDrafts() });
+    return;
+  }
+  const offenseKey = Object.keys(runtime.profiles.offense_archetypes || {})[0];
+  const defenseKey = Object.keys(runtime.profiles.defense_archetypes || {})[0];
+  CBState.set({
+    garageState: {
+      source: 'agent_garage_profiles_v0',
+      offense_profile: { ...(runtime.profiles.offense_archetypes?.[offenseKey] || {}), profile_key: offenseKey },
+      defense_profile: { ...(runtime.profiles.defense_archetypes?.[defenseKey] || {}), profile_key: defenseKey },
+      draft_controls: {},
+    },
+    garageDrafts: loadGarageDrafts(),
+  });
 }
 
-function updateGarage(event) {
-  const { profile, key } = event.target.dataset;
-  const next = structuredClone(CBState.get().garageState);
-  next[profile][key] = event.target.type === 'range' ? Number(event.target.value) : event.target.value;
+function renderGaragePage(params = {}) {
+  const from = params.from || runtime.replayId || 'seed-42';
+  $('garageRouteCopy').textContent = `Tune a fictional coordinator agent, then return to ${from}.`;
+  renderTierSelector();
+  renderGarageControls();
+  renderRuleBuilder();
+  renderGarageActions();
+  renderGarageDrafts();
+  mountRows(document.querySelector('[data-route="garage"]'));
+}
+
+function renderTierSelector() {
+  document.querySelectorAll('[name="garage_tier"]').forEach(input => {
+    input.checked = input.value === CBState.get().garageTier;
+    input.onchange = () => {
+      CBState.set({ garageTier: input.value });
+      renderGaragePage(CBRouter.current().params);
+    };
+  });
+}
+
+function renderGarageControls() {
+  const tier = CBState.get().garageTier;
+  const sections = {
+    identity: $('garageIdentityControls'),
+    strategy: $('garageStrategyControls'),
+    resource: $('garageResourceControls'),
+  };
+  Object.entries(sections).forEach(([section, target]) => {
+    const keys = tier === 'remote_endpoint' && section !== 'identity' ? [] : garageControlSections[section];
+    target.innerHTML = keys.length
+      ? keys.map(key => garageControlRow(key)).join('')
+      : '<p class="muted compact">This tier uses endpoint-owned strategy; local controls are hidden.</p>';
+  });
+  document.querySelectorAll('[data-garage-control]').forEach(input => {
+    input.oninput = updateGarageControl;
+    input.onchange = updateGarageControl;
+  });
+}
+
+function garageControlRow(key) {
+  const current = garageControlValue(key);
+  const error = validateGarageControl(key, current);
+  const message = error || 'Valid for the selected tier.';
+  const field = numericControls.has(key)
+    ? `<input data-garage-control="${key}" type="range" min="0" max="1" step="0.01" value="${current}">`
+    : `<select data-garage-control="${key}">${garageOptions(key, current).map(item => `<option value="${escapeHtml(item.value)}" ${item.value === current ? 'selected' : ''}>${escapeHtml(item.label)}</option>`).join('')}</select>`;
+  return `<label class="control-row ${error ? 'has-error' : ''}">
+    <span class="label">${label(key)}</span>
+    ${field}
+    <small class="help-text">${garageHelp(key)}</small>
+    <small class="validation-message">${message}</small>
+  </label>`;
+}
+
+function garageOptions(key, current) {
+  if (key === 'offensive_archetype') return archetypeOptions('offense_archetypes', current);
+  if (key === 'defensive_archetype') return archetypeOptions('defense_archetypes', current);
+  if (key === 'risk_tolerance') return ['low', 'medium_low', 'medium', 'medium_high', 'high'].map(value => ({ value, label: label(value) }));
+  if (key === 'resource_conservation') return ['low', 'balanced', 'high'].map(value => ({ value, label: label(value) }));
+  if (key === 'run_pass_tendency') return ['balanced_pass', 'pass_heavy', 'constraint_heavy', 'run_to_play_action'].map(value => ({ value, label: label(value) }));
+  return [{ value: current || 'balanced', label: label(current || 'balanced') }];
+}
+
+function archetypeOptions(bucket, current) {
+  const options = Object.entries(runtime.profiles[bucket] || {}).map(([value, profile]) => ({ value, label: profile.label || label(value) }));
+  return options.some(item => item.value === current) ? options : [{ value: current || '', label: label(current || 'Select') }, ...options];
+}
+
+function garageHelp(key) {
+  const help = {
+    offensive_archetype: 'Chooses the visible offense profile defaults.',
+    defensive_archetype: 'Chooses the visible defense profile defaults.',
+    risk_tolerance: 'Controls conservative versus aggressive call selection.',
+    adaptation_speed: 'Range 0-1; higher reacts faster to observed patterns.',
+    pressure_punish_threshold: 'Range 0-1; higher waits for clearer pressure evidence.',
+    screen_trigger_confidence: 'Range 0-1; minimum confidence before screen counters.',
+    explosive_shot_tolerance: 'Range 0-1; higher permits more volatile calls.',
+    run_pass_tendency: 'Visible tendency label for local config review.',
+    disguise_sensitivity: 'Range 0-1; higher reacts more to disguise signals.',
+    counter_repeat_tolerance: 'Range 0-1; lower avoids repeated counters.',
+    resource_conservation: 'Controls how hard the agent spends limited resources.',
+  };
+  return help[key] || 'Local coordinator control.';
+}
+
+function garageControlValue(key) {
+  const state = CBState.get().garageState || {};
+  const draft = state.draft_controls || {};
+  if (draft[key] !== undefined) return draft[key];
+  if (key === 'offensive_archetype') return state.offense_profile?.profile_key || Object.keys(runtime.profiles.offense_archetypes || {})[0] || '';
+  if (key === 'defensive_archetype') return state.defense_profile?.profile_key || Object.keys(runtime.profiles.defense_archetypes || {})[0] || '';
+  return state.offense_profile?.[key] ?? state.defense_profile?.[key] ?? (numericControls.has(key) ? 0.5 : 'balanced');
+}
+
+function updateGarageControl(event) {
+  const key = event.target.dataset.garageControl;
+  const raw = event.target.type === 'range' ? Number(event.target.value) : event.target.value;
+  const next = structuredClone(CBState.get().garageState || {});
+  next.draft_controls = { ...(next.draft_controls || {}), [key]: raw };
+  if (key === 'offensive_archetype') next.offense_profile = { ...(runtime.profiles.offense_archetypes?.[raw] || {}), profile_key: raw };
+  if (key === 'defensive_archetype') next.defense_profile = { ...(runtime.profiles.defense_archetypes?.[raw] || {}), profile_key: raw };
   CBState.set({ garageState: next });
-  renderGarage();
+  renderGaragePage(CBRouter.current().params);
 }
 
-function garagePayload() {
-  const { replay, garageState } = CBState.get();
-  return JSON.stringify({ note: 'Paste this payload into a local profile note; browser edits do not rerun the engine.', command: `python scripts/run_showcase.py --seed ${replay.metadata.seed_hash ? 42 : 42} --offense adaptive --defense adaptive --out data/demo_replay.json --copy-ui`, agent_garage_config: garageState }, null, 2);
+function validateGarageControl(key, raw) {
+  if (numericControls.has(key) && (!Number.isFinite(Number(raw)) || Number(raw) < 0 || Number(raw) > 1)) return 'Enter a value from 0 to 1.';
+  if ((key.includes('archetype') || key === 'risk_tolerance' || key === 'run_pass_tendency' || key === 'resource_conservation') && !raw) return 'Required.';
+  return '';
+}
+
+function renderRuleBuilder() {
+  const target = $('ruleChain');
+  const rules = CBState.get().garageRules || [];
+  target.innerHTML = rules.length ? rules.map((rule, index) => ruleRow(rule, index)).join('') : `<p class="muted compact">${CBEmptyStates.emptyAgents()}</p>`;
+  target.querySelectorAll('[data-rule-field]').forEach(input => input.onchange = updateRule);
+  target.querySelectorAll('[data-rule-move]').forEach(button => button.onclick = moveRule);
+  target.querySelectorAll('[data-rule-delete]').forEach(button => button.onclick = deleteRule);
+  $('addGarageRule').disabled = rules.length >= 8;
+  $('addGarageRule').onclick = addRule;
+}
+
+function ruleRow(rule, index) {
+  const triggerOptions = Object.values(runtime.graphCards).map(card => `<option value="${escapeHtml(card.id)}" ${card.id === rule.trigger ? 'selected' : ''}>${escapeHtml(card.name)}</option>`).join('');
+  const card = runtime.graphCards[rule.trigger] || Object.values(runtime.graphCards)[0] || {};
+  const qualifiers = ['', ...((card.tactical_events || []).map(event => event.tag || event))];
+  const actions = [...new Set(Object.values(runtime.graphCards).flatMap(card => card.counters || []))];
+  return `<div class="rule-row" data-rule-index="${index}">
+    <span class="label">When</span>
+    <select data-rule-field="trigger">${triggerOptions}</select>
+    <span class="label">And</span>
+    <select data-rule-field="qualifier">${qualifiers.map(item => `<option value="${escapeHtml(item)}" ${item === (rule.qualifier || '') ? 'selected' : ''}>${item ? escapeHtml(label(item)) : 'Any event'}</option>`).join('')}</select>
+    <span class="label">Then</span>
+    <select data-rule-field="action">${actions.map(item => `<option value="${escapeHtml(item)}" ${item === rule.action ? 'selected' : ''}>${escapeHtml(label(item))}</option>`).join('')}</select>
+    <button type="button" class="icon-step" data-rule-move="up" aria-label="Move rule up">↑</button>
+    <button type="button" class="icon-step" data-rule-move="down" aria-label="Move rule down">↓</button>
+    <button type="button" class="icon-step" data-rule-delete aria-label="Delete rule">×</button>
+  </div>`;
+}
+
+function firstRule() {
+  const card = Object.values(runtime.graphCards)[0] || {};
+  return { trigger: card.id || '', qualifier: '', action: (card.counters || [])[0] || '' };
+}
+
+function addRule() {
+  const rules = CBState.get().garageRules || [];
+  if (rules.length >= 8) return;
+  CBState.set({ garageRules: [...rules, firstRule()] });
+  renderGaragePage(CBRouter.current().params);
+}
+
+function updateRule(event) {
+  const index = Number(event.target.closest('[data-rule-index]').dataset.ruleIndex);
+  const rules = structuredClone(CBState.get().garageRules || []);
+  rules[index][event.target.dataset.ruleField] = event.target.value;
+  if (event.target.dataset.ruleField === 'trigger') {
+    const card = runtime.graphCards[event.target.value] || {};
+    rules[index].qualifier = '';
+    rules[index].action = (card.counters || [])[0] || rules[index].action || '';
+  }
+  CBState.set({ garageRules: rules });
+  renderGaragePage(CBRouter.current().params);
+}
+
+function moveRule(event) {
+  const index = Number(event.target.closest('[data-rule-index]').dataset.ruleIndex);
+  const direction = event.target.dataset.ruleMove === 'up' ? -1 : 1;
+  const rules = structuredClone(CBState.get().garageRules || []);
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= rules.length) return;
+  [rules[index], rules[nextIndex]] = [rules[nextIndex], rules[index]];
+  CBState.set({ garageRules: rules });
+  renderGaragePage(CBRouter.current().params);
+}
+
+function deleteRule(event) {
+  const index = Number(event.target.closest('[data-rule-index]').dataset.ruleIndex);
+  CBState.set({ garageRules: (CBState.get().garageRules || []).filter((_, i) => i !== index) });
+  renderGaragePage(CBRouter.current().params);
+}
+
+function renderGarageActions() {
+  const button = $('testDriveButton');
+  const valid = garageIsValid();
+  button.disabled = true;
+  button.title = valid ? 'Local script execution is unavailable from a static browser host.' : 'Add one valid rule and fix validation errors first.';
+  button.classList.toggle('ready', valid);
+}
+
+function garageIsValid() {
+  const tier = CBState.get().garageTier;
+  const keys = Object.values(garageControlSections).flat().filter(key => tier !== 'remote_endpoint' || garageControlSections.identity.includes(key));
+  const controlsValid = keys.every(key => !validateGarageControl(key, garageControlValue(key)));
+  const rulesValid = (CBState.get().garageRules || []).some(rule => rule.trigger && rule.action);
+  return controlsValid && rulesValid;
+}
+
+function renderGarageDrafts() {
+  const drafts = loadGarageDrafts();
+  CBState.set({ garageDrafts: drafts });
+  $('garageDraftName').value = CBState.get().garageDraftName;
+  $('garageDraftName').oninput = event => CBState.set({ garageDraftName: event.target.value || 'coachbench-draft' });
+  $('saveGarageDraft').onclick = saveGarageDraft;
+  $('garageDrafts').innerHTML = drafts.length
+    ? drafts.map(draft => `<div class="draft-row"><span>${escapeHtml(draft.name)}</span><button type="button" data-draft-load="${escapeHtml(draft.name)}">Load</button><button type="button" data-draft-delete="${escapeHtml(draft.name)}">Delete</button></div>`).join('')
+    : '<p class="muted compact">No saved drafts in this browser.</p>';
+  $('garageDrafts').querySelectorAll('[data-draft-load]').forEach(button => button.onclick = loadGarageDraft);
+  $('garageDrafts').querySelectorAll('[data-draft-delete]').forEach(button => button.onclick = deleteGarageDraft);
+}
+
+function saveGarageDraft() {
+  const name = (CBState.get().garageDraftName || 'coachbench-draft').replace(/[^a-z0-9_-]/gi, '-').toLowerCase();
+  const payload = { name, garageState: CBState.get().garageState, garageTier: CBState.get().garageTier, garageRules: CBState.get().garageRules || [] };
+  try { localStorage.setItem(`${garageDraftPrefix}${name}`, JSON.stringify(payload)); } catch {}
+  CBState.set({ garageDraftName: name });
+  renderGaragePage(CBRouter.current().params);
+}
+
+function loadGarageDrafts() {
+  try {
+    return Object.keys(localStorage)
+      .filter(key => key.startsWith(garageDraftPrefix))
+      .map(key => JSON.parse(localStorage.getItem(key)))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  } catch {
+    return [];
+  }
+}
+
+function loadGarageDraft(event) {
+  const draft = loadGarageDrafts().find(item => item.name === event.target.dataset.draftLoad);
+  if (!draft) return;
+  CBState.set({ garageState: draft.garageState, garageTier: draft.garageTier, garageRules: draft.garageRules || [], garageDraftName: draft.name });
+  renderGaragePage(CBRouter.current().params);
+}
+
+function deleteGarageDraft(event) {
+  const name = event.target.dataset.draftDelete;
+  if (!confirm(`Delete ${name}?`)) return;
+  try { localStorage.removeItem(`${garageDraftPrefix}${name}`); } catch {}
+  renderGaragePage(CBRouter.current().params);
 }
 
 async function renderDailySlate() {

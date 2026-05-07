@@ -6,6 +6,10 @@
     pinnedForCompare: [],
     autoplay: true,
     activeInspectorTab: 'outcome',
+    garageTier: 'declarative',
+    garageRules: [],
+    garageDraftName: 'coachbench-draft',
+    garageDrafts: [],
   };
   const subscribers = new Set();
 

@@ -2,7 +2,7 @@
   const ROUTES = [
     { name: 'replays', path: '/replays', pattern: /^\/replays\/?$/, build: () => '/replays' },
     { name: 'replay-detail', path: '/replays/:id', pattern: /^\/replays\/([^/]+)\/?$/, build: params => `/replays/${encodeURIComponent(params.id || 'seed-42')}${buildQuery(params, ['id'])}` },
-    { name: 'garage', path: '/garage', pattern: /^\/garage\/?$/, build: () => '/garage' },
+    { name: 'garage', path: '/garage', pattern: /^\/garage\/?$/, build: params => `/garage${buildQuery(params)}` },
     { name: 'reports', path: '/reports', pattern: /^\/reports\/?$/, build: params => `/reports${params.compare ? `?compare=${String(params.compare).split(',').map(encodeURIComponent).join(',')}` : ''}` },
     { name: 'arena', path: '/arena', pattern: /^\/arena\/?$/, build: () => '/arena' },
   ];

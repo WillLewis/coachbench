@@ -567,12 +567,111 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 .matrix tbody tr:nth-child(even) { background: var(--bg-elev-1); }
 .delta-neg { color: var(--warn); } .delta-pos { color: var(--accent); }
 
-.event-block, .profile-editor {
+.event-block {
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: 12px;
   background: var(--bg-elev-1);
   margin-top: 10px;
+}
+.compact-agent-card { display: grid; gap: 12px; }
+.agent-card-compact { display: grid; gap: 10px; }
+.agent-card-compact h3 { margin: 0; font-size: 16px; }
+.garage-route-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
+  gap: 16px;
+  align-items: start;
+}
+.garage-workbench { display: grid; gap: 16px; }
+.tier-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.tier-selector label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--bg-elev-1);
+  cursor: pointer;
+}
+.tier-selector input { accent-color: var(--accent); }
+.garage-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.garage-control-section { display: grid; align-content: start; gap: 12px; }
+.control-row {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+}
+.control-row select, .control-row input { width: 100%; }
+.help-text, .validation-message {
+  color: var(--text-faint);
+  font-size: 12px;
+  line-height: 1.35;
+}
+.has-error .validation-message { color: var(--warn); }
+.rule-builder { display: grid; gap: 12px; }
+.rule-row {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto minmax(140px, 0.7fr) auto minmax(150px, 0.8fr) 36px 36px 36px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-elev-1);
+}
+.icon-step {
+  min-height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg-elev-2);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.garage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.progress-button {
+  position: relative;
+  overflow: hidden;
+}
+.progress-button i {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  width: 0;
+  background: var(--accent);
+}
+.progress-button.ready i { width: 100%; }
+.garage-drafts { display: grid; gap: 12px; }
+.draft-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
+.draft-row button {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg-elev-1);
+  color: var(--text-muted);
+  padding: 6px 8px;
+  cursor: pointer;
 }
 .film-room-panel { display: grid; gap: 14px; }
 .film-compressed { display: grid; gap: 14px; }
@@ -651,8 +750,6 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 .slate-note { grid-area: note; margin: 0; color: var(--text-faint); font-size: 12px; }
 details summary { cursor: pointer; list-style: none; }
 details summary h2 { display: inline; }
-.garage-edit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.profile-editor label { display: grid; gap: 6px; margin: 8px 0; }
 select, input, textarea, .ghost-button {
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
@@ -746,7 +843,7 @@ code { color: var(--accent); }
   .site-nav, .topbar { display: grid; grid-template-columns: 1fr; align-items: stretch; }
   .nav-links { margin-left: 0; }
   .mode-banner { width: 100%; }
-  .main-grid, .three, .two, .footer-strip, .resource-grid, .garage-edit-grid, .slate-grid, .roster-grid { grid-template-columns: 1fr; }
+  .main-grid, .three, .two, .footer-strip, .resource-grid, .garage-form, .garage-route-grid, .slate-grid, .roster-grid { grid-template-columns: 1fr; }
   .scorecard { max-width: none; flex-basis: auto; }
 }
 

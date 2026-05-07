@@ -101,11 +101,9 @@
         </section>
 
         <footer class="footer-strip row-mount">
-          <article class="panel garage-panel">
-            <details open>
-              <summary><h2>Agent Garage</h2></summary>
-              <div id="garage"></div>
-            </details>
+          <article class="panel compact-agent-card">
+            <h2>Coordinator Agent</h2>
+            <div id="agentCard"></div>
           </article>
           <article class="panel"><h2>Daily Slate</h2><div id="dailySlate"></div></article>
           <article class="panel roster-panel"><h2>Roster Strengths</h2><div id="rosterStrengths"></div></article>
@@ -133,7 +131,62 @@
       <section class="hero row-mount">
         <p class="eyebrow">Agent Garage</p>
         <h1>Configure coordinator agents</h1>
-        <p id="garageRouteCopy" class="subhead"></p>
+        <p id="garageRouteCopy" class="subhead">Validation-first rule builder for fictional coordinator agents.</p>
+      </section>
+      <section class="garage-route-grid row-mount" data-garage-page>
+        <div class="garage-workbench">
+          <section class="panel">
+            <div class="panel-title">
+              <h2>Tier</h2>
+              <span>Local configuration</span>
+            </div>
+            <div id="garageTierSelector" class="tier-selector" role="radiogroup" aria-label="Agent tier">
+              <label><input type="radio" name="garage_tier" value="declarative" checked> Tier 0</label>
+              <label><input type="radio" name="garage_tier" value="prompt_policy"> Tier 1</label>
+              <label><input type="radio" name="garage_tier" value="remote_endpoint"> Tier 2</label>
+            </div>
+          </section>
+
+          <form id="garageForm" class="garage-form" novalidate>
+            <section class="panel garage-control-section" data-control-section="identity">
+              <h2>Identity</h2>
+              <div id="garageIdentityControls"></div>
+            </section>
+            <section class="panel garage-control-section" data-control-section="strategy">
+              <h2>Strategy</h2>
+              <div id="garageStrategyControls"></div>
+            </section>
+            <section class="panel garage-control-section" data-control-section="resource">
+              <h2>Resource</h2>
+              <div id="garageResourceControls"></div>
+            </section>
+          </form>
+
+          <section class="panel rule-builder" data-rule-builder>
+            <div class="panel-title">
+              <h2>Rule Chain Builder</h2>
+              <span>Max 8 rules</span>
+            </div>
+            <div id="ruleChain"></div>
+            <button id="addGarageRule" class="ghost-button" type="button">Add Rule</button>
+          </section>
+
+          <section class="panel garage-actions">
+            <button id="testDriveButton" class="btn progress-button" type="button" disabled title="Local script execution is unavailable from a static browser host."><span>Run test drive</span><i></i></button>
+            <a id="garageReplayLink" class="btn" href="#/replays/seed-42" hidden>Open replay →</a>
+          </section>
+        </div>
+
+        <aside class="panel garage-drafts">
+          <h2>Save / Load</h2>
+          <label class="control-row">
+            <span class="label">Draft Name</span>
+            <input id="garageDraftName" type="text" value="coachbench-draft">
+            <small class="help-text">Stores as a browser-local mirror of ui/garage_drafts/{name}.json.</small>
+          </label>
+          <button id="saveGarageDraft" class="ghost-button" type="button">Save Draft</button>
+          <div id="garageDrafts"></div>
+        </aside>
       </section>
     </section>
 
