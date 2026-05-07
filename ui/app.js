@@ -1,10 +1,15 @@
-let replay, graphCards = {}, conceptLabels = {}, profiles = {}, selectedIndex = 0, garageState = {}, auto = null;
+const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, sharedLoaded: false, replayId: null };
 const $ = id => document.getElementById(id);
 const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
+const replaySources = {
+  'seed-42': 'demo_replay.json',
+  'static-proof': 'static_proof_replay.json',
+};
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const label = key => conceptLabels[key] || String(key || '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+const label = key => runtime.conceptLabels[key] || String(key || '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
 const value = item => item === null || item === undefined || item === '' ? '-' : item;
 const pct = raw => Math.round(Number(raw || 0) * 100);
+const currentReplay = () => CBState.get().replay;
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -12,17 +17,53 @@ async function fetchJson(url) {
   return response.json();
 }
 
-async function loadReplay() {
-  replay = await fetchJson('demo_replay.json').catch(() => fetchJson('static_proof_replay.json'));
+async function loadSharedData() {
+  if (runtime.sharedLoaded) return;
   const [graph, concepts, loadedProfiles] = await Promise.all([
     fetchJson('../graph/redzone_v0/interactions.json').catch(() => ({ interactions: [] })),
     fetchJson('../graph/redzone_v0/concepts.json').catch(() => ({ offense: [], defense: [] })),
     fetchJson('../agent_garage/profiles.json').catch(() => ({})),
   ]);
-  graphCards = Object.fromEntries((graph.interactions || []).map(card => [card.id, card]));
-  [...(concepts.offense || []), ...(concepts.defense || [])].forEach(item => conceptLabels[item.id] = item.label || item.name);
-  profiles = loadedProfiles;
-  garageState = structuredClone(replay.agent_garage_config || {});
+  runtime.graphCards = Object.fromEntries((graph.interactions || []).map(card => [card.id, card]));
+  runtime.conceptLabels = {};
+  [...(concepts.offense || []), ...(concepts.defense || [])].forEach(item => runtime.conceptLabels[item.id] = item.label || item.name);
+  runtime.profiles = loadedProfiles;
+  runtime.sharedLoaded = true;
+}
+
+async function loadReplay(id) {
+  await loadSharedData();
+  const source = replaySources[id];
+  if (!source) {
+    renderReplayNotFound(id);
+    return;
+  }
+  const replay = await fetchJson(source).catch(error => {
+    if (id === 'seed-42') return fetchJson(replaySources['static-proof']);
+    throw error;
+  });
+  runtime.replayId = id;
+  CBState.set({
+    replay,
+    selectedIndex: 0,
+    garageState: structuredClone(replay.agent_garage_config || {}),
+    autoplay: !reduced(),
+  });
+  $('replayNotFound').hidden = true;
+  $('replayDetailContent').hidden = false;
+  renderAll();
+}
+
+function renderReplayNotFound(id) {
+  runtime.auto?.stop();
+  runtime.replayId = null;
+  CBState.set({ replay: null, selectedIndex: 0, garageState: {}, autoplay: false });
+  $('replayDetailContent').hidden = true;
+  $('replayNotFound').hidden = false;
+  $('replayNotFound').innerHTML = `<div class="panel"><h1>Replay not found</h1><p class="subhead">${CBEmptyStates.notFoundReplay(id)}</p><a class="btn" href="#/replays">Back to replays</a></div>`;
+}
+
+function renderAll() {
   renderHeader();
   renderGarage();
   renderDailySlate();
@@ -35,10 +76,53 @@ async function loadReplay() {
   setupAutoplay();
   selectPlay(0);
   mountRows(document);
-  if (!reduced()) auto.start();
+  if (!reduced()) runtime.auto.start();
+}
+
+function setActiveRoute(route) {
+  document.querySelectorAll('[data-route]').forEach(section => {
+    section.hidden = section.dataset.route !== route.name;
+  });
+  document.querySelectorAll('[data-route-link]').forEach(link => {
+    const active = link.dataset.routeLink === route.name || (link.dataset.routeLink === 'replays' && route.name === 'replay-detail');
+    link.classList.toggle('active', active);
+    link.setAttribute('aria-current', active ? 'page' : 'false');
+  });
+}
+
+async function handleRoute(route) {
+  setActiveRoute(route);
+  if (route.name !== 'replay-detail') runtime.auto?.stop();
+  if (route.name === 'replays') {
+    renderGallery();
+  } else if (route.name === 'replay-detail') {
+    await loadReplay(route.params.id);
+  } else if (route.name === 'garage') {
+    renderRouteStub('garageRouteCopy', 'Coming in Pass 6. ' + CBEmptyStates.emptyAgents());
+  } else if (route.name === 'reports') {
+    renderRouteStub('reportsRouteCopy', 'Coming in Pass 7.');
+  } else if (route.name === 'arena') {
+    renderRouteStub('arenaRouteCopy', 'Coming in Pass 8.');
+  }
+}
+
+function renderGallery() {
+  const target = $('replayGallery');
+  if (!target) return;
+  target.innerHTML = `<a class="replay-card panel" href="#/replays/seed-42">
+    <span class="eyebrow">Engine-generated replay</span>
+    <strong>Seed 42 showcase</strong>
+    <p>Team A coordinator agent vs Team B coordinator agent.</p>
+    <span class="btn">Open replay</span>
+  </a>`;
+}
+
+function renderRouteStub(id, copy) {
+  $(id).textContent = copy;
 }
 
 function renderHeader() {
+  const replay = currentReplay();
   const staticMode = replay.metadata.mode === 'static_proof';
   $('modeBanner').textContent = staticMode
     ? 'Phase 0B static schema/UI proof - not an engine-generated benchmark result.'
@@ -62,6 +146,7 @@ function formatValue(raw) {
 }
 
 function renderTimeline() {
+  const replay = currentReplay();
   $('timeline').innerHTML = '<div id="timelineIndicator" class="timeline-indicator"></div>';
   replay.plays.forEach((play, index) => {
     const btn = document.createElement('button');
@@ -69,21 +154,22 @@ function renderTimeline() {
     btn.type = 'button';
     btn.role = 'tab';
     btn.textContent = `Play ${play.public.play_index}`;
-    btn.onclick = () => { auto?.stop(); selectPlay(index); };
+    btn.onclick = () => { runtime.auto?.stop(); selectPlay(index); };
     btn.onkeydown = event => handleTimelineKey(event, index);
     $('timeline').appendChild(btn);
   });
   $('timeline').onkeydown = event => {
     if (event.key === ' ') {
       event.preventDefault();
-      auto?.toggle();
+      runtime.auto?.toggle();
     }
   };
 }
 
 function handleTimelineKey(event, index) {
-  if (event.key === 'ArrowRight') { event.preventDefault(); auto?.stop(); focusPlay(Math.min(index + 1, replay.plays.length - 1)); }
-  if (event.key === 'ArrowLeft') { event.preventDefault(); auto?.stop(); focusPlay(Math.max(index - 1, 0)); }
+  const replay = currentReplay();
+  if (event.key === 'ArrowRight') { event.preventDefault(); runtime.auto?.stop(); focusPlay(Math.min(index + 1, replay.plays.length - 1)); }
+  if (event.key === 'ArrowLeft') { event.preventDefault(); runtime.auto?.stop(); focusPlay(Math.max(index - 1, 0)); }
   if (event.key === 'Enter') { event.preventDefault(); selectPlay(index); }
 }
 
@@ -94,7 +180,8 @@ function focusPlay(index) {
 }
 
 function selectPlay(index) {
-  selectedIndex = index;
+  CBState.set({ selectedIndex: index });
+  const replay = currentReplay();
   const play = replay.plays[index];
   const prior = index > 0 ? replay.plays[index - 1] : null;
   document.querySelectorAll('button.play').forEach((button, i) => {
@@ -172,7 +259,7 @@ function renderResources(snapshot, prior) {
 }
 
 function renderGraphCards(ids) {
-  $('graphCards').innerHTML = ids.map(id => graphCardHtml(graphCards[id], id)).join('') || '<p class="muted">No graph card on this play.</p>';
+  $('graphCards').innerHTML = ids.map(id => graphCardHtml(runtime.graphCards[id], id)).join('') || `<p class="muted">${CBEmptyStates.emptyGraphEvidence()}</p>`;
 }
 
 function graphCardHtml(card, id) {
@@ -199,6 +286,7 @@ function renderEvents(play) {
 }
 
 function renderAdaptationChain() {
+  const replay = currentReplay();
   const chain = replay.film_room?.adaptation_chain || [];
   if (!chain.length) {
     $('adaptationChain').innerHTML = '<p class="muted">No high-leverage adaptation on this drive.</p>';
@@ -224,6 +312,7 @@ function renderValidation(result) {
 }
 
 function renderDriveSummary() {
+  const replay = currentReplay();
   const last = replay.plays.at(-1).public;
   const points = replay.plays.map(play => Number(play.public.expected_value_delta || 0));
   const best = replay.plays.reduce((winner, play) =>
@@ -262,6 +351,7 @@ function sparkline(values) {
 }
 
 function renderFilmRoom() {
+  const replay = currentReplay();
   const room = replay.film_room || {};
   const list = items => ((items || []).slice(0, 5).map(item => `<li>${item}</li>`).join('') || '<li class="muted">-</li>') + ((items || []).length > 5 ? `<li class="muted">and ${(items || []).length - 5} more</li>` : '');
   const next = room.next_adjustment ? `<p class="next-adjustment">${room.next_adjustment}</p>` : '';
@@ -269,13 +359,14 @@ function renderFilmRoom() {
 }
 
 function renderGarage() {
-  const cfg = garageState || {};
+  const { replay, garageState } = CBState.get();
   $('garage').innerHTML = `<div class="kv"><span>Offense</span><strong>${replay.agents.offense}</strong></div><div class="kv"><span>Defense</span><strong>${replay.agents.defense}</strong></div><div class="garage-edit-grid">${profileEditor('offense_profile')}${profileEditor('defense_profile')}</div><button id="copyGarage" class="ghost-button" type="button">Copy Profile Payload</button><textarea id="garagePayload" readonly>${garagePayload()}</textarea>`;
   $('copyGarage').onclick = () => navigator.clipboard?.writeText($('garagePayload').value);
   document.querySelectorAll('[data-profile]').forEach(input => input.oninput = updateGarage);
 }
 
 function profileEditor(profileKey) {
+  const garageState = CBState.get().garageState;
   const profile = garageState[profileKey] || {};
   const set = controls.filter(key => profile[key] !== undefined && profile[key] !== null && profile[key] !== '');
   const missing = controls.filter(key => !set.includes(key)).map(label).join(', ');
@@ -290,6 +381,7 @@ function controlInput(profileKey, key, current) {
 }
 
 function optionValues(key, current) {
+  const profiles = runtime.profiles;
   if (key.includes('archetype')) return [...new Set([current, ...(profiles.offense_archetypes ? Object.values(profiles.offense_archetypes).map(p => p.label) : []), ...(profiles.defense_archetypes ? Object.values(profiles.defense_archetypes).map(p => p.label) : [])])];
   if (key === 'risk_tolerance') return [...new Set([current, 'low', 'medium_low', 'medium', 'medium_high', 'high'])];
   if (key === 'resource_conservation') return [...new Set([current, 'low', 'balanced', 'high'])];
@@ -298,11 +390,14 @@ function optionValues(key, current) {
 
 function updateGarage(event) {
   const { profile, key } = event.target.dataset;
-  garageState[profile][key] = event.target.type === 'range' ? Number(event.target.value) : event.target.value;
+  const next = structuredClone(CBState.get().garageState);
+  next[profile][key] = event.target.type === 'range' ? Number(event.target.value) : event.target.value;
+  CBState.set({ garageState: next });
   renderGarage();
 }
 
 function garagePayload() {
+  const { replay, garageState } = CBState.get();
   return JSON.stringify({ note: 'Paste this payload into a local profile note; browser edits do not rerun the engine.', command: `python scripts/run_showcase.py --seed ${replay.metadata.seed_hash ? 42 : 42} --offense adaptive --defense adaptive --out data/demo_replay.json --copy-ui`, agent_garage_config: garageState }, null, 2);
 }
 
@@ -313,7 +408,7 @@ async function renderDailySlate() {
     const results = await fetchJson('../data/daily_slate/results.json').catch(() => ({ results: [] }));
     target.innerHTML = `<div class="slate-grid">${(slate.entries || []).map((entry, i) => slateCard(entry, i, results.results || [])).join('')}</div>`;
   } catch {
-    target.innerHTML = '<p class="muted">Daily Slate sample not present.</p>';
+    target.innerHTML = `<p class="muted">${CBEmptyStates.emptySlate()}</p>`;
   }
 }
 
@@ -330,6 +425,7 @@ function slateCard(entry, index, results) {
 }
 
 function renderRosterStrengths() {
+  const replay = currentReplay();
   const rosters = replay.agent_garage_config?.rosters;
   if (!rosters) {
     $('rosterStrengths').innerHTML = '<p class="muted">No roster applied - running on neutral baseline.</p>';
@@ -379,7 +475,7 @@ function closeGraphExplorer() {
 
 function renderGraphExplorer() {
   const query = ($('graphSearch').value || '').toLowerCase();
-  const cards = Object.values(graphCards).filter(card => JSON.stringify(card).toLowerCase().includes(query));
+  const cards = Object.values(runtime.graphCards).filter(card => JSON.stringify(card).toLowerCase().includes(query));
   $('graphExplorerList').innerHTML = cards.map(card => graphCardHtml(card, card.id)).join('') || '<p class="muted">No matching graph cards.</p>';
 }
 
@@ -403,26 +499,29 @@ function createAutoplay({ count, intervalMs, onTick, onStateChange }) {
   const start = () => {
     if (running || count < 2) return;
     running = true;
+    CBState.set({ autoplay: true });
     state();
-    timer = setInterval(() => onTick((selectedIndex + 1) % count), intervalMs);
+    timer = setInterval(() => onTick((CBState.get().selectedIndex + 1) % count), intervalMs);
   };
   const stop = () => {
     if (timer) clearInterval(timer);
     timer = null;
     running = false;
+    CBState.set({ autoplay: false });
     state();
   };
   return { start, stop, toggle: () => running ? stop() : start(), isRunning: () => running, dispose: stop };
 }
 
 function setupAutoplay() {
-  auto = createAutoplay({
+  const replay = currentReplay();
+  runtime.auto = createAutoplay({
     count: replay.plays.length,
     intervalMs: 3500,
     onTick: i => selectPlay(i),
     onStateChange: updatePlayPauseButton,
   });
-  $('playPause').onclick = () => auto.toggle();
+  $('playPause').onclick = () => runtime.auto.toggle();
 }
 
 function updatePlayPauseButton(running) {
@@ -436,7 +535,7 @@ function updatePlayPauseButton(running) {
 }
 
 function restartAutoplayProgress() {
-  if (!auto?.isRunning()) return;
+  if (!runtime.auto?.isRunning()) return;
   const progress = $('autoplayProgress');
   progress.classList.remove('running');
   void progress.offsetWidth;
@@ -453,6 +552,9 @@ function mountRows(root) {
   }) : null;
 }
 
-loadReplay().catch(error => {
-  document.body.innerHTML = `<pre>Failed to load replay: ${error}</pre>`;
+CBRouter.subscribe(route => handleRoute(route).catch(error => {
+  document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
+}));
+handleRoute(CBRouter.current()).catch(error => {
+  document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
 });
