@@ -16,6 +16,25 @@ const garageControlSections = {
   resource: ['resource_conservation'],
 };
 const numericControls = new Set(['adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'disguise_sensitivity', 'counter_repeat_tolerance']);
+const CHIP_FAMILY = {
+  inside_zone: 'run', outside_zone: 'run', power_counter: 'run',
+  quick_game: 'pass', bunch_mesh: 'pass', vertical_shot: 'pass',
+  rpo_glance: 'trick', play_action_flood: 'trick', screen: 'trick', bootleg: 'trick',
+  base_cover3: 'coverage', cover3_match: 'coverage', quarters_match: 'coverage',
+  cover1_man: 'coverage', two_high_shell: 'coverage', redzone_bracket: 'coverage', trap_coverage: 'coverage',
+  zero_pressure: 'pressure', simulated_pressure: 'pressure',
+  bear_front: 'front',
+};
+const CHIP_CARD_CONCEPT = {
+  'redzone.bunch_mesh_vs_match.v1': 'bunch_mesh',
+  'redzone.screen_vs_zero_pressure.v1': 'screen',
+  'redzone.screen_vs_simulated_pressure.v1': 'screen',
+  'redzone.outside_zone_vs_bear.v1': 'bear_front',
+  'redzone.play_action_after_run_tendency.v1': 'play_action_flood',
+  'redzone.vertical_vs_two_high.v1': 'two_high_shell',
+  'redzone.quick_game_vs_two_high.v1': 'quick_game',
+  'redzone.rpo_vs_static_zone.v1': 'rpo_glance',
+};
 const garageDraftPrefix = 'coachbench.garageDraft.';
 const motionQuery = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 const reduced = () => typeof document !== 'undefined' && document.documentElement.classList.contains('reduced-motion');
@@ -33,6 +52,20 @@ const toHandle = raw => {
 const displayHandle = raw => {
   const handle = toHandle(raw);
   return handle.replace(/^team[ab]/, '').replace(/^team/, '') || handle;
+};
+const chipConceptFor = id => CHIP_CARD_CONCEPT[String(id || '').toLowerCase()] || String(id || '').toLowerCase();
+const chipClassFor = id => {
+  const family = CHIP_FAMILY[chipConceptFor(id)];
+  return family ? `chip chip--${family}` : 'chip';
+};
+const formatMatchup = raw => {
+  const parts = String(raw || '').split(/\s*(?:vs|⇌|⇄|—|–|-)\s*/i).filter(Boolean);
+  if (parts.length < 2) return toHandle(raw);
+  return `${toHandle(parts[0])} ⇌ ${toHandle(parts[1])}`;
+};
+const terminalClass = terminal => {
+  const value = String(terminal || '').toLowerCase();
+  return value === 'touchdown' || value === 'stopped' ? value : '';
 };
 
 async function fetchJson(url) {
@@ -175,8 +208,10 @@ async function handleRoute(route) {
 }
 
 async function renderGallery() {
+  ensureReplayGalleryShell();
   const target = $('replayGallery');
   if (!target) return;
+  await loadSharedData();
   const index = await loadReplayIndex();
   if (!index.length) {
     target.innerHTML = `<div class="panel empty-state"><p class="subhead">${CBEmptyStates.emptyReplays()}</p><code>python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui</code></div>`;
@@ -205,28 +240,70 @@ function renderReports(compare) {
 function renderReplayCard(item) {
   const pinned = CBState.get().pinnedForCompare.includes(item.id);
   const seed = item.id === 'static-proof' ? 'STATIC PROOF' : `SEED ${item.seed}`;
+  const terminal = terminalClass(item.terminal_result);
   const offenseLabel = displayHandle(item.offense_label || 'Team A coordinator agent') || 'coordinatoragent';
   const defenseLabel = displayHandle(item.defense_label || 'Team B coordinator agent') || 'coordinatoragent';
+  const tierColorCount = [item.tier_offense, item.tier_defense].filter(tier => Number(tier) > 0).length;
+  const conceptChips = galleryConceptChips(item, Math.max(0, 3 - tierColorCount));
   return `<article class="replay-card panel" data-gallery-card="${escapeHtml(item.id)}">
     <button class="compare-toggle" type="button" data-compare-id="${escapeHtml(item.id)}" aria-pressed="${pinned}">${pinned ? 'Pinned' : '+ Compare'}</button>
     <a class="replay-card-main" href="#/replays/${encodeURIComponent(item.id)}">
-      <span class="eyebrow" data-card-field="eyebrow">${seed} · RED ZONE · ${item.plays} PLAYS</span>
-      <strong data-card-field="matchup">${escapeHtml(item.matchup)}</strong>
+      <span class="eyebrow" data-card-field="eyebrow"><span class="seed-dot ${terminal ? `seed-dot--${terminal}` : ''}"></span>${seed} · RED ZONE · ${item.plays} PLAYS</span>
+      <strong data-card-field="matchup">${escapeHtml(formatMatchup(item.matchup))}</strong>
       <span class="result-row" data-card-field="result"><span>${escapeHtml(item.result)}</span><em>${escapeHtml(item.outcome_chip || label(item.terminal_result))}</em></span>
-      <span class="tier-row"><span class="tier-chip" data-tier-chip="offense">${escapeHtml(offenseLabel)} · Tier ${item.tier_offense}</span><span class="tier-chip" data-tier-chip="defense">${escapeHtml(defenseLabel)} · Tier ${item.tier_defense}</span></span>
-      ${gallerySparkline(item.sparkline || [])}
+      <span class="tier-row"><span class="tier-chip" data-tier-chip="offense" data-tier-num="${escapeHtml(item.tier_offense ?? '')}">${escapeHtml(offenseLabel)} · Tier ${item.tier_offense}</span><span class="tier-chip" data-tier-chip="defense" data-tier-num="${escapeHtml(item.tier_defense ?? '')}">${escapeHtml(defenseLabel)} · Tier ${item.tier_defense}</span></span>
+      ${conceptChips ? `<span class="gallery-concepts">${conceptChips}</span>` : ''}
+      ${gallerySparkline(item.sparkline || [], item.terminal_result)}
       <span class="metric-row"><span data-card-field="invalid_actions">${item.invalid_actions} invalid actions</span><span data-card-field="top_graph_event">${escapeHtml(truncate(item.top_graph_event))}</span></span>
     </a>
   </article>`;
 }
 
-function gallerySparkline(values) {
+function ensureReplayGalleryShell() {
+  const route = document.querySelector('[data-route="replays"]');
+  if (!route || route.dataset.galleryShell === 'ready') return;
+  const gallery = $('replayGallery') || document.createElement('div');
+  gallery.id = 'replayGallery';
+  gallery.className = 'replay-gallery';
+  route.innerHTML = '<header class="gallery-header"><h2>All replays</h2><p class="muted">Browse every seeded run. Pin two or more to compare.</p></header>';
+  route.appendChild(gallery);
+  route.dataset.galleryShell = 'ready';
+}
+
+function galleryConceptChips(item, coloredBudget) {
+  return galleryConceptIds(item).slice(0, 6).map((id, index) => {
+    const klass = index < coloredBudget ? chipClassFor(id) : 'chip';
+    return `<span class="${klass}" title="${escapeHtml(id)}">${escapeHtml(galleryChipLabel(id))}</span>`;
+  }).join('');
+}
+
+function galleryConceptIds(item) {
+  const ids = [];
+  if (item.top_concept) ids.push(item.top_concept);
+  const eventText = String(item.top_graph_event || '').toLowerCase();
+  if (eventText) {
+    const match = Object.values(runtime.graphCards).find(card => String(card.name || '').toLowerCase() === eventText);
+    if (match) ids.push(chipConceptFor(match.id));
+  }
+  return [...new Set(ids.filter(Boolean))];
+}
+
+function galleryChipLabel(id) {
+  const conceptId = chipConceptFor(id);
+  return runtime.conceptLabels[conceptId] || label(conceptId);
+}
+
+function gallerySparkline(values, terminal) {
+  const status = terminalClass(terminal);
+  const klass = status === 'touchdown' ? 'gallery-sparkline gallery-sparkline--positive'
+    : status === 'stopped' ? 'gallery-sparkline gallery-sparkline--negative'
+      : 'gallery-sparkline';
   const nums = values.length ? values.map(Number) : [0];
   const min = Math.min(...nums), max = Math.max(...nums), range = max - min || 1;
   const x = i => nums.length === 1 ? 4 : 4 + (i / (nums.length - 1)) * 88;
   const y = raw => 20 - ((raw - min) / range) * 16;
   const points = nums.map((raw, i) => `${x(i).toFixed(2)},${y(raw).toFixed(2)}`).join(' ');
-  return `<svg class="gallery-sparkline" width="96" height="24" viewBox="0 0 96 24" aria-hidden="true" data-card-field="sparkline"><path class="gallery-spark-line" d="M${points.replaceAll(' ', ' L')}"></path></svg>`;
+  return `<svg class="${klass}" width="96" height="24" viewBox="0 0 96 24" aria-hidden="true" data-card-field="sparkline"><path class="gallery-spark-line" d="M${points.replaceAll(' ', ' L')}"></path></svg>`;
 }
 
 function toggleCompare(id) {
@@ -369,11 +446,7 @@ function feedCard(play, index) {
 }
 
 function graphChipClass(cardId, isAdaptation) {
-  if (isAdaptation) return 'chip chip--insight';
-  const side = runtime.graphCards[cardId]?.side;
-  if (side === 'offense') return 'chip chip--offense';
-  if (side === 'defense') return 'chip chip--defense';
-  return 'chip';
+  return chipClassFor(cardId);
 }
 
 function causalLine(play) {

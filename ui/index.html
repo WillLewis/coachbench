@@ -40,5 +40,32 @@
   <script src="topbar.js"></script>
   <script src="field_render.js"></script>
   <script src="home.js"></script>
+  <script>
+    (() => {
+      const toHandle = raw => String(raw || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
+      const formatMatchup = raw => {
+        const parts = String(raw || '').split(/\s*(?:vs|⇌|⇄|—|–|-)\s*/i).filter(Boolean);
+        if (parts.length < 2) return toHandle(raw);
+        return `${toHandle(parts[0])} ⇌ ${toHandle(parts[1])}`;
+      };
+      const formatHomeHandles = () => {
+        const meta = document.getElementById('featuredMeta');
+        const metaMatch = meta?.textContent.match(/^(FEATURED REPLAY · SEED \d+ · )(.+)$/i);
+        if (metaMatch) {
+          const next = `${metaMatch[1]}${formatMatchup(metaMatch[2])}`;
+          if (meta.textContent !== next) meta.textContent = next;
+        }
+        document.querySelectorAll('.home-replay-card strong').forEach(node => {
+          const next = formatMatchup(node.textContent);
+          if (node.textContent !== next) node.textContent = next;
+        });
+      };
+      document.addEventListener('DOMContentLoaded', () => {
+        const root = document.querySelector('.home-shell');
+        if (root) new MutationObserver(formatHomeHandles).observe(root, { childList: true, subtree: true, characterData: true });
+        formatHomeHandles();
+      });
+    })();
+  </script>
 </body>
 </html>

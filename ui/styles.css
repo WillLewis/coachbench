@@ -22,6 +22,18 @@
   --insight-soft: rgba(196,181,253,0.10);
   --field: #13201E;
   --ball: #FBBF24;
+  --chip-run: #FF9F5A;
+  --chip-run-soft: rgba(255,159,90,0.12);
+  --chip-pass: #5BA3FF;
+  --chip-pass-soft: rgba(91,163,255,0.12);
+  --chip-trick: #C4B5FD;
+  --chip-trick-soft: rgba(196,181,253,0.12);
+  --chip-coverage: #38D8D2;
+  --chip-coverage-soft: rgba(56,216,210,0.12);
+  --chip-pressure: #FB7185;
+  --chip-pressure-soft: rgba(251,113,133,0.12);
+  --chip-front: #F5B342;
+  --chip-front-soft: rgba(245,179,66,0.12);
   --accent: var(--brand);
   --accent-soft: var(--brand-soft);
   --warn: var(--negative);
@@ -440,18 +452,25 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 .tier-chip {
   color: var(--text-muted);
   background: var(--bg-elev-2);
+  border-color: var(--border);
 }
 .tier-chip[data-tier-chip="offense"] { border-left: 2px solid var(--offense); }
 .tier-chip[data-tier-chip="defense"] { border-left: 2px solid var(--defense); }
+.tier-chip[data-tier-num="1"] { color: var(--brand); background: var(--brand-soft); border-color: rgba(242,184,92,0.32); }
+.tier-chip[data-tier-num="2"] { color: var(--insight); background: var(--insight-soft); border-color: rgba(196,181,253,0.32); }
+.tier-chip[data-tier-num][data-tier-chip="offense"] { border-left: 2px solid var(--offense); }
+.tier-chip[data-tier-num][data-tier-chip="defense"] { border-left: 2px solid var(--defense); }
 .result-row em { color: var(--text-muted); background: var(--bg-elev-2); border-color: var(--border); }
 .gallery-sparkline { width: 96px; height: 24px; overflow: visible; }
-.gallery-spark-line {
+.gallery-sparkline .gallery-spark-line {
   fill: none;
   stroke: var(--text-muted);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.gallery-sparkline--positive .gallery-spark-line { stroke: var(--positive); }
+.gallery-sparkline--negative .gallery-spark-line { stroke: var(--negative); }
 .sparkline--offense path { stroke: var(--offense); }
 .sparkline--defense path { stroke: var(--defense); }
 .replay-card:hover .gallery-spark-line, .replay-card:focus-within .gallery-spark-line {
@@ -462,6 +481,24 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   color: var(--text-muted);
   font-size: 13px;
 }
+.gallery-concepts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gallery-concepts .chip { margin: 0; animation: none; }
+.gallery-header { margin-bottom: 16px; }
+.seed-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--text-faint);
+}
+.seed-dot--touchdown { background: var(--positive); }
+.seed-dot--stopped { background: var(--negative); }
 .compare-tray {
   position: sticky;
   bottom: 16px;
@@ -793,6 +830,12 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 .chip--offense { color: var(--offense); border-color: rgba(255,122,89,0.32); background: var(--offense-soft); }
 .chip--defense { color: var(--defense); border-color: rgba(79,179,255,0.32); background: var(--defense-soft); }
 .chip--insight { color: var(--insight); border-color: rgba(196,181,253,0.32); background: var(--insight-soft); }
+.chip--run { color: var(--chip-run); background: var(--chip-run-soft); border-color: rgba(255,159,90,0.32); }
+.chip--pass { color: var(--chip-pass); background: var(--chip-pass-soft); border-color: rgba(91,163,255,0.32); }
+.chip--trick { color: var(--chip-trick); background: var(--chip-trick-soft); border-color: rgba(196,181,253,0.32); }
+.chip--coverage { color: var(--chip-coverage); background: var(--chip-coverage-soft); border-color: rgba(56,216,210,0.32); }
+.chip--pressure { color: var(--chip-pressure); background: var(--chip-pressure-soft); border-color: rgba(251,113,133,0.32); }
+.chip--front { color: var(--chip-front); background: var(--chip-front-soft); border-color: rgba(245,179,66,0.32); }
 .card-ref, .resource-card { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
 .card-ref:first-child { border-top: 0; padding-top: 0; }
 .bar { margin: 12px 0; }
