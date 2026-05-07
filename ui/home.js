@@ -15,20 +15,6 @@
   const $ = id => document.getElementById(id);
   const label = raw => String(raw || '').replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
   const compact = raw => String(raw || '').replaceAll('_', ' ');
-  const CHIP_FAMILY = {
-    inside_zone: 'run', outside_zone: 'run', power_counter: 'run',
-    quick_game: 'pass', bunch_mesh: 'pass', vertical_shot: 'pass',
-    rpo_glance: 'trick', play_action_flood: 'trick', screen: 'trick', bootleg: 'trick',
-    base_cover3: 'coverage', cover3_match: 'coverage', quarters_match: 'coverage',
-    cover1_man: 'coverage', two_high_shell: 'coverage', redzone_bracket: 'coverage', trap_coverage: 'coverage',
-    zero_pressure: 'pressure', simulated_pressure: 'pressure',
-    bear_front: 'front',
-  };
-  const chipClassFor = id => {
-    const family = CHIP_FAMILY[String(id || '').toLowerCase()];
-    return family ? `chip--${family}` : '';
-  };
-  const resultClass = result => String(result || '').toLowerCase().replace(/[^a-z0-9_-]/g, '');
 
   async function fetchJson(path) {
     const response = await fetch(path);
@@ -75,7 +61,7 @@
       host.dataset.ready = 'true';
     }
     CBField.positionBall($('homeBall'), play.public.next_state.yardline, play.public.terminal_reason, reducedQuery.matches);
-    $('featuredMeta').textContent = `FEATURED REPLAY · SEED ${item.seed} · ${item.offense_handle} vs ${item.defense_handle}`;
+    $('featuredMeta').innerHTML = `<span class="${CBChips.seedDotClass(replay.score?.result)}"></span>FEATURED REPLAY · SEED ${item.seed} · ${item.offense_handle} ⇌ ${item.defense_handle}`;
     $('downsStrip').textContent = CBField.downsText(play);
     $('downsStrip').classList.toggle('is-touchdown', play.public.terminal_reason === 'touchdown');
     $('postDrive').innerHTML = postDriveHtml(item, replay);
@@ -152,23 +138,11 @@
   }
 
   function renderGallery() {
-    $('homeGallery').innerHTML = state.manifest.map(item => `<a class="home-replay-card" href="/ui/replay.html?seed=${item.seed}">
-      <span class="eyebrow"><span class="seed-dot seed-dot--${resultClass(item.summary.result)}"></span>SEED ${item.seed}</span>
-      <strong>${item.offense_handle} ⇄ ${item.defense_handle}</strong>
-      <span>${item.summary.points} pts · ${label(item.summary.result)}</span>
-      <span>${item.summary.plays} plays · ${item.summary.invalid_action_count} invalid</span>
-      ${sparkline(item.ep_sparkline || [], item.summary.result)}
-      <span class="home-chip-row"><span class="chip">Tier ${tierNumber(item.offense_tier)}</span><span class="chip ${chipClassFor(item.summary.top_concept)}">${label(item.summary.top_concept)}</span></span>
-    </a>`).join('');
-  }
-
-  function tierNumber(tier) {
-    return tier === 'prompt_policy' ? 1 : 0;
+    CBGallery.render('homeGallery', { replays: state.manifest });
   }
 
   function sparkline(values, result) {
-    const status = resultClass(result);
-    const klass = status ? `home-sparkline home-sparkline--${status}` : 'home-sparkline';
+    const klass = CBChips.sparklineClass('home-sparkline', result);
     const nums = values.length ? values.map(Number) : [0];
     const min = Math.min(...nums), max = Math.max(...nums), range = max - min || 1;
     const x = i => nums.length === 1 ? 2 : 2 + (i / (nums.length - 1)) * 60;

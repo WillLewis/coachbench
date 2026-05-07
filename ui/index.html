@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench</title>
-  <link rel="stylesheet" href="styles.css?v=home-entry" />
+  <link rel="stylesheet" href="styles.css?v=home-chips-v1" />
 </head>
 <body>
   <div id="topbar"></div>
@@ -39,6 +39,8 @@
   </main>
   <script src="topbar.js"></script>
   <script src="field_render.js"></script>
+  <script src="chips.js"></script>
+  <script src="gallery.js"></script>
   <script src="home.js"></script>
   <script>
     (() => {
@@ -53,7 +55,8 @@
         const metaMatch = meta?.textContent.match(/^(FEATURED REPLAY · SEED \d+ · )(.+)$/i);
         if (metaMatch) {
           const next = `${metaMatch[1]}${formatMatchup(metaMatch[2])}`;
-          if (meta.textContent !== next) meta.textContent = next;
+          const dot = meta.querySelector('.seed-dot');
+          if (meta.textContent !== next || !dot) meta.innerHTML = `<span class="${dot?.className || 'seed-dot'}"></span>${next}`;
         }
         document.querySelectorAll('.home-replay-card strong').forEach(node => {
           const next = formatMatchup(node.textContent);

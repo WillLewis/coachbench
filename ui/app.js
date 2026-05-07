@@ -1,4 +1,4 @@
-const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null };
+const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null, manifest: null };
 const $ = id => document.getElementById(id);
 const fallbackReplaySources = {
   'seed-42': 'demo_replay.json',
@@ -16,15 +16,6 @@ const garageControlSections = {
   resource: ['resource_conservation'],
 };
 const numericControls = new Set(['adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'disguise_sensitivity', 'counter_repeat_tolerance']);
-const CHIP_FAMILY = {
-  inside_zone: 'run', outside_zone: 'run', power_counter: 'run',
-  quick_game: 'pass', bunch_mesh: 'pass', vertical_shot: 'pass',
-  rpo_glance: 'trick', play_action_flood: 'trick', screen: 'trick', bootleg: 'trick',
-  base_cover3: 'coverage', cover3_match: 'coverage', quarters_match: 'coverage',
-  cover1_man: 'coverage', two_high_shell: 'coverage', redzone_bracket: 'coverage', trap_coverage: 'coverage',
-  zero_pressure: 'pressure', simulated_pressure: 'pressure',
-  bear_front: 'front',
-};
 const CHIP_CARD_CONCEPT = {
   'redzone.bunch_mesh_vs_match.v1': 'bunch_mesh',
   'redzone.screen_vs_zero_pressure.v1': 'screen',
@@ -54,10 +45,7 @@ const displayHandle = raw => {
   return handle.replace(/^team[ab]/, '').replace(/^team/, '') || handle;
 };
 const chipConceptFor = id => CHIP_CARD_CONCEPT[String(id || '').toLowerCase()] || String(id || '').toLowerCase();
-const chipClassFor = id => {
-  const family = CHIP_FAMILY[chipConceptFor(id)];
-  return family ? `chip chip--${family}` : 'chip';
-};
+const chipClassFor = id => window.CBChips?.chipClassFor(chipConceptFor(id)) || 'chip';
 const formatMatchup = raw => {
   const parts = String(raw || '').split(/\s*(?:vs|⇌|⇄|—|–|-)\s*/i).filter(Boolean);
   if (parts.length < 2) return toHandle(raw);
@@ -85,6 +73,12 @@ async function loadReplayIndex() {
   return runtime.replayIndex;
 }
 
+async function loadManifest() {
+  if (runtime.manifest) return runtime.manifest;
+  runtime.manifest = await fetchJson('showcase_manifest.json').catch(() => ({ replays: [] }));
+  return runtime.manifest;
+}
+
 async function loadSharedData() {
   if (runtime.sharedLoaded) return;
   const [graph, concepts, loadedProfiles] = await Promise.all([
@@ -102,6 +96,7 @@ async function loadSharedData() {
 async function loadReplay(id, playParam) {
   await loadSharedData();
   await loadReplayIndex();
+  await loadManifest();
   const source = runtime.replaySources[id] || fallbackReplaySources[id] || showcaseReplaySource(id);
   if (!source) {
     renderReplayNotFound(id);
@@ -390,6 +385,7 @@ function largestBeliefShift(play, prior) {
 function renderHeader() {
   const replay = currentReplay();
   const staticMode = replay.metadata.mode === 'static_proof';
+  renderReplayHero(replay);
   $('modeBanner').textContent = staticMode
     ? 'Phase 0B static schema/UI proof - not an engine-generated benchmark result.'
     : 'Engine-generated replay';
@@ -399,6 +395,19 @@ function renderHeader() {
   $('episodeLabel').textContent = replay.metadata.episode_id;
   if (replay.score.result === 'touchdown') flashScore('good');
   if (replay.score.result === 'stopped') flashScore('warn');
+}
+
+function renderReplayHero(replay) {
+  const seed = new URLSearchParams(window.location.search).get('seed') || String(runtime.replayId || '').match(/^seed-(\d+)$/)?.[1];
+  const meta = (runtime.manifest?.replays || []).find(item => String(item.seed) === String(seed));
+  const offenseHandle = displayHandle(meta?.offense_handle || replay.agents?.offense || 'team a');
+  const defenseHandle = displayHandle(meta?.defense_handle || replay.agents?.defense || 'team b');
+  const matchup = $('replayHeroMatchup');
+  const metaLine = $('replayHeroMeta');
+  if (matchup) matchup.textContent = `${offenseHandle || 'offense'} ⇌ ${defenseHandle || 'defense'}`;
+  if (metaLine) {
+    metaLine.innerHTML = `SEED ${seed ?? '—'}<span class="dot"></span>${replay.plays.length} plays<span class="dot"></span>${label(replay.score.result)}<span class="dot"></span>${replay.score.points} pts`;
+  }
 }
 
 function kvRows(obj, keys = Object.keys(obj || {})) {
@@ -671,20 +680,22 @@ function renderDriveSummary() {
 
 function sparkline(values) {
   if (!values.length) return '';
+  const W = 720, H = 180;
+  const padL = 36, padR = 32, padT = 28, padB = 28;
   const min = Math.min(...values), max = Math.max(...values), range = max - min || 1;
-  const x = i => 18 + (i / Math.max(1, values.length - 1)) * 172;
-  const y = v => 118 - ((v - min) / range) * 82;
-  const pts = values.map((v, i) => `${x(i)},${y(v)}`).join(' ');
-  const zeroY = min <= 0 && max >= 0 ? y(0) : y(min);
+  const x = i => padL + (i / Math.max(1, values.length - 1)) * (W - padL - padR);
+  const y = v => H - padB - ((v - min) / range) * (H - padT - padB);
+  const pts = values.map((v, i) => `${x(i).toFixed(2)},${y(v).toFixed(2)}`).join(' ');
+  const zeroY = (min <= 0 && max >= 0 ? y(0) : y(min)).toFixed(2);
   const bestIndex = values.reduce((winner, v, i) => Math.abs(v) > Math.abs(values[winner]) ? i : winner, 0);
   const bestValue = values[bestIndex];
-  const ticks = values.map((_, i) => `<text class="spark-tick" x="${x(i)}" y="144" text-anchor="middle">${i + 1}</text>`).join('');
-  return `<div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 150" preserveAspectRatio="none">
-    <text class="spark-label" x="0" y="20">EP delta</text>
-    <line class="spark-axis" x1="16" x2="192" y1="${zeroY}" y2="${zeroY}"></line>
+  const ticks = values.map((_, i) => `<text class="spark-tick" x="${x(i).toFixed(2)}" y="${(H - padB + 18).toFixed(2)}" text-anchor="middle">${i + 1}</text>`).join('');
+  return `<div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Expected-value delta per play">
+    <text class="spark-label" x="${padL}" y="20">EP delta</text>
+    <line class="spark-axis" x1="${padL}" x2="${W - padR}" y1="${zeroY}" y2="${zeroY}"></line>
     <path class="draw-on-mount" d="M${pts.replaceAll(' ', ' L')}" />
-    <circle class="spark-dot" cx="${x(bestIndex)}" cy="${y(bestValue)}" r="4"></circle>
-    <text class="spark-dot-label" x="${Math.min(172, x(bestIndex) + 6)}" y="${Math.max(12, y(bestValue) - 7)}">${bestValue >= 0 ? '+' : ''}${bestValue.toFixed(2)}</text>
+    <circle class="spark-dot" cx="${x(bestIndex).toFixed(2)}" cy="${y(bestValue).toFixed(2)}" r="4"></circle>
+    <text class="spark-dot-label" x="${Math.min(W - padR - 4, x(bestIndex) + 8).toFixed(2)}" y="${Math.max(14, y(bestValue) - 8).toFixed(2)}">${bestValue >= 0 ? '+' : ''}${bestValue.toFixed(2)}</text>
     ${ticks}
   </svg></div>`;
 }

@@ -347,26 +347,30 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 }
 .home-sparkline--touchdown path { stroke: var(--positive); }
 .home-sparkline--stopped path { stroke: var(--negative); }
+.home-sparkline--positive path { stroke: var(--positive); }
+.home-sparkline--negative path { stroke: var(--negative); }
 .home-chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-top: 8px;
 }
-.home-chip-row span {
-  display: inline-flex;
-  min-height: 26px;
-  align-items: center;
-  padding: 4px 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-pill);
-  color: var(--text-muted);
-  font-size: 12px;
-}
-.home-chip-row .chip { margin: 0; animation: none; }
+.home-chip-row .chip { min-height: 26px; margin: 0; padding: 4px 8px; font-size: 12px; animation: none; }
 .stub-shell {
   width: min(960px, calc(100vw - 32px));
   margin: 0 auto;
   padding: 32px 0 72px;
+}
+.replay-hero h1 { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.replay-meta-line { color: var(--text-muted); font-size: 14px; letter-spacing: 0.02em; }
+.replay-meta-line .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 8px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--border-strong);
 }
 
 .scorecard, .panel {
@@ -839,6 +843,9 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 .chip--coverage { color: var(--chip-coverage); background: var(--chip-coverage-soft); border-color: rgba(56,216,210,0.32); }
 .chip--pressure { color: var(--chip-pressure); background: var(--chip-pressure-soft); border-color: rgba(251,113,133,0.32); }
 .chip--front { color: var(--chip-front); background: var(--chip-front-soft); border-color: rgba(245,179,66,0.32); }
+.chip--tier-0 { color: var(--text-muted); background: var(--bg-elev-2); border-color: var(--border); }
+.chip--tier-1 { color: var(--brand); background: var(--brand-soft); border-color: rgba(242,184,92,0.32); }
+.chip--tier-2 { color: var(--insight); background: var(--insight-soft); border-color: rgba(196,181,253,0.32); }
 .card-ref, .resource-card { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
 .card-ref:first-child { border-top: 0; padding-top: 0; }
 .bar { margin: 12px 0; }
@@ -1075,8 +1082,10 @@ textarea { width: 100%; min-height: 92px; resize: vertical; color: var(--text-mu
 
 .sparkline-wrap { margin: 16px 0 12px; }
 .sparkline {
+  display: block;
   width: 100%;
-  height: 150px;
+  height: auto;
+  aspect-ratio: 4 / 1;
   overflow: visible;
 }
 .sparkline path { fill: none; stroke: var(--text-muted); stroke-width: 1.5; }

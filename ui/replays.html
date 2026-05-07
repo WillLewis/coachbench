@@ -2,10 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="refresh" content="0; url=/ui/replay.html#/replays" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Replays</title>
+  <link rel="stylesheet" href="styles.css?v=home-chips-v1" />
 </head>
 <body>
-  <a href="/ui/replay.html#/replays">View all replays</a>
+  <div id="topbar"></div>
+  <main class="home-shell">
+    <header class="section-head">
+      <h1>All replays</h1>
+      <p class="muted">Browse every seeded run. Pick one to inspect the play-by-play, resource tradeoffs, belief updates, and Film Room feedback.</p>
+    </header>
+    <section id="replayGallery" class="home-gallery"></section>
+  </main>
+  <script src="topbar.js"></script>
+  <script src="chips.js"></script>
+  <script src="gallery.js"></script>
+  <script src="replays.js"></script>
 </body>
 </html>
