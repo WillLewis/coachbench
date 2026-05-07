@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoachBench Replay</title>
+  <link rel="stylesheet" href="styles.css?v=endzone-full-height" />
+</head>
+<body>
+  <header class="site-nav">
+    <a class="wordmark" href="#/replays">CoachBench</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#/replays" data-route-link="replays">Replays</a>
+      <a href="#/garage" data-route-link="garage">Garage</a>
+      <a href="#/reports" data-route-link="reports">Reports</a>
+      <a href="#/arena" data-route-link="arena">Arena</a>
+    </nav>
+  </header>
+
+  <main id="appRoot" class="shell">
+    <section data-route="replays" hidden>
+      <section class="hero row-mount">
+        <p class="eyebrow">Replay gallery</p>
+        <h1>Red-zone benchmark replays</h1>
+        <p class="subhead">Start with the seeded showcase replay, then inspect the graph events, resource tradeoffs, and Film Room feedback on the detail route.</p>
+      </section>
+      <div id="replayGallery" class="replay-gallery"></div>
+    </section>
+
+    <section data-route="replay-detail" hidden>
+      <div id="replayNotFound" class="empty-state" hidden></div>
+      <div id="replayDetailContent">
+        <section class="hero row-mount">
+          <p class="eyebrow">Fictional red-zone benchmark</p>
+          <h1>Can your agent discover the edge before the opponent adjusts?</h1>
+          <p class="subhead">Inspect legal calls, resource tradeoffs, belief movement, graph-backed events, and Film Room feedback from a deterministic replay.</p>
+        </section>
+
+        <section class="replay-layout row-mount">
+          <div class="replay-stage">
+            <header class="topbar replay-topbar">
+              <p class="eyebrow">Replay detail</p>
+              <div id="modeBanner" class="mode-banner">Phase 0B static schema/UI proof - not an engine-generated benchmark result.</div>
+              <div id="scorecard" class="scorecard" aria-live="polite">
+                <span id="resultLabel">Loading</span>
+                <strong id="pointsLabel">0 pts</strong>
+                <small id="episodeLabel">episode</small>
+              </div>
+            </header>
+
+            <section class="panel film-room-panel row-mount">
+              <h2>Film Room</h2>
+              <div id="filmRoom"></div>
+            </section>
+
+            <article class="panel field-panel">
+              <div class="panel-title"><h2>Field + Selected Play</h2><span id="driveState">Loading</span></div>
+              <div class="field">
+                <div class="yard-rule y20"><span>20</span></div>
+                <div class="yard-rule y15"><span>15</span></div>
+                <div class="yard-rule y10"><span>10</span></div>
+                <div class="yard-rule y5"><span>5</span></div>
+                <div class="mid-rule"></div>
+                <div class="endzone">End Zone</div>
+                <div id="ball" class="ball"></div>
+              </div>
+            </article>
+
+            <section class="panel inspector-panel" aria-labelledby="inspectorTitle">
+              <div class="panel-title">
+                <h2 id="inspectorTitle">Play Inspector</h2>
+                <span id="inspectorPlayLabel">Play 1</span>
+              </div>
+              <div id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Play inspector tabs">
+                <button id="inspector-tab-outcome" class="inspector-tab active" type="button" role="tab" aria-selected="true" aria-controls="inspectorPanel" data-inspector-tab="outcome">Outcome</button>
+                <button id="inspector-tab-resources" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="resources" tabindex="-1">Resources</button>
+                <button id="inspector-tab-beliefs" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="beliefs" tabindex="-1">Beliefs</button>
+                <button id="inspector-tab-graph" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="graph" tabindex="-1">Graph Evidence</button>
+              </div>
+              <div id="inspectorPanel" class="inspector-content" role="tabpanel" tabindex="0" aria-labelledby="inspector-tab-outcome" data-active-tab="outcome"></div>
+            </section>
+
+            <section class="panel summary-panel row-mount">
+              <h2>Post-Drive Summary</h2>
+              <div id="driveSummary"></div>
+            </section>
+
+          </div>
+
+          <aside class="feed-panel panel" aria-label="Replay feed">
+            <div class="feed-head">
+              <div>
+                <p class="eyebrow">Chronological feed</p>
+                <h2>Play-by-play</h2>
+              </div>
+              <button id="resumeFeed" class="resume-chip" type="button" hidden>Resume</button>
+            </div>
+            <div id="autoplayProgress" class="autoplay-progress"></div>
+            <div id="playFeed" class="play-feed" role="list" tabindex="0"></div>
+          </aside>
+        </section>
+
+        <footer class="footer-strip row-mount">
+          <article class="panel compact-agent-card">
+            <h2>Coordinator Agent</h2>
+            <div id="agentCard"></div>
+          </article>
+          <article class="panel"><h2>Daily Slate</h2><div id="dailySlate"></div></article>
+          <article class="panel roster-panel"><h2>Roster Strengths</h2><div id="rosterStrengths"></div></article>
+          <button id="openGraphExplorer" class="btn explorer-launch" type="button">Graph Cards</button>
+        </footer>
+      </div>
+
+      <div id="graphOverlay" class="overlay" hidden>
+        <button id="overlayBackdrop" class="overlay-backdrop" type="button" aria-label="Close graph cards"></button>
+        <section class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="graphExplorerTitle">
+          <div class="overlay-head">
+            <div>
+              <p class="eyebrow">Graph-backed tactical truth</p>
+              <h2 id="graphExplorerTitle">Graph Cards</h2>
+            </div>
+            <button id="closeGraphExplorer" class="ghost-button" type="button">Close</button>
+          </div>
+          <input id="graphSearch" class="search" type="search" placeholder="Search card name, event, counter, or id" />
+          <div id="graphExplorerList" class="explorer-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <section data-route="garage" hidden>
+      <section class="hero row-mount">
+        <p class="eyebrow">Agent Garage</p>
+        <h1>Configure coordinator agents</h1>
+        <p id="garageRouteCopy" class="subhead">Validation-first rule builder for fictional coordinator agents.</p>
+        <p class="mobile-policy-banner subhead">Garage works best on desktop. Switch to a larger screen to edit, or browse your drafts in read-only mode.</p>
+      </section>
+      <section class="garage-route-grid row-mount" data-garage-page>
+        <div class="garage-workbench">
+          <section class="panel">
+            <div class="panel-title">
+              <h2>Tier</h2>
+              <span>Local configuration</span>
+            </div>
+            <div id="garageTierSelector" class="tier-selector" role="radiogroup" aria-label="Agent tier">
+              <label><input type="radio" name="garage_tier" value="declarative" checked> Tier 0</label>
+              <label><input type="radio" name="garage_tier" value="prompt_policy"> Tier 1</label>
+              <label><input type="radio" name="garage_tier" value="remote_endpoint"> Tier 2</label>
+            </div>
+          </section>
+
+          <form id="garageForm" class="garage-form" novalidate>
+            <section class="panel garage-control-section" data-control-section="identity">
+              <h2>Identity</h2>
+              <div id="garageIdentityControls"></div>
+            </section>
+            <section class="panel garage-control-section" data-control-section="strategy">
+              <h2>Strategy</h2>
+              <div id="garageStrategyControls"></div>
+            </section>
+            <section class="panel garage-control-section" data-control-section="resource">
+              <h2>Resource</h2>
+              <div id="garageResourceControls"></div>
+            </section>
+          </form>
+
+          <section class="panel rule-builder" data-rule-builder>
+            <div class="panel-title">
+              <h2>Rule Chain Builder</h2>
+              <span>Max 8 rules</span>
+            </div>
+            <div id="ruleChain"></div>
+            <button id="addGarageRule" class="ghost-button" type="button">Add Rule</button>
+          </section>
+
+          <section class="panel garage-actions">
+            <button id="testDriveButton" class="btn progress-button" type="button" disabled title="Local script execution is unavailable from a static browser host."><span>Run test drive</span><i></i></button>
+            <a id="garageReplayLink" class="btn" href="#/replays/seed-42" hidden>Open replay →</a>
+          </section>
+        </div>
+
+        <aside class="panel garage-drafts">
+          <h2>Save / Load</h2>
+          <label class="control-row">
+            <span class="label">Draft Name</span>
+            <input id="garageDraftName" type="text" value="coachbench-draft">
+            <small class="help-text">Stores as a browser-local mirror of ui/garage_drafts/{name}.json.</small>
+          </label>
+          <button id="saveGarageDraft" class="ghost-button" type="button">Save Draft</button>
+          <div id="garageDrafts"></div>
+        </aside>
+      </section>
+    </section>
+
+    <section data-route="reports" hidden>
+      <section class="hero row-mount">
+        <p class="eyebrow">Reports</p>
+        <h1>Compare seeded runs</h1>
+        <p id="reportsRouteCopy" class="subhead"></p>
+      </section>
+    </section>
+
+    <section data-route="arena" hidden>
+      <section class="hero row-mount">
+        <p class="eyebrow">Arena</p>
+        <h1>Run local agent challenges</h1>
+        <p id="arenaRouteCopy" class="subhead"></p>
+      </section>
+    </section>
+
+    <aside id="compareTray" class="compare-tray" aria-label="Pinned replays" hidden></aside>
+  </main>
+
+  <script src="state.js"></script>
+  <script src="router.js"></script>
+  <script src="empty_states.js"></script>
+  <script src="adaptation.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

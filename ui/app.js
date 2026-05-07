@@ -60,7 +60,7 @@ async function loadSharedData() {
 async function loadReplay(id, playParam) {
   await loadSharedData();
   await loadReplayIndex();
-  const source = runtime.replaySources[id] || fallbackReplaySources[id];
+  const source = runtime.replaySources[id] || fallbackReplaySources[id] || showcaseReplaySource(id);
   if (!source) {
     renderReplayNotFound(id);
     return;
@@ -80,6 +80,11 @@ async function loadReplay(id, playParam) {
   $('replayNotFound').hidden = true;
   $('replayDetailContent').hidden = false;
   renderAll();
+}
+
+function showcaseReplaySource(id) {
+  const match = String(id || '').match(/^seed-(\d+)$/);
+  return match ? `showcase_replays/seed_${match[1]}.json` : null;
 }
 
 function renderReplayNotFound(id) {
@@ -1162,12 +1167,20 @@ function mountRows(root) {
   }) : null;
 }
 
+function normalizeReplayPageRoute() {
+  if (!location.pathname.endsWith('/replay.html')) return;
+  if (CBRouter.current().name !== 'replays') return;
+  const seed = new URLSearchParams(location.search).get('seed');
+  CBRouter.go('replay-detail', { id: seed ? `seed-${seed}` : 'seed-42' });
+}
+
 syncMotionPreference();
 if (typeof motionQuery.addEventListener === 'function') {
   motionQuery.addEventListener('change', syncMotionPreference);
 } else if (typeof motionQuery.addListener === 'function') {
   motionQuery.addListener(syncMotionPreference);
 }
+normalizeReplayPageRoute();
 CBRouter.subscribe(route => handleRoute(route).catch(error => {
   document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
 }));
