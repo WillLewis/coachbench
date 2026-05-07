@@ -15,6 +15,20 @@
   const $ = id => document.getElementById(id);
   const label = raw => String(raw || '').replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
   const compact = raw => String(raw || '').replaceAll('_', ' ');
+  const CHIP_FAMILY = {
+    inside_zone: 'run', outside_zone: 'run', power_counter: 'run',
+    quick_game: 'pass', bunch_mesh: 'pass', vertical_shot: 'pass',
+    rpo_glance: 'trick', play_action_flood: 'trick', screen: 'trick', bootleg: 'trick',
+    base_cover3: 'coverage', cover3_match: 'coverage', quarters_match: 'coverage',
+    cover1_man: 'coverage', two_high_shell: 'coverage', redzone_bracket: 'coverage', trap_coverage: 'coverage',
+    zero_pressure: 'pressure', simulated_pressure: 'pressure',
+    bear_front: 'front',
+  };
+  const chipClassFor = id => {
+    const family = CHIP_FAMILY[String(id || '').toLowerCase()];
+    return family ? `chip--${family}` : '';
+  };
+  const resultClass = result => String(result || '').toLowerCase().replace(/[^a-z0-9_-]/g, '');
 
   async function fetchJson(path) {
     const response = await fetch(path);
@@ -73,7 +87,7 @@
     return `<p class="eyebrow">Post-drive</p>
       <strong>${label(score.result)}</strong>
       <span>${score.points} pts · ${replay.plays.length} plays</span>
-      ${sparkline(item.ep_sparkline || [])}
+      ${sparkline(item.ep_sparkline || [], score.result)}
       <a class="btn" href="/ui/replay.html?seed=${item.seed}">Open replay</a>`;
   }
 
@@ -139,12 +153,12 @@
 
   function renderGallery() {
     $('homeGallery').innerHTML = state.manifest.map(item => `<a class="home-replay-card" href="/ui/replay.html?seed=${item.seed}">
-      <span class="eyebrow">SEED ${item.seed}</span>
+      <span class="eyebrow"><span class="seed-dot seed-dot--${resultClass(item.summary.result)}"></span>SEED ${item.seed}</span>
       <strong>${item.offense_handle} ⇄ ${item.defense_handle}</strong>
       <span>${item.summary.points} pts · ${label(item.summary.result)}</span>
       <span>${item.summary.plays} plays · ${item.summary.invalid_action_count} invalid</span>
-      ${sparkline(item.ep_sparkline || [])}
-      <span class="home-chip-row"><span>Tier ${tierNumber(item.offense_tier)}</span><span>${label(item.summary.top_concept)}</span></span>
+      ${sparkline(item.ep_sparkline || [], item.summary.result)}
+      <span class="home-chip-row"><span class="chip">Tier ${tierNumber(item.offense_tier)}</span><span class="chip ${chipClassFor(item.summary.top_concept)}">${label(item.summary.top_concept)}</span></span>
     </a>`).join('');
   }
 
@@ -152,13 +166,15 @@
     return tier === 'prompt_policy' ? 1 : 0;
   }
 
-  function sparkline(values) {
+  function sparkline(values, result) {
+    const status = resultClass(result);
+    const klass = status ? `home-sparkline home-sparkline--${status}` : 'home-sparkline';
     const nums = values.length ? values.map(Number) : [0];
     const min = Math.min(...nums), max = Math.max(...nums), range = max - min || 1;
     const x = i => nums.length === 1 ? 2 : 2 + (i / (nums.length - 1)) * 60;
     const y = raw => 22 - ((raw - min) / range) * 18;
     const points = nums.map((raw, index) => `${x(index).toFixed(2)},${y(raw).toFixed(2)}`).join(' ');
-    return `<svg class="home-sparkline" viewBox="0 0 64 24" aria-hidden="true"><path d="M${points.replaceAll(' ', ' L')}"></path></svg>`;
+    return `<svg class="${klass}" viewBox="0 0 64 24" aria-hidden="true"><path d="M${points.replaceAll(' ', ' L')}"></path></svg>`;
   }
 
   function handleReducedChange() {

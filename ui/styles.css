@@ -345,6 +345,8 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.home-sparkline--touchdown path { stroke: var(--positive); }
+.home-sparkline--stopped path { stroke: var(--negative); }
 .home-chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -360,6 +362,7 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   color: var(--text-muted);
   font-size: 12px;
 }
+.home-chip-row .chip { margin: 0; animation: none; }
 .stub-shell {
   width: min(960px, calc(100vw - 32px));
   margin: 0 auto;
