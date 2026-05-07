@@ -71,5 +71,5 @@ def test_ui_defaults_to_demo_replay_before_static_fallback() -> None:
 
     assert "'seed-42': 'demo_replay.json'" in script
     assert "'static-proof': 'static_proof_replay.json'" in script
-    assert "if (id === 'seed-42') return fetchJson(replaySources['static-proof']);" in script
+    assert "if (id === 'seed-42') return fetchJson(fallbackReplaySources['static-proof']);" in script
     assert "Phase 0B static schema/UI proof" in script

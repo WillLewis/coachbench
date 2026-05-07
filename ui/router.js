@@ -3,23 +3,30 @@
     { name: 'replays', path: '/replays', pattern: /^\/replays\/?$/, build: () => '/replays' },
     { name: 'replay-detail', path: '/replays/:id', pattern: /^\/replays\/([^/]+)\/?$/, build: params => `/replays/${encodeURIComponent(params.id || 'seed-42')}` },
     { name: 'garage', path: '/garage', pattern: /^\/garage\/?$/, build: () => '/garage' },
-    { name: 'reports', path: '/reports', pattern: /^\/reports\/?$/, build: () => '/reports' },
+    { name: 'reports', path: '/reports', pattern: /^\/reports\/?$/, build: params => `/reports${params.compare ? `?compare=${String(params.compare).split(',').map(encodeURIComponent).join(',')}` : ''}` },
     { name: 'arena', path: '/arena', pattern: /^\/arena\/?$/, build: () => '/arena' },
   ];
   const DEFAULT_HASH = '#/replays';
   const subscribers = new Set();
 
-  function pathFromHash() {
-    return location.hash.replace(/^#/, '') || '/replays';
+  function splitHash() {
+    const raw = location.hash.replace(/^#/, '') || '/replays';
+    const [path, query = ''] = raw.split('?');
+    return { path, query };
   }
 
-  function match(path) {
+  function queryParams(query) {
+    return Object.fromEntries(new URLSearchParams(query));
+  }
+
+  function match(path, query) {
     for (const route of ROUTES) {
       const found = path.match(route.pattern);
       if (found) {
+        const params = queryParams(query);
         return {
           name: route.name,
-          params: route.name === 'replay-detail' ? { id: decodeURIComponent(found[1]) } : {},
+          params: route.name === 'replay-detail' ? { ...params, id: decodeURIComponent(found[1]) } : params,
         };
       }
     }
@@ -37,7 +44,8 @@
 
   window.CBRouter = {
     current() {
-      return match(pathFromHash());
+      const { path, query } = splitHash();
+      return match(path, query);
     },
     subscribe(fn) {
       subscribers.add(fn);
@@ -51,5 +59,5 @@
   };
 
   window.addEventListener('hashchange', notify);
-  if (!location.hash || !isKnown(pathFromHash())) location.hash = DEFAULT_HASH;
+  if (!location.hash || !isKnown(splitHash().path)) location.hash = DEFAULT_HASH;
 })();

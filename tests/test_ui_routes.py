@@ -29,4 +29,4 @@ def test_router_defaults_empty_or_unknown_hash_to_replays() -> None:
     router = Path("ui/router.js").read_text(encoding="utf-8")
 
     assert "DEFAULT_HASH = '#/replays'" in router
-    assert "if (!location.hash || !isKnown(pathFromHash())) location.hash = DEFAULT_HASH" in router
+    assert "if (!location.hash || !isKnown(splitHash().path)) location.hash = DEFAULT_HASH" in router
