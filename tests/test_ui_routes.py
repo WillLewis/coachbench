@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def test_ui_declares_five_hash_route_sections() -> None:
-    html = Path("ui/index.html").read_text(encoding="utf-8")
+    html = Path("ui/replay.html").read_text(encoding="utf-8")
 
     routes = set(re.findall(r'data-route="([^"]+)"', html))
 
@@ -13,16 +13,12 @@ def test_ui_declares_five_hash_route_sections() -> None:
 
 
 def test_top_nav_has_four_visible_route_links() -> None:
-    html = Path("ui/index.html").read_text(encoding="utf-8")
+    topbar = Path("ui/topbar.js").read_text(encoding="utf-8")
 
-    links = re.findall(r'<a href="#/[^"]+" data-route-link="([^"]+)">([^<]+)</a>', html)
-
-    assert links == [
-        ("replays", "Replays"),
-        ("garage", "Garage"),
-        ("reports", "Reports"),
-        ("arena", "Arena"),
-    ]
+    for label in ("Home", "Replays", "Garage", "Reports", "Arena"):
+        assert label in topbar
+    for href in ("/ui/index.html", "/ui/replays.html", "/ui/garage.html", "/ui/reports.html", "/ui/arena.html"):
+        assert href in topbar
 
 
 def test_router_defaults_empty_or_unknown_hash_to_replays() -> None:

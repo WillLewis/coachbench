@@ -19,7 +19,7 @@ def test_replay_index_seeds_gallery_with_three_cards() -> None:
 
 def test_gallery_template_exposes_metrics_and_tier_chips() -> None:
     script = Path("ui/app.js").read_text(encoding="utf-8")
-    html = Path("ui/index.html").read_text(encoding="utf-8")
+    html = Path("ui/replay.html").read_text(encoding="utf-8")
 
     for field in ("eyebrow", "matchup", "result", "sparkline", "invalid_actions", "top_graph_event"):
         assert f'data-card-field="{field}"' in script

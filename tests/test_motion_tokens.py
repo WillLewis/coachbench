@@ -45,7 +45,7 @@ def test_js_motion_timing_reads_css_tokens() -> None:
 
 def test_mobile_breakpoint_policy_is_declared() -> None:
     css = (ROOT / "ui/styles.css").read_text(encoding="utf-8")
-    html = (ROOT / "ui/index.html").read_text(encoding="utf-8")
+    html = (ROOT / "ui/replay.html").read_text(encoding="utf-8")
 
     assert "@media (min-width: 640px)" in css
     assert "@media (max-width: 639px)" in css

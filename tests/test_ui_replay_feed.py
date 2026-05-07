@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def test_replay_detail_has_feed_layout_and_resume_control() -> None:
-    html = Path("ui/index.html").read_text(encoding="utf-8")
+    html = Path("ui/replay.html").read_text(encoding="utf-8")
 
     assert 'class="replay-layout row-mount"' in html
     assert 'id="playFeed"' in html

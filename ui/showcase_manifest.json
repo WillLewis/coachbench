@@ -1,0 +1,335 @@
+{
+  "version": "1",
+  "replays": [
+    {
+      "seed": 42,
+      "offense_handle": "zone_runner_22",
+      "offense_label": "zone_runner_22",
+      "defense_handle": "disguise_chef",
+      "defense_label": "disguise_chef",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "prompt_policy",
+      "offense_kind": "adaptive",
+      "defense_kind": "adaptive",
+      "replay_path": "showcase_replays/seed_42.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 6,
+        "invalid_action_count": 0,
+        "top_concept": "quick_game"
+      },
+      "ep_sparkline": [
+        0,
+        -0.15,
+        0.76,
+        0.76,
+        0.63,
+        0.63,
+        0.63
+      ]
+    },
+    {
+      "seed": 99,
+      "offense_handle": "quick_game_queen",
+      "offense_label": "quick_game_queen",
+      "defense_handle": "cover_shell_sam",
+      "defense_label": "cover_shell_sam",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "declarative",
+      "offense_kind": "adaptive",
+      "defense_kind": "static",
+      "replay_path": "showcase_replays/seed_99.json",
+      "summary": {
+        "result": "stopped",
+        "points": 0,
+        "plays": 7,
+        "invalid_action_count": 0,
+        "top_concept": "bunch_mesh"
+      },
+      "ep_sparkline": [
+        0,
+        0.17,
+        0.42,
+        0.5,
+        0.17,
+        0.42,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "seed": 202,
+      "offense_handle": "bunch_mesh_king",
+      "offense_label": "bunch_mesh_king",
+      "defense_handle": "edge_chaser",
+      "defense_label": "edge_chaser",
+      "offense_tier": "declarative",
+      "defense_tier": "prompt_policy",
+      "offense_kind": "static",
+      "defense_kind": "adaptive",
+      "replay_path": "showcase_replays/seed_202.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 6,
+        "invalid_action_count": 0,
+        "top_concept": "bunch_mesh"
+      },
+      "ep_sparkline": [
+        0,
+        0.27,
+        0.85,
+        0.5,
+        0.27,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "seed": 311,
+      "offense_handle": "pressure_lab",
+      "offense_label": "pressure_lab",
+      "defense_handle": "rpo_lover_88",
+      "defense_label": "rpo_lover_88",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "declarative",
+      "offense_kind": "adaptive",
+      "defense_kind": "static",
+      "replay_path": "showcase_replays/seed_311.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 8,
+        "invalid_action_count": 2,
+        "top_concept": "rpo_glance"
+      },
+      "ep_sparkline": [
+        0,
+        0.17,
+        0.42,
+        0.5,
+        0.42,
+        0.17,
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    {
+      "seed": 404,
+      "offense_handle": "two_high_tilly",
+      "offense_label": "two_high_tilly",
+      "defense_handle": "blitz_pilot",
+      "defense_label": "blitz_pilot",
+      "offense_tier": "declarative",
+      "defense_tier": "prompt_policy",
+      "offense_kind": "static",
+      "defense_kind": "adaptive",
+      "replay_path": "showcase_replays/seed_404.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 5,
+        "invalid_action_count": 0,
+        "top_concept": "bunch_mesh"
+      },
+      "ep_sparkline": [
+        0,
+        0.27,
+        0.85,
+        0.27,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "seed": 515,
+      "offense_handle": "route_schemer",
+      "offense_label": "route_schemer",
+      "defense_handle": "redzone_ryder",
+      "defense_label": "redzone_ryder",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "prompt_policy",
+      "offense_kind": "adaptive",
+      "defense_kind": "adaptive",
+      "replay_path": "showcase_replays/seed_515.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 5,
+        "invalid_action_count": 0,
+        "top_concept": "play_action_flood"
+      },
+      "ep_sparkline": [
+        0,
+        -0.15,
+        0.76,
+        0.76,
+        0.63,
+        0.63
+      ]
+    },
+    {
+      "seed": 628,
+      "offense_handle": "trap_coverage_v0",
+      "offense_label": "trap_coverage_v0",
+      "defense_handle": "front_strength_fiend",
+      "defense_label": "front_strength_fiend",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "declarative",
+      "offense_kind": "adaptive",
+      "defense_kind": "static",
+      "replay_path": "showcase_replays/seed_628.json",
+      "summary": {
+        "result": "stopped",
+        "points": 0,
+        "plays": 4,
+        "invalid_action_count": 0,
+        "top_concept": "bunch_mesh"
+      },
+      "ep_sparkline": [
+        0,
+        0.17,
+        0.42,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "seed": 733,
+      "offense_handle": "screen_sorcerer",
+      "offense_label": "screen_sorcerer",
+      "defense_handle": "match_point_man",
+      "defense_label": "match_point_man",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "declarative",
+      "offense_kind": "adaptive",
+      "defense_kind": "static",
+      "replay_path": "showcase_replays/seed_733.json",
+      "summary": {
+        "result": "stopped",
+        "points": 0,
+        "plays": 4,
+        "invalid_action_count": 0,
+        "top_concept": "bunch_mesh"
+      },
+      "ep_sparkline": [
+        0,
+        0.17,
+        0.42,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "seed": 841,
+      "offense_handle": "bootleg_baron",
+      "offense_label": "bootleg_baron",
+      "defense_handle": "bracket_boss",
+      "defense_label": "bracket_boss",
+      "offense_tier": "declarative",
+      "defense_tier": "prompt_policy",
+      "offense_kind": "static",
+      "defense_kind": "adaptive",
+      "replay_path": "showcase_replays/seed_841.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 5,
+        "invalid_action_count": 0,
+        "top_concept": "bunch_mesh"
+      },
+      "ep_sparkline": [
+        0,
+        0.27,
+        0.85,
+        0.5,
+        0.27,
+        0.5
+      ]
+    },
+    {
+      "seed": 956,
+      "offense_handle": "rpo_architect",
+      "offense_label": "rpo_architect",
+      "defense_handle": "zero_pressure_zoe",
+      "defense_label": "zero_pressure_zoe",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "prompt_policy",
+      "offense_kind": "adaptive",
+      "defense_kind": "adaptive",
+      "replay_path": "showcase_replays/seed_956.json",
+      "summary": {
+        "result": "stopped",
+        "points": 0,
+        "plays": 8,
+        "invalid_action_count": 0,
+        "top_concept": "quick_game"
+      },
+      "ep_sparkline": [
+        0,
+        -0.15,
+        0.76,
+        0.76,
+        0.63,
+        0.63,
+        0.63,
+        0.63,
+        0.48
+      ]
+    },
+    {
+      "seed": 1063,
+      "offense_handle": "qb_decision_engine",
+      "offense_label": "qb_decision_engine",
+      "defense_handle": "disguise_specialist",
+      "defense_label": "disguise_specialist",
+      "offense_tier": "prompt_policy",
+      "defense_tier": "prompt_policy",
+      "offense_kind": "adaptive",
+      "defense_kind": "adaptive",
+      "replay_path": "showcase_replays/seed_1063.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 4,
+        "invalid_action_count": 0,
+        "top_concept": "play_action_flood"
+      },
+      "ep_sparkline": [
+        0,
+        -0.15,
+        0.76,
+        0.76,
+        0.63
+      ]
+    },
+    {
+      "seed": 1170,
+      "offense_handle": "static_baseline_a",
+      "offense_label": "static_baseline_a",
+      "defense_handle": "static_baseline_b",
+      "defense_label": "static_baseline_b",
+      "offense_tier": "declarative",
+      "defense_tier": "declarative",
+      "offense_kind": "static",
+      "defense_kind": "static",
+      "replay_path": "showcase_replays/seed_1170.json",
+      "summary": {
+        "result": "touchdown",
+        "points": 7,
+        "plays": 4,
+        "invalid_action_count": 0,
+        "top_concept": "inside_zone"
+      },
+      "ep_sparkline": [
+        0,
+        0.27,
+        0.85,
+        0.27,
+        0.85
+      ]
+    }
+  ]
+}

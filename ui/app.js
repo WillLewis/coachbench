@@ -397,16 +397,10 @@ function scrollFeedCard(index) {
 }
 
 function renderBall(yardline, terminalReason) {
-  const clamped = Math.max(0, Math.min(25, Number(yardline)));
-  const left = 8 + ((25 - clamped) / 25) * 84;
   const ball = $('ball');
-  ball.style.left = `${left}%`;
-  ball.classList.toggle('touchdown', terminalReason === 'touchdown');
-  if (!reduced()) {
-    ball.classList.remove('move');
-    void ball.offsetWidth;
-    ball.classList.add('move');
-  }
+  if (typeof window !== 'undefined' && window.CBField) return window.CBField.positionBall(ball, yardline, terminalReason, reduced());
+  const clamped = Math.max(0, Math.min(25, Number(yardline)));
+  ball.style.left = `${8 + ((25 - clamped) / 25) * 84}%`;
 }
 
 function activeInspectorTab() {
@@ -1168,22 +1162,26 @@ function mountRows(root) {
 }
 
 function normalizeReplayPageRoute() {
+  if (typeof location === 'undefined' || typeof CBRouter === 'undefined') return;
   if (!location.pathname.endsWith('/replay.html')) return;
   if (CBRouter.current().name !== 'replays') return;
   const seed = new URLSearchParams(location.search).get('seed');
   CBRouter.go('replay-detail', { id: seed ? `seed-${seed}` : 'seed-42' });
 }
 
+if (typeof window !== 'undefined') window.CBTopbar?.renderTopbar('replays');
 syncMotionPreference();
 if (typeof motionQuery.addEventListener === 'function') {
   motionQuery.addEventListener('change', syncMotionPreference);
 } else if (typeof motionQuery.addListener === 'function') {
   motionQuery.addListener(syncMotionPreference);
 }
-normalizeReplayPageRoute();
-CBRouter.subscribe(route => handleRoute(route).catch(error => {
-  document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
-}));
-handleRoute(CBRouter.current()).catch(error => {
-  document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
-});
+if (typeof CBRouter !== 'undefined') {
+  normalizeReplayPageRoute();
+  CBRouter['subscribe'](route => handleRoute(route).catch(error => {
+    document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
+  }));
+  handleRoute(CBRouter.current()).catch(error => {
+    document.body.innerHTML = `<pre>Failed to load route: ${error}</pre>`;
+  });
+}
