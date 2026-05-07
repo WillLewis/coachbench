@@ -4,12 +4,96 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Garage</title>
-  <link rel="stylesheet" href="styles.css?v=home-entry" />
+  <link rel="stylesheet" href="styles.css?v=garage-restore-v1" />
 </head>
 <body>
   <div id="topbar"></div>
-  <main class="stub-shell"><section class="panel"><p class="muted">Coming soon.</p></section></main>
+  <main id="appRoot" class="shell">
+    <section data-route="garage">
+      <section class="hero row-mount">
+        <p class="eyebrow">Agent Garage</p>
+        <h1>Configure coordinator agents</h1>
+        <p id="garageRouteCopy" class="subhead">Validation-first rule builder for fictional coordinator agents.</p>
+        <p class="mobile-policy-banner subhead">Garage works best on desktop. Switch to a larger screen to edit, or browse your drafts in read-only mode.</p>
+      </section>
+      <section class="garage-route-grid row-mount" data-garage-page>
+        <div class="garage-workbench">
+          <section class="panel">
+            <div class="panel-title">
+              <h2>Tier</h2>
+              <span>Local configuration</span>
+            </div>
+            <div id="garageTierSelector" class="tier-selector" role="radiogroup" aria-label="Agent tier">
+              <label><input type="radio" name="garage_tier" value="declarative" checked> Tier 0</label>
+              <label><input type="radio" name="garage_tier" value="prompt_policy"> Tier 1</label>
+              <label><input type="radio" name="garage_tier" value="remote_endpoint"> Tier 2</label>
+            </div>
+          </section>
+
+          <form id="garageForm" class="garage-form" novalidate>
+            <section class="panel garage-control-section" data-control-section="identity">
+              <h2>Identity</h2>
+              <div id="garageIdentityControls"></div>
+            </section>
+            <section class="panel garage-control-section" data-control-section="strategy">
+              <h2>Strategy</h2>
+              <div id="garageStrategyControls"></div>
+            </section>
+            <section class="panel garage-control-section" data-control-section="resource">
+              <h2>Resource</h2>
+              <div id="garageResourceControls"></div>
+            </section>
+          </form>
+
+          <section class="panel rule-builder" data-rule-builder>
+            <div class="panel-title">
+              <h2>Rule Chain Builder</h2>
+              <span>Max 8 rules</span>
+            </div>
+            <div id="ruleChain"></div>
+            <button id="addGarageRule" class="ghost-button" type="button">Add Rule</button>
+          </section>
+
+          <section class="panel garage-actions">
+            <button id="testDriveButton" class="btn progress-button" type="button" disabled title="Local script execution is unavailable from a static browser host."><span>Run test drive</span><i></i></button>
+            <a id="garageReplayLink" class="btn" href="/ui/replay.html?seed=42" hidden>Open replay -></a>
+          </section>
+        </div>
+
+        <aside class="panel garage-drafts">
+          <h2>Save / Load</h2>
+          <label class="control-row">
+            <span class="label">Draft Name</span>
+            <input id="garageDraftName" type="text" value="coachdraft">
+            <small class="help-text">Stores as a browser-local mirror of ui/garage_drafts/{name}.json.</small>
+          </label>
+          <button id="saveGarageDraft" class="ghost-button" type="button">Save Draft</button>
+          <div id="garageDrafts"></div>
+        </aside>
+      </section>
+    </section>
+  </main>
+
+  <script src="state.js"></script>
   <script src="topbar.js"></script>
-  <script>window.CBTopbar.renderTopbar('garage');</script>
+  <script src="empty_states.js"></script>
+  <script src="adaptation.js"></script>
+  <script src="app.js"></script>
+  <script>
+    (() => {
+      const from = new URLSearchParams(window.location.search).get('from') || 'seed-42';
+      window.CBRouter = { current: () => ({ name: 'garage', params: { from } }) };
+      window.CBTopbar?.renderTopbar('garage');
+      (async () => {
+        try {
+          await loadSharedData();
+          ensureGarageDefaults();
+          renderGaragePage({ from });
+        } catch (error) {
+          console.error('Garage init failed', error);
+        }
+      })();
+    })();
+  </script>
 </body>
 </html>

@@ -4,11 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Reports</title>
-  <link rel="stylesheet" href="styles.css?v=home-entry" />
+  <link rel="stylesheet" href="styles.css?v=garage-restore-v1" />
 </head>
 <body>
   <div id="topbar"></div>
-  <main class="stub-shell"><section class="panel"><p class="muted">Coming soon.</p></section></main>
+  <main class="shell">
+    <section class="hero row-mount">
+      <p class="eyebrow">Reports · Phase 1.75</p>
+      <h1>Compare seeded runs</h1>
+      <p class="subhead">A side-by-side comparison view for two or more pinned replays, surfacing adaptation deltas, resource tradeoffs, and Film Room divergence across seeds.</p>
+    </section>
+
+    <section class="panel roadmap-panel row-mount">
+      <p class="eyebrow">Planned</p>
+      <ul class="roadmap-list">
+        <li>Pin two or more replays from the gallery, open them side-by-side.</li>
+        <li>Adaptation event matrix: which agent adjusted first, by how much.</li>
+        <li>Resource-usage diff per drive: pressure budget, two-high snaps, max-protect.</li>
+        <li>Belief calibration error per agent across seeds.</li>
+        <li>Film Room turning-point comparison.</li>
+      </ul>
+      <p class="muted compact">Tracked in <code>PLAN.md</code> Phase 1.75, Benchmark Hardening.</p>
+    </section>
+  </main>
   <script src="topbar.js"></script>
   <script>window.CBTopbar.renderTopbar('reports');</script>
 </body>

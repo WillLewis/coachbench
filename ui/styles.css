@@ -361,6 +361,10 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   margin: 0 auto;
   padding: 32px 0 72px;
 }
+.roadmap-panel { display: grid; gap: 12px; max-width: 720px; }
+.roadmap-list { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
+.roadmap-list li { line-height: 1.5; color: var(--text); }
+.roadmap-list li::marker { color: var(--brand); }
 .replay-hero h1 { font-variant-numeric: tabular-nums; letter-spacing: 0; }
 .replay-meta-line { color: var(--text-muted); font-size: 14px; letter-spacing: 0.02em; }
 .replay-meta-line .dot {
