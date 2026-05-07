@@ -1,0 +1,92 @@
+{
+  "graph_cards": {
+    "card_a": {
+      "id": "card_a",
+      "name": "Card A",
+      "counters": [
+        "quick_game"
+      ]
+    },
+    "card_b": {
+      "id": "card_b",
+      "name": "Card B",
+      "counters": [
+        "trap_coverage"
+      ]
+    },
+    "card_c": {
+      "id": "card_c",
+      "name": "Card C",
+      "counters": [
+        "screen"
+      ]
+    }
+  },
+  "plays": [
+    {
+      "public": {
+        "play_index": 1,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "inside_zone",
+          "protection_family": "standard",
+          "risk_level": "balanced",
+          "constraint_tag": "legal:inside_zone"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "even",
+          "coverage_family": "base_cover3",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "balanced",
+          "constraint_tag": "legal:base_cover3"
+        },
+        "graph_card_ids": [],
+        "events": []
+      },
+      "offense_observed": {
+        "belief_after": {
+          "screen_trap_risk": 0.2
+        }
+      }
+    },
+    {
+      "public": {
+        "play_index": 2,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "inside_zone",
+          "protection_family": "standard",
+          "risk_level": "balanced",
+          "constraint_tag": "legal:inside_zone"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "even",
+          "coverage_family": "base_cover3",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "balanced",
+          "constraint_tag": "legal:base_cover3"
+        },
+        "graph_card_ids": [],
+        "events": []
+      },
+      "offense_observed": {
+        "belief_after": {
+          "screen_trap_risk": 0.32
+        }
+      }
+    }
+  ],
+  "expected": {
+    "1": "belief-shift"
+  }
+}

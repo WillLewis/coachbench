@@ -1,4 +1,4 @@
-const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null };
+const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null };
 const $ = id => document.getElementById(id);
 const controls = ['offensive_archetype', 'defensive_archetype', 'risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance', 'resource_conservation'];
 const fallbackReplaySources = {
@@ -44,7 +44,7 @@ async function loadSharedData() {
   runtime.sharedLoaded = true;
 }
 
-async function loadReplay(id) {
+async function loadReplay(id, playParam) {
   await loadSharedData();
   await loadReplayIndex();
   const source = runtime.replaySources[id] || fallbackReplaySources[id];
@@ -52,14 +52,15 @@ async function loadReplay(id) {
     renderReplayNotFound(id);
     return;
   }
-  const replay = await fetchJson(source).catch(error => {
+  const rawReplay = await fetchJson(source).catch(error => {
     if (id === 'seed-42') return fetchJson(fallbackReplaySources['static-proof']);
     throw error;
   });
+  const replay = annotateReplay(rawReplay);
   runtime.replayId = id;
   CBState.set({
     replay,
-    selectedIndex: 0,
+    selectedIndex: playToIndex(playParam, replay.plays.length),
     garageState: structuredClone(replay.agent_garage_config || {}),
     autoplay: !reduced(),
   });
@@ -82,13 +83,12 @@ function renderAll() {
   renderGarage();
   renderDailySlate();
   renderRosterStrengths();
-  renderTimeline();
+  renderPlayFeed();
   renderDriveSummary();
   renderFilmRoom();
-  renderAdaptationChain();
   setupOverlay();
-  setupAutoplay();
-  selectPlay(0);
+  setupFeedAutoplay();
+  selectPlay(CBState.get().selectedIndex, { syncHash: false, scroll: false, source: 'route' });
   mountRows(document);
   if (!reduced()) runtime.auto.start();
 }
@@ -110,7 +110,13 @@ async function handleRoute(route) {
   if (route.name === 'replays') {
     await renderGallery();
   } else if (route.name === 'replay-detail') {
-    await loadReplay(route.params.id);
+    if (runtime.replayId === route.params.id && currentReplay()) {
+      const shouldScroll = !runtime.skipNextRouteScroll;
+      runtime.skipNextRouteScroll = false;
+      selectPlay(playToIndex(route.params.play, currentReplay().plays.length), { syncHash: false, scroll: shouldScroll, source: 'route' });
+    } else {
+      await loadReplay(route.params.id, route.params.play);
+    }
   } else if (route.name === 'garage') {
     renderRouteStub('garageRouteCopy', 'Coming in Pass 6. ' + CBEmptyStates.emptyAgents());
   } else if (route.name === 'reports') {
@@ -201,6 +207,60 @@ function renderCompareTray() {
   if (action) action.onclick = () => { if (!disabled) CBRouter.go('reports', { compare: pins.join(',') }); };
 }
 
+function playToIndex(playParam, count) {
+  const parsed = Number(playParam || 1);
+  return Math.max(0, Math.min(count - 1, Number.isFinite(parsed) ? parsed - 1 : 0));
+}
+
+function annotateReplay(rawReplay) {
+  const replay = structuredClone(rawReplay);
+  const reasons = CBAdaptation.classifyAdaptationReasons(replay.plays, runtime.graphCards);
+  replay.plays = replay.plays.map((play, index) => ({
+    ...play,
+    is_adaptation: Boolean(reasons[index]),
+    adaptation_reason: reasons[index] || null,
+    adaptation_detail: reasons[index] ? adaptationDetail(replay.plays, index, reasons[index]) : null,
+  }));
+  return replay;
+}
+
+function adaptationDetail(plays, index, reason) {
+  if (reason === 'graph-fire') {
+    const prior = new Set(plays.slice(0, index).flatMap(play => play.public.graph_card_ids || []));
+    const cardId = (plays[index].public.graph_card_ids || []).find(id => !prior.has(id));
+    return { type: reason, card_id: cardId, card_label: cardLabel(cardId) };
+  }
+  if (reason === 'belief-shift') {
+    const shift = largestBeliefShift(plays[index], plays[index - 1]);
+    return { type: reason, key: shift?.key, delta: shift?.delta || 0 };
+  }
+  const priorCall = plays[index - 1]?.public.offense_action?.concept_family;
+  const newCall = plays[index].public.offense_action?.concept_family;
+  const priorDefense = plays[index - 1]?.public.defense_action?.coverage_family;
+  const newDefense = plays[index].public.defense_action?.coverage_family;
+  return newCall !== priorCall
+    ? { type: reason, prior_call: priorCall, new_call: newCall }
+    : { type: reason, prior_call: priorDefense, new_call: newDefense };
+}
+
+function cardLabel(cardId) {
+  return runtime.graphCards[cardId]?.name || label(cardId);
+}
+
+function playBeliefs(play) {
+  return play.public.beliefs || play.offense_observed?.belief_after || {};
+}
+
+function largestBeliefShift(play, prior) {
+  if (!prior) return null;
+  const current = playBeliefs(play);
+  const before = playBeliefs(prior);
+  return [...new Set([...Object.keys(current), ...Object.keys(before)])]
+    .map(key => ({ key, delta: Number(current[key] || 0) - Number(before[key] || 0) }))
+    .filter(item => Math.abs(item.delta) >= 0.10)
+    .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))[0] || null;
+}
+
 function renderHeader() {
   const replay = currentReplay();
   const staticMode = replay.metadata.mode === 'static_proof';
@@ -225,50 +285,59 @@ function formatValue(raw) {
   return typeof raw === 'string' ? label(raw) : raw;
 }
 
-function renderTimeline() {
+function renderPlayFeed() {
   const replay = currentReplay();
-  $('timeline').innerHTML = '<div id="timelineIndicator" class="timeline-indicator"></div>';
-  replay.plays.forEach((play, index) => {
-    const btn = document.createElement('button');
-    btn.className = 'play';
-    btn.type = 'button';
-    btn.role = 'tab';
-    btn.textContent = `Play ${play.public.play_index}`;
-    btn.onclick = () => { runtime.auto?.stop(); selectPlay(index); };
-    btn.onkeydown = event => handleTimelineKey(event, index);
-    $('timeline').appendChild(btn);
+  const feed = $('playFeed');
+  feed.innerHTML = replay.plays.map((play, index) => feedCard(play, index)).join('');
+  feed.querySelectorAll('[data-feed-index]').forEach(card => {
+    card.onclick = () => {
+      pauseForUser();
+      selectPlay(Number(card.dataset.feedIndex), { syncHash: true, scroll: false, source: 'click' });
+    };
   });
-  $('timeline').onkeydown = event => {
-    if (event.key === ' ') {
-      event.preventDefault();
-      runtime.auto?.toggle();
-    }
+  feed.onscroll = () => {
+    if (!runtime.autoScrolling && runtime.auto?.isRunning()) pauseForUser();
   };
+  $('resumeFeed').onclick = () => runtime.auto?.start();
 }
 
-function handleTimelineKey(event, index) {
-  const replay = currentReplay();
-  if (event.key === 'ArrowRight') { event.preventDefault(); runtime.auto?.stop(); focusPlay(Math.min(index + 1, replay.plays.length - 1)); }
-  if (event.key === 'ArrowLeft') { event.preventDefault(); runtime.auto?.stop(); focusPlay(Math.max(index - 1, 0)); }
-  if (event.key === 'Enter') { event.preventDefault(); selectPlay(index); }
+function feedCard(play, index) {
+  const pub = play.public;
+  const offense = label(pub.offense_action.concept_family);
+  const defense = label(pub.defense_action.coverage_family);
+  const yards = Number(pub.yards_gained || 0);
+  const yardText = `${yards >= 0 ? '+' : ''}${yards} yd`;
+  const outcome = `${pub.success ? 'Success' : 'No success'} · ${yardText}${pub.terminal_reason ? ` · ${label(pub.terminal_reason)}` : ''}`;
+  const cards = (pub.graph_card_ids || []).map(id => `<span class="chip" title="${escapeHtml(id)}">${escapeHtml(cardLabel(id))}</span>`).join('');
+  const turningPoint = currentReplay().film_room?.turning_point?.play_index === pub.play_index;
+  const adaptation = play.is_adaptation;
+  return `<button class="feed-card ${adaptation ? 'is-adaptation' : ''}" type="button" role="listitem" data-feed-index="${index}" aria-current="false">
+    <span class="feed-eyebrow">${adaptation ? `ADAPTATION · PLAY ${pub.play_index}` : `PLAY ${pub.play_index} · ${offense} vs ${defense}`}${turningPoint ? ' · ★ TURNING POINT' : ''}</span>
+    <span class="feed-body">${outcome}</span>
+    ${adaptation ? `<span class="feed-causal">${causalLine(play)}</span>` : ''}
+    <span class="feed-tags">${cards || '<span class="muted">No graph card</span>'}</span>
+  </button>`;
 }
 
-function focusPlay(index) {
-  const btn = document.querySelectorAll('button.play')[index];
-  btn.focus();
-  selectPlay(index);
+function causalLine(play) {
+  const detail = play.adaptation_detail || {};
+  if (play.adaptation_reason === 'graph-fire') return `Trigger: ${detail.card_label || 'Graph card'} fired`;
+  if (play.adaptation_reason === 'belief-shift') return `Belief: ${label(detail.key)} ${detail.delta >= 0 ? '+' : ''}${Math.round(Number(detail.delta || 0) * 100)}pp`;
+  if (play.adaptation_reason === 'counter-call') return `Adjustment: ${label(detail.prior_call)} → ${label(detail.new_call)}`;
+  return '';
 }
 
-function selectPlay(index) {
+function selectPlay(index, options = {}) {
+  const { syncHash = false, scroll = false, source = 'user' } = options;
   CBState.set({ selectedIndex: index });
   const replay = currentReplay();
   const play = replay.plays[index];
   const prior = index > 0 ? replay.plays[index - 1] : null;
-  document.querySelectorAll('button.play').forEach((button, i) => {
-    button.classList.toggle('active', i === index);
-    button.setAttribute('aria-selected', i === index ? 'true' : 'false');
+  document.querySelectorAll('[data-feed-index]').forEach(card => {
+    const active = Number(card.dataset.feedIndex) === index;
+    card.classList.toggle('active', active);
+    card.setAttribute('aria-current', active ? 'true' : 'false');
   });
-  moveIndicator();
   restartAutoplayProgress();
   renderBall(play.public.next_state.yardline, play.public.terminal_reason);
   $('driveState').textContent = `${play.public.next_state.down} & ${play.public.next_state.distance} at ${play.public.next_state.yardline}`;
@@ -281,14 +350,19 @@ function selectPlay(index) {
   renderBeliefs(play, prior);
   renderValidation(play.public.validation_result);
   mountPanels(['offenseCall', 'defenseCall', 'playOutcome', 'resources', 'events', 'graphCards', 'beliefs']);
+  if (scroll) scrollFeedCard(index);
+  if (syncHash) {
+    runtime.skipNextRouteScroll = source === 'click';
+    CBRouter.go('replay-detail', { id: runtime.replayId, play: play.public.play_index });
+  }
 }
 
-function moveIndicator() {
-  const active = document.querySelector('button.play.active');
-  const indicator = $('timelineIndicator');
-  if (!active || !indicator) return;
-  indicator.style.width = `${active.offsetWidth}px`;
-  indicator.style.transform = `translateX(${active.offsetLeft}px)`;
+function scrollFeedCard(index) {
+  const card = document.querySelector(`[data-feed-index="${index}"]`);
+  if (!card) return;
+  runtime.autoScrolling = true;
+  card.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'nearest' });
+  setTimeout(() => { runtime.autoScrolling = false; }, reduced() ? 0 : 260);
 }
 
 function renderBall(yardline, terminalReason) {
@@ -363,28 +437,6 @@ function renderEvents(play) {
   $('events').innerHTML = events.length
     ? events.map(event => `<div class="event-block"><span class="chip">${label(event.tag)}</span><p><strong>${event.graph_card_id}</strong><br>${event.description || ''}</p></div>`).join('')
     : '<p class="muted">No public graph event on this play.</p>';
-}
-
-function renderAdaptationChain() {
-  const replay = currentReplay();
-  const chain = replay.film_room?.adaptation_chain || [];
-  if (!chain.length) {
-    $('adaptationChain').innerHTML = '<p class="muted">No high-leverage adaptation on this drive.</p>';
-    return;
-  }
-  $('adaptationChain').innerHTML = chain.map(entry => {
-    const shifts = Object.entries(entry.belief_shift || {});
-    const largest = shifts.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0];
-    const shiftLine = largest ? `<p class="adaptation-meta">${label(largest[0])} ${largest[1] >= 0 ? '+' : ''}${Math.round(largest[1] * 100)}pp</p>` : '';
-    const resources = Object.entries(entry.resource_remaining || {}).map(([key, raw]) => `${label(key)} ${raw}`).join(' / ');
-    return `<div class="adaptation-entry">
-      <span class="adaptation-pill">Play ${entry.play_index}</span>
-      <strong class="adaptation-headline">${entry.card_label}</strong>
-      <p class="adaptation-meta">${entry.offense_call} vs ${entry.defense_call} - fired ${entry.trigger_event}</p>
-      ${shiftLine}
-      ${resources ? `<p class="adaptation-meta">Remaining: ${resources}</p>` : ''}
-    </div>`;
-  }).join('');
 }
 
 function renderValidation(result) {
@@ -593,25 +645,39 @@ function createAutoplay({ count, intervalMs, onTick, onStateChange }) {
   return { start, stop, toggle: () => running ? stop() : start(), isRunning: () => running, dispose: stop };
 }
 
-function setupAutoplay() {
+function autoplayIntervalMs() {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--autoplay-interval').trim();
+  if (raw.endsWith('ms')) return Number(raw.replace('ms', '')) || 3500;
+  if (raw.endsWith('s')) return Number(raw.replace('s', '')) * 1000 || 3500;
+  return 3500;
+}
+
+function setupFeedAutoplay() {
   const replay = currentReplay();
+  runtime.auto?.dispose();
   runtime.auto = createAutoplay({
     count: replay.plays.length,
-    intervalMs: 3500,
-    onTick: i => selectPlay(i),
+    intervalMs: autoplayIntervalMs(),
+    onTick: i => selectPlay(i, { syncHash: true, scroll: true, source: 'autoplay' }),
     onStateChange: updatePlayPauseButton,
   });
-  $('playPause').onclick = () => runtime.auto.toggle();
+  $('resumeFeed').onclick = () => runtime.auto.start();
 }
 
 function updatePlayPauseButton(running) {
-  const button = $('playPause');
+  const button = $('resumeFeed');
   const progress = $('autoplayProgress');
-  button.textContent = running ? '❚❚' : '▶';
-  button.setAttribute('aria-label', running ? 'Pause autoplay' : 'Play autoplay');
+  button.hidden = running || reduced();
+  button.textContent = 'Resume';
+  button.setAttribute('aria-label', 'Resume autoplay');
   progress.classList.remove('running');
   void progress.offsetWidth;
   if (running && !reduced()) progress.classList.add('running');
+}
+
+function pauseForUser() {
+  runtime.auto?.stop();
+  if (!reduced()) $('resumeFeed').hidden = false;
 }
 
 function restartAutoplayProgress() {
@@ -624,7 +690,7 @@ function restartAutoplayProgress() {
 
 function mountPanels(ids) { ids.forEach(id => mountRows($(id))); }
 function mountRows(root) {
-  root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel, #offenseCall, #defenseCall, #playOutcome, #resources, #events, #graphCards, #beliefs, #adaptationChain').forEach(panel => {
+  root.querySelectorAll ? root.querySelectorAll('.row-mount, .panel, #offenseCall, #defenseCall, #playOutcome, #resources, #events, #graphCards, #beliefs').forEach(panel => {
     panel.classList.remove('mount');
     [...panel.children].slice(0, 6).forEach((child, i) => child.style.animationDelay = `${Math.min(i, 6) * 40}ms`);
     void panel.offsetWidth;

@@ -1,13 +1,22 @@
 (() => {
   const ROUTES = [
     { name: 'replays', path: '/replays', pattern: /^\/replays\/?$/, build: () => '/replays' },
-    { name: 'replay-detail', path: '/replays/:id', pattern: /^\/replays\/([^/]+)\/?$/, build: params => `/replays/${encodeURIComponent(params.id || 'seed-42')}` },
+    { name: 'replay-detail', path: '/replays/:id', pattern: /^\/replays\/([^/]+)\/?$/, build: params => `/replays/${encodeURIComponent(params.id || 'seed-42')}${buildQuery(params, ['id'])}` },
     { name: 'garage', path: '/garage', pattern: /^\/garage\/?$/, build: () => '/garage' },
     { name: 'reports', path: '/reports', pattern: /^\/reports\/?$/, build: params => `/reports${params.compare ? `?compare=${String(params.compare).split(',').map(encodeURIComponent).join(',')}` : ''}` },
     { name: 'arena', path: '/arena', pattern: /^\/arena\/?$/, build: () => '/arena' },
   ];
   const DEFAULT_HASH = '#/replays';
   const subscribers = new Set();
+
+  function buildQuery(params, omit = []) {
+    const query = new URLSearchParams();
+    Object.entries(params || {}).forEach(([key, raw]) => {
+      if (!omit.includes(key) && key !== 'query' && raw !== undefined && raw !== null && raw !== '') query.set(key, raw);
+    });
+    const text = query.toString();
+    return text ? `?${text}` : '';
+  }
 
   function splitHash() {
     const raw = location.hash.replace(/^#/, '') || '/replays';
@@ -23,14 +32,14 @@
     for (const route of ROUTES) {
       const found = path.match(route.pattern);
       if (found) {
-        const params = queryParams(query);
+        const queryObject = queryParams(query);
         return {
           name: route.name,
-          params: route.name === 'replay-detail' ? { ...params, id: decodeURIComponent(found[1]) } : params,
+          params: route.name === 'replay-detail' ? { ...queryObject, query: queryObject, id: decodeURIComponent(found[1]) } : { ...queryObject, query: queryObject },
         };
       }
     }
-    return { name: 'replays', params: {} };
+    return { name: 'replays', params: { query: {} } };
   }
 
   function isKnown(path) {
