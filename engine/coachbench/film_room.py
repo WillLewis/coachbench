@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List
 
 from .graph_loader import StrategyGraph
@@ -7,6 +8,84 @@ from .labels import card_label, concept_label, is_legal_concept
 
 NO_EVENT_FILM_ROOM_NOTE = "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
 NO_EVENT_FILM_ROOM_TWEAK = "Review call sequencing, resource use, and risk level against nearby fixed seeds."
+
+TWEAK_PARAMETERS = {
+    "risk_tolerance",
+    "adaptation_speed",
+    "screen_trigger_confidence",
+    "explosive_shot_tolerance",
+    "run_pass_tendency",
+    "disguise_sensitivity",
+    "pressure_frequency",
+    "counter_repeat_tolerance",
+}
+TWEAK_DIRECTIONS = {"increase", "decrease", "set"}
+TWEAK_MAGNITUDES = {"small", "medium", "large"}
+TWEAK_SIGNALS = {
+    "play_distribution",
+    "belief_trajectory",
+    "resource_burn",
+    "graph_event_frequency",
+    "drive_outcome",
+}
+TWEAK_TEMPLATE_IDS = {
+    "belief_event_crossed_threshold",
+    "event_count_crossed_threshold",
+    "resource_burn_crossed_threshold",
+    "play_mix_crossed_threshold",
+    "drive_outcome_after_event",
+}
+
+CARD_TWEAK_RULES: Dict[str, Dict[str, Any]] = {
+    "redzone.bunch_mesh_vs_match.v1": {
+        "parameter": "counter_repeat_tolerance",
+        "direction": "decrease",
+        "magnitude": "small",
+        "signal": "graph_event_frequency",
+    },
+    "redzone.screen_vs_zero_pressure.v1": {
+        "parameter": "pressure_frequency",
+        "direction": "decrease",
+        "magnitude": "small",
+        "signal": "graph_event_frequency",
+    },
+    "redzone.screen_vs_simulated_pressure.v1": {
+        "parameter": "screen_trigger_confidence",
+        "direction": "increase",
+        "magnitude": "small",
+        "signal": "graph_event_frequency",
+    },
+    "redzone.outside_zone_vs_bear.v1": {
+        "parameter": "adaptation_speed",
+        "direction": "increase",
+        "magnitude": "small",
+        "signal": "graph_event_frequency",
+    },
+    "redzone.play_action_after_run_tendency.v1": {
+        "parameter": "counter_repeat_tolerance",
+        "direction": "decrease",
+        "magnitude": "small",
+        "signal": "graph_event_frequency",
+    },
+    "redzone.vertical_vs_two_high.v1": {
+        "parameter": "explosive_shot_tolerance",
+        "direction": "decrease",
+        "magnitude": "medium",
+        "signal": "graph_event_frequency",
+    },
+    "redzone.quick_game_vs_two_high.v1": {
+        "parameter": "risk_tolerance",
+        "direction": "increase",
+        "magnitude": "small",
+        "signal": "graph_event_frequency",
+    },
+    "redzone.rpo_vs_static_zone.v1": {
+        "parameter": "disguise_sensitivity",
+        "direction": "increase",
+        "magnitude": "small",
+        "signal": "graph_event_frequency",
+    },
+}
 
 
 def _public_play(play: Dict[str, Any]) -> Dict[str, Any]:
@@ -35,6 +114,56 @@ def _graph_cards_by_id(graph: StrategyGraph | None = None) -> Dict[str, Dict[str
 
 def _humanize(value: str) -> str:
     return " ".join(part for part in value.replace("_", " ").split()).title()
+
+
+def _slug(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
+
+
+def _plays_text(play_indices: List[int]) -> str:
+    if len(play_indices) == 1:
+        return f"Play {play_indices[0]}"
+    if len(play_indices) == 2:
+        return f"Plays {play_indices[0]} and {play_indices[1]}"
+    return f"Plays {', '.join(str(index) for index in play_indices[:-1])}, and {play_indices[-1]}"
+
+
+def _count_text(count: int) -> str:
+    if count == 1:
+        return "once"
+    if count == 2:
+        return "twice"
+    return f"{count} times"
+
+
+def render_tweak_rationale(template_id: str, arguments: Dict[str, Any]) -> str:
+    play_indices = [int(index) for index in arguments.get("play_indices", [])]
+    play_text = _plays_text(play_indices)
+    event_tag = str(arguments.get("event_tag", "event"))
+    parameter = str(arguments.get("parameter", "parameter"))
+    direction = str(arguments.get("direction", "adjust"))
+    observed = arguments.get("observed_value", {})
+    threshold = arguments.get("threshold", {})
+
+    if template_id == "belief_event_crossed_threshold":
+        belief = observed.get("belief", "belief") if isinstance(observed, dict) else "belief"
+        value = observed.get("value", observed) if isinstance(observed, dict) else observed
+        return f"{play_text} produced {event_tag} and {belief} reached {value}, so {direction} {parameter}."
+    if template_id == "resource_burn_crossed_threshold":
+        resource = observed.get("resource", "resource") if isinstance(observed, dict) else "resource"
+        spent = observed.get("spent", observed) if isinstance(observed, dict) else observed
+        call = observed.get("call", event_tag) if isinstance(observed, dict) else event_tag
+        return f"{play_text} spent {spent} {resource} on {call}, so {direction} {parameter}."
+    if template_id == "play_mix_crossed_threshold":
+        mix = observed.get("mix", observed) if isinstance(observed, dict) else observed
+        gate = threshold.get("mix", threshold) if isinstance(threshold, dict) else threshold
+        return f"{play_text} reached {mix} against mix gate {gate}, so {direction} {parameter}."
+    if template_id == "drive_outcome_after_event":
+        outcome = observed.get("outcome", observed) if isinstance(observed, dict) else observed
+        return f"{play_text} produced {event_tag} before {outcome}, so {direction} {parameter}."
+
+    count = observed.get("count", len(play_indices)) if isinstance(observed, dict) else len(play_indices)
+    return f"{play_text} produced {event_tag} {_count_text(int(count))}, so {direction} {parameter}."
 
 
 def _belief_shift(play: Dict[str, Any], prior: Dict[str, Any] | None) -> Dict[str, float]:
@@ -81,6 +210,69 @@ def film_room_tweak_for_card(
     return None
 
 
+def structured_tweak_for_card_record(record: Dict[str, Any]) -> Dict[str, Any] | None:
+    card = record["card"]
+    card_id = str(card["id"])
+    rule = CARD_TWEAK_RULES.get(card_id)
+    if not rule:
+        return None
+
+    event_play_indices_by_tag = record.get("event_play_indices_by_tag", {})
+    if not event_play_indices_by_tag:
+        return None
+    event_tag = next(iter(event_play_indices_by_tag))
+    play_indices = sorted({int(index) for index in event_play_indices_by_tag[event_tag]})
+    if not play_indices:
+        return None
+
+    observed_value: Dict[str, Any] = {
+        "event_tag": event_tag,
+        "count": len(play_indices),
+    }
+    offense_calls = record.get("offense_calls", [])
+    defense_calls = record.get("defense_calls", [])
+    if offense_calls:
+        observed_value["offense_call"] = offense_calls[0]
+    if defense_calls:
+        observed_value["defense_call"] = defense_calls[0]
+
+    threshold = {"event_count": 1}
+    arguments = {
+        "play_indices": play_indices,
+        "signal": rule["signal"],
+        "event_tag": event_tag,
+        "graph_card_id": card_id,
+        "observed_value": observed_value,
+        "threshold": threshold,
+        "parameter": rule["parameter"],
+        "direction": rule["direction"],
+    }
+    template_id = "event_count_crossed_threshold"
+    tweak = {
+        "tweak_id": f"twk_{_slug(rule['parameter'])}_{_slug(event_tag)}_{play_indices[0]:03d}",
+        "parameter": rule["parameter"],
+        "direction": rule["direction"],
+        "magnitude": rule["magnitude"],
+        "evidence": {
+            "signal": rule["signal"],
+            "observed_value": observed_value,
+            "threshold": threshold,
+            "play_indices": play_indices,
+        },
+        "source": {
+            "graph_card_id": card_id,
+        },
+        "rationale": {
+            "template_id": template_id,
+            "arguments": arguments,
+            "rendered": render_tweak_rationale(template_id, arguments),
+        },
+    }
+    if "target_value" in rule:
+        tweak["target_value"] = rule["target_value"]
+    return tweak
+
+
 def headline_for_terminal(points: int, terminal_reason: str | None) -> str:
     if terminal_reason == "touchdown" or points >= 7:
         return "Touchdown drive"
@@ -102,6 +294,7 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: Stra
             "turning_point": None,
             "notes": [],
             "suggested_tweaks": [],
+            "film_room_tweaks": [],
             "adaptation_chain": [],
             "next_adjustment": "Next try: review call sequencing across nearby seeds.",
         }
@@ -134,11 +327,30 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: Stra
                     "card": card,
                     "first_play_index": int(_public_play(play).get("play_index", play_index + 1)),
                     "max_abs_ep": expected_value,
+                    "event_tags": [],
+                    "event_play_indices_by_tag": {},
+                    "offense_calls": [],
+                    "defense_calls": [],
                 }
+                record = card_records[str(card_id)]
             else:
                 record["max_abs_ep"] = max(float(record["max_abs_ep"]), expected_value)
 
             public = _public_play(play)
+            public_play_index = int(public.get("play_index", play_index + 1))
+            event_tag = str(event.get("tag", ""))
+            if event_tag:
+                if event_tag not in record["event_tags"]:
+                    record["event_tags"].append(event_tag)
+                event_play_indices = record["event_play_indices_by_tag"].setdefault(event_tag, [])
+                if public_play_index not in event_play_indices:
+                    event_play_indices.append(public_play_index)
+            offense_call = public.get("offense_action", {}).get("concept_family")
+            defense_call = public.get("defense_action", {}).get("coverage_family")
+            if offense_call and offense_call not in record["offense_calls"]:
+                record["offense_calls"].append(offense_call)
+            if defense_call and defense_call not in record["defense_calls"]:
+                record["defense_calls"].append(defense_call)
             resource_snapshot = public.get("resource_budget_snapshot", {})
             entry = {
                 "play_index": public.get("play_index"),
@@ -157,9 +369,11 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: Stra
         tweak = film_room_tweak_for_card(record["card"])
         if tweak is None:
             continue
+        structured_tweak = structured_tweak_for_card_record(record)
         tweak_records.append({
             "card_id": card_id,
             "tweak": tweak,
+            "structured_tweak": structured_tweak,
             "first_play_index": record["first_play_index"],
             "max_abs_ep": record["max_abs_ep"],
             "card": record["card"],
@@ -172,6 +386,7 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: Stra
         tweak_records = [item for item in tweak_records if item["card_id"] in kept_card_ids]
     tweak_records.sort(key=lambda item: int(item["first_play_index"]))
     tweaks = [item["tweak"] for item in tweak_records]
+    structured_tweaks = [item["structured_tweak"] for item in tweak_records if item["structured_tweak"] is not None]
     if not notes:
         notes.append(NO_EVENT_FILM_ROOM_NOTE)
         tweaks.append(NO_EVENT_FILM_ROOM_TWEAK)
@@ -205,6 +420,7 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: Stra
         },
         "notes": notes,
         "suggested_tweaks": tweaks,
+        "film_room_tweaks": structured_tweaks,
         "adaptation_chain": adaptation_chain,
         "next_adjustment": next_adjustment,
     }

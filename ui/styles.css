@@ -923,6 +923,15 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   gap: 7px;
   margin: 12px 0;
 }
+.control-row.tweak-highlight {
+  margin-inline: -8px;
+  padding: 8px;
+  border: 1px solid var(--brand);
+  border-radius: var(--r-md);
+  background: var(--brand-soft);
+  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.12);
+  transition: background var(--motion-outcome) var(--ease-out), box-shadow var(--motion-outcome) var(--ease-out);
+}
 .control-row select, .control-row input { width: 100%; }
 .range-readout {
   justify-self: end;
@@ -1036,6 +1045,8 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   gap: 3px;
   padding: 9px 0;
   border-top: 1px solid var(--border);
+}
+.run-row a {
   color: var(--text);
   text-decoration: none;
 }
@@ -1043,12 +1054,21 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   color: var(--text-muted);
   font-size: 12px;
 }
-.run-row:hover, .run-row:focus-visible {
+.run-row a:hover, .run-row a:focus-visible {
   color: var(--brand);
   outline: none;
 }
+.parent-run-link {
+  width: max-content;
+  color: var(--text-muted);
+  font-size: 12px;
+}
 .film-room-panel { display: grid; gap: 14px; }
 .film-compressed { display: grid; gap: 14px; }
+.film-actions {
+  display: flex;
+  justify-content: flex-end;
+}
 .film-line {
   display: grid;
   gap: 4px;
@@ -1072,6 +1092,29 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   animation: filmNext var(--motion-outcome) var(--ease-out) both;
 }
 .film-next p { font-size: 18px; color: var(--text); }
+.film-tweak-list {
+  display: grid;
+  gap: 8px;
+}
+.film-tweak-chip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-elev-1);
+}
+.film-tweak-chip div {
+  display: grid;
+  gap: 3px;
+}
+.film-tweak-chip span {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
 .film-evidence {
   display: grid;
   gap: 8px;
@@ -1094,6 +1137,29 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
+}
+.before-after-panel {
+  display: grid;
+  gap: 12px;
+}
+.before-after-grid {
+  display: grid;
+  gap: 8px;
+}
+.before-after-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(80px, auto) minmax(80px, auto) minmax(70px, auto);
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
+.before-after-row span,
+.before-after-row small {
+  color: var(--text-muted);
+}
+.before-after-row strong {
+  font-variant-numeric: tabular-nums;
 }
 .slate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: stretch; }
 .slate-card {

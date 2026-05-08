@@ -1,34 +1,42 @@
 {
   "risk_tolerance": {
     "football_terms": "Shifts calls between safer underneath answers and higher-leverage stress calls.",
-    "ai_terms": "Adjusts the policy's willingness to choose higher-variance legal actions."
+    "ai_terms": "Adjusts the policy's willingness to choose higher-variance legal actions.",
+    "before_after_signals": ["risk_call_mix", "drive_outcome"]
   },
   "adaptation_speed": {
     "football_terms": "Controls how quickly the coordinator answers a repeated front, shell, or coverage stress.",
-    "ai_terms": "Lowers or raises the evidence count needed before changing the policy path."
+    "ai_terms": "Lowers or raises the evidence count needed before changing the policy path.",
+    "before_after_signals": ["time_to_first_counter", "belief_delta_magnitudes"]
   },
   "screen_trigger_confidence": {
     "football_terms": "Sets how quickly the offense calls screens when it reads pressure looks.",
-    "ai_terms": "Changes the belief threshold for selecting the screen counter route."
+    "ai_terms": "Changes the belief threshold for selecting the screen counter route.",
+    "before_after_signals": ["screen_call_count", "screen_graph_events", "pressure_screen_belief_trajectory"]
   },
   "explosive_shot_tolerance": {
     "football_terms": "Sets how much the offense accepts volatile downfield-shot attempts.",
-    "ai_terms": "Gates high-variance pass concepts when legal action and game state allow them."
+    "ai_terms": "Gates high-variance pass concepts when legal action and game state allow them.",
+    "before_after_signals": ["explosive_call_count", "explosive_graph_events"]
   },
   "run_pass_tendency": {
     "football_terms": "Declares whether the offense leans pass, run-to-play-action, balanced, or constraint-heavy.",
-    "ai_terms": "Selects the policy branch that prioritizes concept families before reactive counters."
+    "ai_terms": "Selects the policy branch that prioritizes concept families before reactive counters.",
+    "before_after_signals": ["run_pass_mix", "play_action_call_count"]
   },
   "disguise_sensitivity": {
     "football_terms": "Controls how often the defense answers with late movement and simulated pressure.",
-    "ai_terms": "Weights observed offensive stress toward disguise-heavy policy branches."
+    "ai_terms": "Weights observed offensive stress toward disguise-heavy policy branches.",
+    "before_after_signals": ["disguise_call_count", "disguise_graph_events"]
   },
   "pressure_frequency": {
     "football_terms": "Sets how often the defense escalates from coverage calls into pressure looks.",
-    "ai_terms": "Changes the threshold for selecting true or simulated pressure actions."
+    "ai_terms": "Changes the threshold for selecting true or simulated pressure actions.",
+    "before_after_signals": ["pressure_call_count", "pressure_graph_events", "resource_burn"]
   },
   "counter_repeat_tolerance": {
     "football_terms": "Controls how long the defense waits before repeating bracket or front counters.",
-    "ai_terms": "Adjusts the count gate for reusing counter actions against visible tendencies."
+    "ai_terms": "Adjusts the count gate for reusing counter actions against visible tendencies.",
+    "before_after_signals": ["counter_call_count", "counter_graph_events"]
   }
 }

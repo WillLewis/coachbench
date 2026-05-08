@@ -1,4 +1,4 @@
-const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, parameterGlossary: {}, garageRunnerIndex: null, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null, manifest: null };
+const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, parameterGlossary: {}, garageRunnerIndex: null, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null, activeRunRecordId: null, manifest: null };
 const $ = id => document.getElementById(id);
 const fallbackReplaySources = {
   'seed-42': 'demo_replay.json',
@@ -126,20 +126,33 @@ async function loadSharedData() {
   runtime.sharedLoaded = true;
 }
 
-async function loadReplay(id, playParam) {
+function replaySourceForId(id) {
+  return runtime.replaySources[id] || fallbackReplaySources[id] || showcaseReplaySource(id);
+}
+
+async function fetchReplayById(id) {
   await loadSharedData();
   await loadReplayIndex();
   await loadManifest();
-  const source = runtime.replaySources[id] || fallbackReplaySources[id] || showcaseReplaySource(id);
-  if (!source) {
-    renderReplayNotFound(id);
-    return;
-  }
+  const source = replaySourceForId(id);
+  if (!source) throw new Error(`Replay not found: ${id}`);
   const rawReplay = await fetchJson(source).catch(error => {
     if (id === 'seed-42') return fetchJson(fallbackReplaySources['static-proof']);
     throw error;
   });
-  const replay = annotateReplay(rawReplay);
+  return annotateReplay(rawReplay);
+}
+
+async function loadReplay(id, playParam) {
+  await loadSharedData();
+  await loadReplayIndex();
+  await loadManifest();
+  const source = replaySourceForId(id);
+  if (!source) {
+    renderReplayNotFound(id);
+    return;
+  }
+  const replay = await fetchReplayById(id);
   runtime.replayId = id;
   CBState.set({
     replay,
@@ -174,6 +187,7 @@ function renderAll() {
   renderPlayFeed();
   renderDriveSummary();
   renderFilmRoom();
+  renderBeforeAfter();
   renderInspectorTabs();
   setupOverlay();
   setupFeedAutoplay();
@@ -216,16 +230,19 @@ async function handleRoute(route) {
   if (route.name === 'replays') {
     await renderGallery();
   } else if (route.name === 'replay-detail') {
+    runtime.activeRunRecordId = route.params.run || null;
     if (runtime.replayId === route.params.id && currentReplay()) {
       const shouldScroll = !runtime.skipNextRouteScroll;
       runtime.skipNextRouteScroll = false;
       selectPlay(playToIndex(route.params.play, currentReplay().plays.length), { syncHash: false, scroll: shouldScroll, source: 'route' });
+      renderBeforeAfter();
     } else {
       await loadReplay(route.params.id, route.params.play);
     }
   } else if (route.name === 'garage') {
     await loadSharedData();
     ensureGarageDefaults();
+    await prepareGarageFromQuery(route.params);
     renderGaragePage(route.params);
   } else if (route.name === 'reports') {
     renderReports(route.params.compare);
@@ -737,7 +754,14 @@ function sparkline(values) {
 
 function renderFilmRoom() {
   const replay = currentReplay();
-  $('filmRoom').innerHTML = renderFilmRoomHtml(replay);
+  const target = $('filmRoom');
+  target.innerHTML = renderFilmRoomHtml(replay);
+  target.querySelectorAll('[data-apply-tweak]').forEach(button => {
+    button.onclick = () => navigateToGarage({ from: runtime.replayId || 'seed-42', apply: button.dataset.applyTweak });
+  });
+  target.querySelectorAll('[data-tune-agent]').forEach(button => {
+    button.onclick = () => navigateToGarage({ from: runtime.replayId || 'seed-42' });
+  });
 }
 
 function renderFilmRoomHtml(replay) {
@@ -749,7 +773,11 @@ function renderFilmRoomHtml(replay) {
   const turningCards = room.turning_point.graph_card_ids || [];
   const primaryCardId = turningCards[0];
   const evidence = filmRoomEvidence(replay, nextTry);
+  const tweakChips = renderFilmRoomTweakChips(replay);
   return `<section class="film-compressed">
+    <div class="film-actions">
+      <button class="ghost-button" type="button" data-tune-agent>Tune Agent</button>
+    </div>
     <div class="film-line">
       <h3>Turning Point</h3>
       <p>Play ${room.turning_point.play_index} · ${escapeHtml(shortCardLabel(primaryCardId))}</p>
@@ -762,6 +790,7 @@ function renderFilmRoomHtml(replay) {
       <h3>Next Try</h3>
       <p>${escapeHtml(displayNextTry(nextTry))}</p>
     </div>
+    ${tweakChips}
     <div class="film-evidence">
       <h3>Evidence</h3>
       ${evidence.hasDirectCounter ? '' : '<p class="muted compact">Recommendation derived from sequencing — no direct counter card.</p>'}
@@ -772,6 +801,319 @@ function renderFilmRoomHtml(replay) {
       <div class="film-notes-scroll">${filmRoomFullNotes(room)}</div>
     </details>
   </section>`;
+}
+
+function filmRoomTweaks(replay) {
+  return replay?.film_room_tweaks || replay?.film_room?.film_room_tweaks || [];
+}
+
+function renderFilmRoomTweakChips(replay) {
+  const tweaks = filmRoomTweaks(replay);
+  if (!tweaks.length) return '';
+  return `<div class="film-tweak-list">
+    ${tweaks.map(tweak => `<article class="film-tweak-chip">
+      <div>
+        <strong>${escapeHtml(label(tweak.parameter))}</strong>
+        <span>${escapeHtml(tweak.rationale?.rendered || 'Structured tweak available.')}</span>
+      </div>
+      <button class="ghost-button" type="button" data-apply-tweak="${escapeHtml(tweak.tweak_id)}">Apply suggested tweak</button>
+    </article>`).join('')}
+  </div>`;
+}
+
+function garageUrl(params = {}) {
+  const query = new URLSearchParams();
+  if (params.from) query.set('from', params.from);
+  if (params.apply) query.set('apply', params.apply);
+  const text = query.toString();
+  return `garage.html${text ? `?${text}` : ''}`;
+}
+
+function navigateToGarage(params = {}) {
+  window.location.href = garageUrl(params);
+}
+
+async function renderBeforeAfter() {
+  const target = $('beforeAfterPanel');
+  if (!target) return;
+  const replay = currentReplay();
+  const runs = loadGarageRecentRuns();
+  const currentRun = runs.find(run => run.run_record_id && run.run_record_id === runtime.activeRunRecordId)
+    || runs.find(run => run.id === runtime.replayId && run.applied_tweak);
+  const applied = currentRun?.applied_tweak;
+  if (!replay || !applied?.parameter || !currentRun.parent_run_id) {
+    target.hidden = true;
+    target.innerHTML = '';
+    return;
+  }
+  target.hidden = false;
+  target.innerHTML = `<h2>Before / After</h2><p class="muted compact">Loading scoped comparison for ${escapeHtml(label(applied.parameter))}.</p>`;
+  const replayId = runtime.replayId;
+  const parentReplay = await fetchReplayById(currentRun.parent_run_id).catch(() => null);
+  if (runtime.replayId !== replayId) return;
+  if (!parentReplay) {
+    target.innerHTML = `<h2>Before / After</h2><p class="muted compact">No scoped comparison is available because the parent run could not be loaded.</p>`;
+    return;
+  }
+  const signals = beforeAfterSignalsFor(applied.parameter);
+  if (!signals.length) {
+    target.innerHTML = `<h2>Before / After</h2><p class="muted compact">No scoped comparison is available for ${escapeHtml(label(applied.parameter))}.</p>`;
+    return;
+  }
+  const rows = signals.map(signal => compareSignal(signal, parentReplay, replay)).filter(Boolean);
+  if (!rows.length) {
+    target.innerHTML = `<h2>Before / After</h2><p class="muted compact">No scoped comparison is available for ${escapeHtml(label(applied.parameter))}.</p>`;
+    return;
+  }
+  target.innerHTML = `<div class="panel-title">
+    <h2>Before / After</h2>
+    <span>${escapeHtml(label(applied.parameter))}</span>
+  </div>
+  <p class="muted compact">Scoped to the applied tweak from ${escapeHtml(currentRun.parent_run_id)}.</p>
+  <div class="before-after-grid">
+    ${rows.map(row => `<div class="before-after-row">
+      <span>${escapeHtml(row.label)}</span>
+      <strong>${escapeHtml(row.before)}</strong>
+      <strong>${escapeHtml(row.after)}</strong>
+      <small>${escapeHtml(row.delta)}</small>
+    </div>`).join('')}
+  </div>`;
+}
+
+function beforeAfterSignalsFor(parameter) {
+  const required = {
+    screen_trigger_confidence: ['screen_call_count', 'screen_graph_events', 'pressure_screen_belief_trajectory'],
+    adaptation_speed: ['time_to_first_counter', 'belief_delta_magnitudes'],
+  };
+  return required[parameter] || runtime.parameterGlossary[parameter]?.before_after_signals || [];
+}
+
+function uniqueReplayEvents(replay) {
+  const seen = new Set();
+  return (replay?.plays || []).flatMap(play => {
+    const playIndex = Number(play.public?.play_index || 0);
+    const events = [
+      ...(play.public?.events || []),
+      ...(play.offense_observed?.events || []),
+      ...(play.defense_observed?.events || []),
+    ];
+    return events.filter(event => {
+      const key = `${playIndex}:${event.graph_card_id}:${event.tag}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  });
+}
+
+function countOffenseConcepts(replay, concepts) {
+  const set = new Set(concepts);
+  return (replay?.plays || []).filter(play => set.has(play.public?.offense_action?.concept_family)).length;
+}
+
+function countDefenseCalls(replay, calls) {
+  const set = new Set(calls);
+  return (replay?.plays || []).filter(play => set.has(play.public?.defense_action?.coverage_family)).length;
+}
+
+function countEventTags(replay, tags) {
+  const set = new Set(tags);
+  return uniqueReplayEvents(replay).filter(event => set.has(event.tag)).length;
+}
+
+function countRiskCalls(replay, side, riskLevels) {
+  const set = new Set(riskLevels);
+  const key = side === 'defense' ? 'defense_action' : 'offense_action';
+  return (replay?.plays || []).filter(play => set.has(play.public?.[key]?.risk_level)).length;
+}
+
+function resourceBurn(replay, side) {
+  return (replay?.plays || []).reduce((total, play) => {
+    const snapshot = play.public?.resource_budget_snapshot || {};
+    return total + Object.values(snapshot[`${side}_cost`] || {}).reduce((sum, raw) => sum + Number(raw || 0), 0);
+  }, 0);
+}
+
+function firstGraphEventPlay(replay) {
+  const plays = replay?.plays || [];
+  const found = plays.find(play => uniquePlayEvents(play).length > 0);
+  return found ? Number(found.public?.play_index || 0) : null;
+}
+
+function uniquePlayEvents(play) {
+  const seen = new Set();
+  return [
+    ...(play.public?.events || []),
+    ...(play.offense_observed?.events || []),
+    ...(play.defense_observed?.events || []),
+  ].filter(event => {
+    const key = `${event.graph_card_id}:${event.tag}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function beliefDeltaMagnitude(replay) {
+  let total = 0;
+  let previous = null;
+  (replay?.plays || []).forEach(play => {
+    const current = play.offense_observed?.belief_after || {};
+    if (previous) {
+      Object.keys(current).forEach(key => {
+        if (previous[key] !== undefined) total += Math.abs(Number(current[key] || 0) - Number(previous[key] || 0));
+      });
+    }
+    previous = current;
+  });
+  return Number(total.toFixed(2));
+}
+
+function beliefTrajectorySummary(replay, keys) {
+  return keys.map(key => {
+    const values = (replay?.plays || []).map(play => Number(play.offense_observed?.belief_after?.[key])).filter(Number.isFinite);
+    if (!values.length) return `${label(key)} -`;
+    return `${label(key)} ${pct(values[0])}%→${pct(values[values.length - 1])}%`;
+  }).join(' · ');
+}
+
+function compareSignal(signal, before, after) {
+  const metric = beforeAfterMetric(signal);
+  if (!metric) return null;
+  const left = metric.value(before);
+  const right = metric.value(after);
+  return {
+    label: metric.label,
+    before: metric.format(left),
+    after: metric.format(right),
+    delta: metric.delta(left, right),
+  };
+}
+
+function numericDelta(left, right, suffix = '') {
+  const delta = Number(right) - Number(left);
+  if (!Number.isFinite(delta)) return '';
+  return `${delta >= 0 ? '+' : ''}${delta}${suffix}`;
+}
+
+function beforeAfterMetric(signal) {
+  const countFormat = raw => `${raw}`;
+  const countDelta = (left, right) => numericDelta(left, right);
+  const metrics = {
+    screen_call_count: {
+      label: 'Screen call count',
+      value: replay => countOffenseConcepts(replay, ['screen']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    screen_graph_events: {
+      label: 'Screen graph events',
+      value: replay => countEventTags(replay, ['pressure_punished', 'space_created_after_rush', 'screen_baited', 'simulated_pressure_revealed']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    pressure_screen_belief_trajectory: {
+      label: 'Pressure/screen belief trajectory',
+      value: replay => beliefTrajectorySummary(replay, ['true_pressure_confidence', 'screen_trap_risk']),
+      format: raw => raw,
+      delta: () => 'scoped trace',
+    },
+    time_to_first_counter: {
+      label: 'Time to first graph counter',
+      value: firstGraphEventPlay,
+      format: raw => raw ? `play ${raw}` : 'none',
+      delta: (left, right) => left && right ? numericDelta(left, right, ' plays') : 'changed',
+    },
+    belief_delta_magnitudes: {
+      label: 'Belief delta magnitude',
+      value: beliefDeltaMagnitude,
+      format: raw => String(raw),
+      delta: (left, right) => numericDelta(left, right),
+    },
+    risk_call_mix: {
+      label: 'Aggressive risk calls',
+      value: replay => countRiskCalls(replay, 'offense', ['aggressive']) + countRiskCalls(replay, 'defense', ['aggressive']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    drive_outcome: {
+      label: 'Drive outcome',
+      value: replay => `${label(replay.score?.result)} · ${replay.score?.points || 0} pts`,
+      format: raw => raw,
+      delta: () => 'result',
+    },
+    explosive_call_count: {
+      label: 'Vertical shot calls',
+      value: replay => countOffenseConcepts(replay, ['vertical_shot']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    explosive_graph_events: {
+      label: 'Explosive-shot graph events',
+      value: replay => countEventTags(replay, ['explosive_window_capped', 'underneath_space_conceded']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    run_pass_mix: {
+      label: 'Run/pass mix',
+      value: replay => {
+        const runs = countOffenseConcepts(replay, ['inside_zone', 'outside_zone', 'power_counter']);
+        const passes = (replay.plays || []).length - runs;
+        return `${runs} run / ${passes} pass`;
+      },
+      format: raw => raw,
+      delta: () => 'mix',
+    },
+    play_action_call_count: {
+      label: 'Play-action calls',
+      value: replay => countOffenseConcepts(replay, ['play_action_flood', 'bootleg']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    disguise_call_count: {
+      label: 'Disguise calls',
+      value: replay => countDefenseCalls(replay, ['simulated_pressure', 'trap_coverage']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    disguise_graph_events: {
+      label: 'Disguise graph events',
+      value: replay => countEventTags(replay, ['screen_baited', 'simulated_pressure_revealed']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    pressure_call_count: {
+      label: 'Pressure calls',
+      value: replay => countDefenseCalls(replay, ['zero_pressure', 'simulated_pressure']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    pressure_graph_events: {
+      label: 'Pressure graph events',
+      value: replay => countEventTags(replay, ['pressure_punished', 'space_created_after_rush', 'screen_baited']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    resource_burn: {
+      label: 'Defense resource burn',
+      value: replay => resourceBurn(replay, 'defense'),
+      format: countFormat,
+      delta: countDelta,
+    },
+    counter_call_count: {
+      label: 'Counter calls',
+      value: replay => countDefenseCalls(replay, ['redzone_bracket', 'bear_front', 'trap_coverage', 'cover1_man']),
+      format: countFormat,
+      delta: countDelta,
+    },
+    counter_graph_events: {
+      label: 'Counter graph events',
+      value: replay => countEventTags(replay, ['coverage_switch_stress', 'wide_zone_constrained', 'underneath_space_taken']),
+      format: countFormat,
+      delta: countDelta,
+    },
+  };
+  return metrics[signal] || null;
 }
 
 function displayNextTry(raw) {
@@ -835,7 +1177,8 @@ function filmRoomFullNotes(room) {
   const chain = (room.adaptation_chain || []).map(entry => `<li><strong>Play ${entry.play_index}</strong> · ${escapeHtml(entry.card_label || cardLabel(entry.graph_card_id))}<br><span class="muted">${escapeHtml(entry.offense_call || '-')} vs ${escapeHtml(entry.defense_call || '-')} · ${escapeHtml(entry.trigger_event || '-')}</span></li>`).join('');
   const notes = (room.notes || []).map(note => `<li>${escapeHtml(note)}</li>`).join('');
   const tweaks = (room.suggested_tweaks || []).map(tweak => `<li>${escapeHtml(tweak)}</li>`).join('');
-  return `<h3>Adaptation Chain</h3><ul>${chain || '<li class="muted">No adaptation chain entries.</li>'}</ul><h3>Notes</h3><ul>${notes || '<li class="muted">-</li>'}</ul><h3>Suggested Tweaks</h3><ul>${tweaks || '<li class="muted">-</li>'}</ul>`;
+  const structured = filmRoomTweaks({ film_room: room }).map(tweak => `<li>${escapeHtml(tweak.rationale?.rendered || tweak.tweak_id)}</li>`).join('');
+  return `<h3>Adaptation Chain</h3><ul>${chain || '<li class="muted">No adaptation chain entries.</li>'}</ul><h3>Notes</h3><ul>${notes || '<li class="muted">-</li>'}</ul><h3>Suggested Tweaks</h3><ul>${tweaks || '<li class="muted">-</li>'}</ul><h3>Structured Tweaks</h3><ul>${structured || '<li class="muted">-</li>'}</ul>`;
 }
 
 function renderCompactAgentCard() {
@@ -855,7 +1198,7 @@ function renderCompactAgentCard() {
     <p class="compact">${differences.length ? differences.map(item => `${label(item.key)} ${item.delta}`).join(' · ') : 'No local tuning over profile defaults.'}</p>
     <button id="tuneAgent" class="ghost-button" type="button">Tune Agent →</button>
   </div>`;
-  $('tuneAgent').onclick = () => CBRouter.go('garage', { from: runtime.replayId || 'seed-42' });
+  $('tuneAgent').onclick = () => navigateToGarage({ from: runtime.replayId || 'seed-42' });
 }
 
 function compactProfileDiffs(garageState) {
@@ -873,6 +1216,111 @@ function compactProfileDiffs(garageState) {
 function profileDefaults(profileKey, key) {
   const bucket = profileKey === 'defense_profile' ? 'defense_archetypes' : 'offense_archetypes';
   return runtime.profiles[bucket]?.[key] || {};
+}
+
+function seedFromReplayId(id) {
+  const match = String(id || '').match(/--(\d+)$/) || String(id || '').match(/^seed-(\d+)$/);
+  return match ? Number(match[1]) : null;
+}
+
+function findProfileKey(side, profile) {
+  const bucket = side === 'defense' ? 'defense_archetypes' : 'offense_archetypes';
+  if (profile?.profile_key && runtime.profiles[bucket]?.[profile.profile_key]) return profile.profile_key;
+  return Object.entries(runtime.profiles[bucket] || {}).find(([, candidate]) => candidate.label === profile?.label)?.[0]
+    || Object.keys(runtime.profiles[bucket] || {})[0]
+    || '';
+}
+
+function garageStateFromReplay(replay, from) {
+  const config = structuredClone(replay.agent_garage_config || {});
+  const offenseKey = findProfileKey('offense', config.offense_profile);
+  const defenseKey = findProfileKey('defense', config.defense_profile);
+  const seed = config.runner_seed || seedFromReplayId(from) || garageRunnerSeeds()[0] || 42;
+  return {
+    source: config.source || 'agent_garage_replay_source',
+    offense_profile: { ...(config.offense_profile || runtime.profiles.offense_archetypes?.[offenseKey] || {}), profile_key: offenseKey },
+    defense_profile: { ...(config.defense_profile || runtime.profiles.defense_archetypes?.[defenseKey] || {}), profile_key: defenseKey },
+    runner_seed: Number(seed),
+    draft_controls: { ...(config.draft_controls || {}), runner_seed: String(seed) },
+  };
+}
+
+function findReplayTweak(replay, tweakId) {
+  return filmRoomTweaks(replay).find(tweak => tweak.tweak_id === tweakId) || null;
+}
+
+function magnitudeDelta(magnitude) {
+  if (typeof magnitude === 'number') return magnitude;
+  return { small: 0.1, medium: 0.2, large: 0.3 }[magnitude] || 0.1;
+}
+
+function transformedTweakValue(parameter, current, tweak) {
+  if (tweak.direction === 'set' && tweak.target_value !== undefined) return tweak.target_value;
+  if (numericControls.has(parameter)) {
+    const delta = magnitudeDelta(tweak.magnitude);
+    const sign = tweak.direction === 'decrease' ? -1 : 1;
+    return Math.max(0, Math.min(1, Number((Number(current || 0) + sign * delta).toFixed(2))));
+  }
+  if (parameter === 'risk_tolerance') {
+    const index = Math.max(0, riskOrder.indexOf(String(current)));
+    const step = tweak.magnitude === 'large' ? 3 : tweak.magnitude === 'medium' ? 2 : 1;
+    const sign = tweak.direction === 'decrease' ? -1 : 1;
+    return riskOrder[Math.max(0, Math.min(riskOrder.length - 1, index + sign * step))];
+  }
+  return tweak.target_value !== undefined ? tweak.target_value : current;
+}
+
+function applyTweakToGarageState(garageState, tweak, from) {
+  const parameter = tweak.parameter;
+  const before = garageControlValueFromState(garageState, parameter);
+  const after = transformedTweakValue(parameter, before, tweak);
+  garageState.draft_controls = { ...(garageState.draft_controls || {}), [parameter]: after };
+  garageState.applied_tweak = {
+    ...structuredClone(tweak),
+    parent_run_id: from,
+    applied_value_before: before,
+    applied_value_after: after,
+  };
+  garageState.parent_run_id = from;
+  return garageState.applied_tweak;
+}
+
+function garageControlValueFromState(garageState, key) {
+  const draft = garageState.draft_controls || {};
+  if (draft[key] !== undefined) return draft[key];
+  if (key === 'offensive_archetype') return garageState.offense_profile?.profile_key || '';
+  if (key === 'defensive_archetype') return garageState.defense_profile?.profile_key || '';
+  if (key === 'runner_seed') return String(garageState.runner_seed || garageRunnerSeeds()[0] || 42);
+  const offenseParams = garageState.offense_profile?.parameters || garageState.offense_profile || {};
+  const defenseParams = garageState.defense_profile?.parameters || garageState.defense_profile || {};
+  return offenseParams[key] ?? defenseParams[key] ?? (numericControls.has(key) ? 0.5 : 'balanced');
+}
+
+async function prepareGarageFromQuery(params = {}) {
+  const from = params.from;
+  if (!from) return;
+  const key = `${from}:${params.apply || ''}`;
+  if (CBState.get().garagePreparedQuery === key) return;
+  const replay = await fetchReplayById(from).catch(() => null);
+  if (!replay?.agent_garage_config) {
+    CBState.set({ garagePreparedQuery: key });
+    return;
+  }
+  const next = garageStateFromReplay(replay, from);
+  let applied = null;
+  if (params.apply) {
+    const tweak = findReplayTweak(replay, params.apply);
+    if (tweak) applied = applyTweakToGarageState(next, tweak, from);
+  }
+  CBState.set({
+    garageState: next,
+    garageTier: 'declarative',
+    garageRules: [],
+    garageDraftName: applied ? toHandle(`tweak-${applied.parameter}`) : toHandle(`from-${from}`),
+    garagePreparedQuery: key,
+    garageHighlightControl: applied?.parameter || null,
+  });
+  persistGarageActiveDraft();
 }
 
 function ensureGarageDefaults() {
@@ -916,7 +1364,20 @@ function renderGaragePage(params = {}) {
   renderRuleBuilder();
   renderGarageActions();
   renderGarageDrafts();
+  highlightGarageControl(CBState.get().garageHighlightControl);
   mountRows(document.querySelector('[data-route="garage"]'));
+}
+
+function highlightGarageControl(key) {
+  if (!key) return;
+  const row = document.querySelector(`[data-garage-row="${key}"]`);
+  if (!row) return;
+  row.classList.add('tweak-highlight');
+  row.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'center' });
+  window.setTimeout(() => {
+    row.classList.remove('tweak-highlight');
+    if (CBState.get().garageHighlightControl === key) CBState.set({ garageHighlightControl: null });
+  }, 2000);
 }
 
 function renderTierSelector() {
@@ -984,7 +1445,7 @@ function garageControlRow(key) {
   const field = numericControls.has(key)
     ? `<input data-garage-control="${key}" type="range" min="0" max="1" step="0.01" value="${current}">`
     : `<select data-garage-control="${key}">${garageOptions(key, current).map(item => `<option value="${escapeHtml(item.value)}" ${item.value === current ? 'selected' : ''}>${escapeHtml(item.label)}</option>`).join('')}</select>`;
-  return `<label class="control-row ${error ? 'has-error' : ''}">
+  return `<label class="control-row ${error ? 'has-error' : ''}" data-garage-row="${escapeHtml(key)}">
     <span class="label">${label(key)}</span>
     ${field}
     ${numericControls.has(key) ? `<span class="range-readout">${Math.round(Number(current || 0) * 100)}%</span>` : ''}
@@ -1270,8 +1731,13 @@ function garageIsValid() {
   return garageValidationErrors().length === 0;
 }
 
-function replayUrlForRunnerEntry(entry) {
-  return `replay.html#/replays/${encodeURIComponent(entry.id)}`;
+function replayUrlForRunnerEntry(entry, params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, raw]) => {
+    if (raw !== undefined && raw !== null && raw !== '') query.set(key, raw);
+  });
+  const suffix = query.toString() ? `?${query.toString()}` : '';
+  return `replay.html#/replays/${encodeURIComponent(entry.id)}${suffix}`;
 }
 
 function runGarageTestDrive() {
@@ -1281,9 +1747,13 @@ function runGarageTestDrive() {
     renderGaragePage(CBRouter.current().params);
     return;
   }
+  const garageState = CBState.get().garageState || {};
+  const applied = garageState.applied_tweak;
+  const runRecordId = `run-${Date.now().toString(36)}`;
   const run = {
     id: resolved.entry.id,
-    href: replayUrlForRunnerEntry(resolved.entry),
+    run_record_id: runRecordId,
+    href: replayUrlForRunnerEntry(resolved.entry, { run: runRecordId }),
     offense: resolved.offense.profile.label,
     defense: resolved.defense.profile.label,
     seed: resolved.seed,
@@ -1292,6 +1762,11 @@ function runGarageTestDrive() {
     result: resolved.entry.result,
     saved_at: new Date().toISOString(),
   };
+  if (applied?.parent_run_id) {
+    run.parent_run_id = applied.parent_run_id;
+    run.parent_href = `replay.html#/replays/${encodeURIComponent(applied.parent_run_id)}`;
+    run.applied_tweak = applied;
+  }
   saveGarageRecentRun(run);
   persistGarageActiveDraft();
   window.location.href = run.href;
@@ -1315,7 +1790,7 @@ function renderGarageDrafts() {
       : '<p class="muted compact">No saved drafts in this browser.</p>'
   }</div><div class="recent-panel"><h3>Recent Runs</h3>${
     runs.length
-      ? runs.map(run => `<a class="run-row" href="${escapeHtml(run.href)}"><span>${escapeHtml(run.offense)} vs ${escapeHtml(run.defense)}</span><small>Seed ${escapeHtml(run.seed)} · ${escapeHtml(label(run.result))} · ${escapeHtml(run.points)} pts${run.exact ? '' : ' · nearest'}</small></a>`).join('')
+      ? runs.map(run => `<div class="run-row"><a href="${escapeHtml(run.href)}"><span>${escapeHtml(run.offense)} vs ${escapeHtml(run.defense)}</span><small>Seed ${escapeHtml(run.seed)} · ${escapeHtml(label(run.result))} · ${escapeHtml(run.points)} pts${run.exact ? '' : ' · nearest'}</small></a>${run.parent_run_id ? `<a class="parent-run-link" href="${escapeHtml(run.parent_href || `replay.html#/replays/${encodeURIComponent(run.parent_run_id)}`)}">Parent run</a>` : ''}</div>`).join('')
       : '<p class="muted compact">No test drives launched in this browser.</p>'
   }</div>`;
   $('garageDrafts').querySelectorAll('[data-draft-load]').forEach(button => button.onclick = loadGarageDraft);
@@ -1400,7 +1875,7 @@ function loadGarageRecentRuns() {
 
 function saveGarageRecentRun(run) {
   try {
-    const runs = [run, ...loadGarageRecentRuns().filter(item => item.id !== run.id)].slice(0, garageRecentLimit);
+    const runs = [run, ...loadGarageRecentRuns().filter(item => item.run_record_id !== run.run_record_id)].slice(0, garageRecentLimit);
     localStorage.setItem(garageRecentRunsKey, JSON.stringify(runs));
   } catch {}
 }

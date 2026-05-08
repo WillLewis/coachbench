@@ -5,8 +5,14 @@ from typing import Any, Dict, List
 from .film_room import (
     NO_EVENT_FILM_ROOM_NOTE,
     NO_EVENT_FILM_ROOM_TWEAK,
+    TWEAK_DIRECTIONS,
+    TWEAK_MAGNITUDES,
+    TWEAK_PARAMETERS,
+    TWEAK_SIGNALS,
+    TWEAK_TEMPLATE_IDS,
     film_room_note_for_event,
     film_room_tweak_for_card,
+    render_tweak_rationale,
 )
 from .graph_loader import StrategyGraph
 
@@ -131,6 +137,32 @@ TURNING_POINT_FIELDS = {
     "metric",
 }
 
+FILM_ROOM_TWEAK_FIELDS = {
+    "tweak_id",
+    "parameter",
+    "direction",
+    "magnitude",
+    "target_value",
+    "evidence",
+    "source",
+    "rationale",
+}
+
+FILM_ROOM_TWEAK_REQUIRED_FIELDS = FILM_ROOM_TWEAK_FIELDS - {"target_value"}
+TWEAK_EVIDENCE_FIELDS = {"signal", "observed_value", "threshold", "play_indices"}
+TWEAK_SOURCE_FIELDS = {"graph_card_id", "replay_event_id"}
+TWEAK_RATIONALE_FIELDS = {"template_id", "arguments", "rendered"}
+TWEAK_RATIONALE_ARGUMENT_FIELDS = {
+    "play_indices",
+    "signal",
+    "event_tag",
+    "graph_card_id",
+    "observed_value",
+    "threshold",
+    "parameter",
+    "direction",
+}
+
 HIDDEN_OBSERVATION_FIELDS = {
     "seed",
     "seed_hash",
@@ -253,6 +285,116 @@ def validate_film_room_is_event_derived(replay: Dict[str, Any]) -> None:
     for entry in replay.get("film_room", {}).get("adaptation_chain", []):
         if entry.get("graph_card_id") not in graph_card_ids:
             raise ContractValidationError(f"Film Room adaptation entry is not graph-derived: {entry}")
+    play_by_index = {
+        int(play.get("public", {}).get("play_index", index)): play
+        for index, play in enumerate(replay.get("plays", []), start=1)
+    }
+    for tweak in replay.get("film_room_tweaks", replay.get("film_room", {}).get("film_room_tweaks", [])):
+        validate_film_room_tweak_schema(tweak)
+        source_card_id = tweak["source"].get("graph_card_id")
+        arguments = tweak["rationale"]["arguments"]
+        argument_card_id = arguments["graph_card_id"]
+        if source_card_id is None:
+            raise ContractValidationError(f"Film Room structured tweak lacks resolvable graph card source: {tweak}")
+        if source_card_id != argument_card_id:
+            raise ContractValidationError(f"Film Room structured tweak source does not match rationale: {tweak}")
+        if source_card_id not in graph_card_ids:
+            raise ContractValidationError(f"Film Room structured tweak references unknown graph card: {source_card_id}")
+        if tweak["evidence"]["play_indices"] != arguments["play_indices"]:
+            raise ContractValidationError(f"Film Room structured tweak evidence and rationale play indices diverge: {tweak}")
+        if tweak["evidence"]["signal"] != arguments["signal"]:
+            raise ContractValidationError(f"Film Room structured tweak evidence and rationale signals diverge: {tweak}")
+        if tweak["parameter"] != arguments["parameter"] or tweak["direction"] != arguments["direction"]:
+            raise ContractValidationError(f"Film Room structured tweak target diverges from rationale: {tweak}")
+        expected_rationale = render_tweak_rationale(tweak["rationale"]["template_id"], arguments)
+        if tweak["rationale"]["rendered"] != expected_rationale:
+            raise ContractValidationError(f"Film Room structured tweak rationale is not template-derived: {tweak}")
+        event_tag = arguments["event_tag"]
+        for play_index in tweak["evidence"]["play_indices"]:
+            play = play_by_index.get(int(play_index))
+            if not play:
+                raise ContractValidationError(f"Film Room structured tweak references missing play: {play_index}")
+            matching_events = [
+                event
+                for event in _all_events_from_play(play)
+                if event.get("graph_card_id") == source_card_id and event.get("tag") == event_tag
+            ]
+            if not matching_events:
+                raise ContractValidationError(
+                    f"Film Room structured tweak evidence is not event-derived: play {play_index}, {source_card_id}, {event_tag}"
+                )
+
+
+def validate_film_room_tweak_schema(tweak: Dict[str, Any]) -> None:
+    _require_fields(tweak, FILM_ROOM_TWEAK_REQUIRED_FIELDS, "film_room_tweak")
+    extras = set(tweak) - FILM_ROOM_TWEAK_FIELDS
+    if extras:
+        raise ContractValidationError(f"film_room_tweak has unsupported fields: {sorted(extras)}")
+    tweak_id = tweak.get("tweak_id")
+    if not isinstance(tweak_id, str) or not tweak_id.startswith("twk_"):
+        raise ContractValidationError("film_room_tweak tweak_id must start with twk_")
+    if any(char for char in tweak_id if char not in "abcdefghijklmnopqrstuvwxyz0123456789_"):
+        raise ContractValidationError("film_room_tweak tweak_id must contain lowercase ids only")
+    if tweak.get("parameter") not in TWEAK_PARAMETERS:
+        raise ContractValidationError(f"film_room_tweak parameter is not live: {tweak.get('parameter')}")
+    direction = tweak.get("direction")
+    if direction not in TWEAK_DIRECTIONS:
+        raise ContractValidationError(f"film_room_tweak direction is invalid: {direction}")
+    magnitude = tweak.get("magnitude")
+    if not isinstance(magnitude, (int, float)) and magnitude not in TWEAK_MAGNITUDES:
+        raise ContractValidationError(f"film_room_tweak magnitude is invalid: {magnitude}")
+    if direction != "set" and "target_value" in tweak:
+        raise ContractValidationError("film_room_tweak target_value is only allowed for set direction")
+
+    evidence = tweak.get("evidence")
+    if not isinstance(evidence, dict):
+        raise ContractValidationError("film_room_tweak evidence must be an object")
+    _require_fields(evidence, TWEAK_EVIDENCE_FIELDS, "film_room_tweak evidence")
+    if set(evidence) - TWEAK_EVIDENCE_FIELDS:
+        raise ContractValidationError(f"film_room_tweak evidence has unsupported fields: {sorted(set(evidence) - TWEAK_EVIDENCE_FIELDS)}")
+    if evidence.get("signal") not in TWEAK_SIGNALS:
+        raise ContractValidationError(f"film_room_tweak evidence signal is invalid: {evidence.get('signal')}")
+    play_indices = evidence.get("play_indices")
+    if not isinstance(play_indices, list) or not play_indices:
+        raise ContractValidationError("film_room_tweak evidence play_indices must be a non-empty list")
+    if len(set(play_indices)) != len(play_indices) or any(not isinstance(index, int) or index < 1 for index in play_indices):
+        raise ContractValidationError("film_room_tweak evidence play_indices must be unique positive integers")
+
+    source = tweak.get("source")
+    if not isinstance(source, dict):
+        raise ContractValidationError("film_room_tweak source must be an object")
+    if set(source) - TWEAK_SOURCE_FIELDS:
+        raise ContractValidationError(f"film_room_tweak source has unsupported fields: {sorted(set(source) - TWEAK_SOURCE_FIELDS)}")
+    if not source.get("graph_card_id") and not source.get("replay_event_id"):
+        raise ContractValidationError("film_room_tweak source must cite graph_card_id or replay_event_id")
+
+    rationale = tweak.get("rationale")
+    if not isinstance(rationale, dict):
+        raise ContractValidationError("film_room_tweak rationale must be an object")
+    _require_fields(rationale, TWEAK_RATIONALE_FIELDS, "film_room_tweak rationale")
+    if set(rationale) - TWEAK_RATIONALE_FIELDS:
+        raise ContractValidationError(f"film_room_tweak rationale has unsupported fields: {sorted(set(rationale) - TWEAK_RATIONALE_FIELDS)}")
+    if rationale.get("template_id") not in TWEAK_TEMPLATE_IDS:
+        raise ContractValidationError(f"film_room_tweak rationale template is invalid: {rationale.get('template_id')}")
+    rendered = rationale.get("rendered")
+    if not isinstance(rendered, str) or not rendered or len(rendered) > 180:
+        raise ContractValidationError("film_room_tweak rationale rendered text must be 1-180 chars")
+    arguments = rationale.get("arguments")
+    if not isinstance(arguments, dict):
+        raise ContractValidationError("film_room_tweak rationale arguments must be an object")
+    _require_fields(arguments, TWEAK_RATIONALE_ARGUMENT_FIELDS, "film_room_tweak rationale arguments")
+    if set(arguments) - TWEAK_RATIONALE_ARGUMENT_FIELDS:
+        raise ContractValidationError(
+            f"film_room_tweak rationale arguments have unsupported fields: {sorted(set(arguments) - TWEAK_RATIONALE_ARGUMENT_FIELDS)}"
+        )
+    if arguments.get("signal") not in TWEAK_SIGNALS:
+        raise ContractValidationError(f"film_room_tweak rationale signal is invalid: {arguments.get('signal')}")
+    if arguments.get("parameter") not in TWEAK_PARAMETERS:
+        raise ContractValidationError(f"film_room_tweak rationale parameter is invalid: {arguments.get('parameter')}")
+    if arguments.get("direction") not in TWEAK_DIRECTIONS:
+        raise ContractValidationError(f"film_room_tweak rationale direction is invalid: {arguments.get('direction')}")
+    if arguments.get("play_indices") != play_indices:
+        raise ContractValidationError("film_room_tweak rationale play_indices must match evidence")
 
 
 def validate_film_room_schema(film_room: Dict[str, Any], *, require_enriched: bool = True) -> None:
@@ -268,6 +410,11 @@ def validate_film_room_schema(film_room: Dict[str, Any], *, require_enriched: bo
         raise ContractValidationError("film_room next_adjustment must be a string")
     if require_enriched and not film_room["next_adjustment"]:
         raise ContractValidationError("film_room next_adjustment must be non-empty")
+    if "film_room_tweaks" in film_room:
+        if not isinstance(film_room["film_room_tweaks"], list):
+            raise ContractValidationError("film_room film_room_tweaks must be a list")
+        for tweak in film_room["film_room_tweaks"]:
+            validate_film_room_tweak_schema(tweak)
 
     turning_point = film_room["turning_point"]
     if turning_point is not None:
@@ -284,6 +431,11 @@ def validate_replay_contract(replay: Dict[str, Any]) -> None:
     if replay["debug"] != {"fields": []}:
         raise ContractValidationError("P0 debug partition must be present and empty")
     validate_film_room_schema(replay["film_room"], require_enriched=replay["metadata"].get("mode") != "static_proof")
+    if "film_room_tweaks" in replay:
+        if not isinstance(replay["film_room_tweaks"], list):
+            raise ContractValidationError("replay film_room_tweaks must be a list")
+        for tweak in replay["film_room_tweaks"]:
+            validate_film_room_tweak_schema(tweak)
 
     _require_fields(replay["score"], {"points", "result", "invalid_action_count"}, "score")
     if replay["score"]["result"] not in {"touchdown", "field_goal", "stopped"}:

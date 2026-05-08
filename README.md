@@ -72,6 +72,8 @@ Defense: Coverage Shell Conservative, Pressure-Look Defender, Disguise Specialis
 
 Each preset in `agent_garage/profiles.json` includes a one-line strategic intent, live parameters, aggregate expected-behavior signatures, and a known counter validated across the fixed garage seed pack.
 
+The 2.5 loop is closed for static Tier 0 runs: Film Room emits structured, event-derived tweak chips; Apply Suggested Tweak opens Garage with the matching live knob pre-moved and highlighted; Run Test Drive records the parent run and replay detail shows a scoped before/after panel for the affected signal. Runs still resolve to the nearest pre-baked replay matrix entry. Arbitrary custom-config execution is intentionally deferred to Phase 2.75.
+
 ## Repo Map
 
 ```text

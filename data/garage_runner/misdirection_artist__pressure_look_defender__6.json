@@ -2554,6 +2554,102 @@
       "Try Simulated Pressure, Trap Coverage against Screens can punish true pressure.",
       "Try Quarters Match, Trap Coverage against RPO glance stresses static zone conflict defenders."
     ],
+    "film_room_tweaks": [
+      {
+        "tweak_id": "twk_pressure_frequency_pressure_punished_003",
+        "parameter": "pressure_frequency",
+        "direction": "decrease",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "pressure_punished",
+            "count": 1,
+            "offense_call": "screen",
+            "defense_call": "zero_pressure"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            3
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.screen_vs_zero_pressure.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              3
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "pressure_punished",
+            "graph_card_id": "redzone.screen_vs_zero_pressure.v1",
+            "observed_value": {
+              "event_tag": "pressure_punished",
+              "count": 1,
+              "offense_call": "screen",
+              "defense_call": "zero_pressure"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "pressure_frequency",
+            "direction": "decrease"
+          },
+          "rendered": "Play 3 produced pressure_punished once, so decrease pressure_frequency."
+        }
+      },
+      {
+        "tweak_id": "twk_disguise_sensitivity_conflict_defender_stressed_007",
+        "parameter": "disguise_sensitivity",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "conflict_defender_stressed",
+            "count": 1,
+            "offense_call": "rpo_glance",
+            "defense_call": "base_cover3"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            7
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.rpo_vs_static_zone.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              7
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "conflict_defender_stressed",
+            "graph_card_id": "redzone.rpo_vs_static_zone.v1",
+            "observed_value": {
+              "event_tag": "conflict_defender_stressed",
+              "count": 1,
+              "offense_call": "rpo_glance",
+              "defense_call": "base_cover3"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "disguise_sensitivity",
+            "direction": "increase"
+          },
+          "rendered": "Play 7 produced conflict_defender_stressed once, so increase disguise_sensitivity."
+        }
+      }
+    ],
     "adaptation_chain": [
       {
         "play_index": 3,
@@ -2607,6 +2703,102 @@
     ],
     "next_adjustment": "Next try: Simulated Pressure to counter Screens can punish true pressure."
   },
+  "film_room_tweaks": [
+    {
+      "tweak_id": "twk_pressure_frequency_pressure_punished_003",
+      "parameter": "pressure_frequency",
+      "direction": "decrease",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "pressure_punished",
+          "count": 1,
+          "offense_call": "screen",
+          "defense_call": "zero_pressure"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          3
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.screen_vs_zero_pressure.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            3
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "pressure_punished",
+          "graph_card_id": "redzone.screen_vs_zero_pressure.v1",
+          "observed_value": {
+            "event_tag": "pressure_punished",
+            "count": 1,
+            "offense_call": "screen",
+            "defense_call": "zero_pressure"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "pressure_frequency",
+          "direction": "decrease"
+        },
+        "rendered": "Play 3 produced pressure_punished once, so decrease pressure_frequency."
+      }
+    },
+    {
+      "tweak_id": "twk_disguise_sensitivity_conflict_defender_stressed_007",
+      "parameter": "disguise_sensitivity",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "conflict_defender_stressed",
+          "count": 1,
+          "offense_call": "rpo_glance",
+          "defense_call": "base_cover3"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          7
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.rpo_vs_static_zone.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            7
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "conflict_defender_stressed",
+          "graph_card_id": "redzone.rpo_vs_static_zone.v1",
+          "observed_value": {
+            "event_tag": "conflict_defender_stressed",
+            "count": 1,
+            "offense_call": "rpo_glance",
+            "defense_call": "base_cover3"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "disguise_sensitivity",
+          "direction": "increase"
+        },
+        "rendered": "Play 7 produced conflict_defender_stressed once, so increase disguise_sensitivity."
+      }
+    }
+  ],
   "debug": {
     "fields": []
   }

@@ -2543,6 +2543,57 @@
     "suggested_tweaks": [
       "Try Cover 1 Man, Trap Coverage against Quick game can take conceded underneath space."
     ],
+    "film_room_tweaks": [
+      {
+        "tweak_id": "twk_risk_tolerance_underneath_space_taken_006",
+        "parameter": "risk_tolerance",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 2,
+            "offense_call": "quick_game",
+            "defense_call": "two_high_shell"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            6,
+            7
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              6,
+              7
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "underneath_space_taken",
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "observed_value": {
+              "event_tag": "underneath_space_taken",
+              "count": 2,
+              "offense_call": "quick_game",
+              "defense_call": "two_high_shell"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "risk_tolerance",
+            "direction": "increase"
+          },
+          "rendered": "Plays 6 and 7 produced underneath_space_taken twice, so increase risk_tolerance."
+        }
+      }
+    ],
     "adaptation_chain": [
       {
         "play_index": 6,
@@ -2577,6 +2628,57 @@
     ],
     "next_adjustment": "Next try: Trap Coverage to counter Quick game can take conceded underneath space."
   },
+  "film_room_tweaks": [
+    {
+      "tweak_id": "twk_risk_tolerance_underneath_space_taken_006",
+      "parameter": "risk_tolerance",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "underneath_space_taken",
+          "count": 2,
+          "offense_call": "quick_game",
+          "defense_call": "two_high_shell"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          6,
+          7
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            6,
+            7
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "underneath_space_taken",
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 2,
+            "offense_call": "quick_game",
+            "defense_call": "two_high_shell"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "risk_tolerance",
+          "direction": "increase"
+        },
+        "rendered": "Plays 6 and 7 produced underneath_space_taken twice, so increase risk_tolerance."
+      }
+    }
+  ],
   "debug": {
     "fields": []
   }

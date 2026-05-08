@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Garage</title>
-  <link rel="stylesheet" href="styles.css?v=garage-restore-v1" />
+  <link rel="stylesheet" href="styles.css?v=tweak-loop-v1" />
 </head>
 <body>
   <div id="topbar"></div>
@@ -83,14 +83,17 @@
   <script src="app.js"></script>
   <script>
     (() => {
-      const from = new URLSearchParams(window.location.search).get('from') || 'seed-42';
-      window.CBRouter = { current: () => ({ name: 'garage', params: { from } }) };
+      const query = new URLSearchParams(window.location.search);
+      const from = query.get('from') || 'seed-42';
+      const apply = query.get('apply') || '';
+      window.CBRouter = { current: () => ({ name: 'garage', params: { from, apply } }) };
       window.CBTopbar?.renderTopbar('garage');
       (async () => {
         try {
           await loadSharedData();
           ensureGarageDefaults();
-          renderGaragePage({ from });
+          await prepareGarageFromQuery({ from, apply });
+          renderGaragePage({ from, apply });
         } catch (error) {
           console.error('Garage init failed', error);
         }

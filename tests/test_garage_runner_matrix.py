@@ -47,3 +47,4 @@ def test_parameter_glossary_covers_live_profile_parameters() -> None:
     for key in live_parameters:
         assert glossary[key]["football_terms"]
         assert glossary[key]["ai_terms"]
+        assert glossary[key]["before_after_signals"]

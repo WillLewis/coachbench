@@ -2414,9 +2414,11 @@
     "suggested_tweaks": [
       "Review call sequencing, resource use, and risk level against nearby fixed seeds."
     ],
+    "film_room_tweaks": [],
     "adaptation_chain": [],
     "next_adjustment": "Next try: review call sequencing across nearby seeds."
   },
+  "film_room_tweaks": [],
   "debug": {
     "fields": []
   }

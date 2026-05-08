@@ -2925,6 +2925,157 @@
       "Try Red-Zone Bracket, Two-High Shell against Play-action gains value after credible run tendency.",
       "Try Cover 1 Man, Trap Coverage against Quick game can take conceded underneath space."
     ],
+    "film_room_tweaks": [
+      {
+        "tweak_id": "twk_adaptation_speed_wide_zone_constrained_001",
+        "parameter": "adaptation_speed",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "wide_zone_constrained",
+            "count": 1,
+            "offense_call": "outside_zone",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            1
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.outside_zone_vs_bear.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              1
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "wide_zone_constrained",
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "observed_value": {
+              "event_tag": "wide_zone_constrained",
+              "count": 1,
+              "offense_call": "outside_zone",
+              "defense_call": "bear_front"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "adaptation_speed",
+            "direction": "increase"
+          },
+          "rendered": "Play 1 produced wide_zone_constrained once, so increase adaptation_speed."
+        }
+      },
+      {
+        "tweak_id": "twk_counter_repeat_tolerance_run_tendency_exploited_002",
+        "parameter": "counter_repeat_tolerance",
+        "direction": "decrease",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "run_tendency_exploited",
+            "count": 2,
+            "offense_call": "play_action_flood",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            2,
+            3
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.play_action_after_run_tendency.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              2,
+              3
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "run_tendency_exploited",
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "observed_value": {
+              "event_tag": "run_tendency_exploited",
+              "count": 2,
+              "offense_call": "play_action_flood",
+              "defense_call": "bear_front"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "counter_repeat_tolerance",
+            "direction": "decrease"
+          },
+          "rendered": "Plays 2 and 3 produced run_tendency_exploited twice, so decrease counter_repeat_tolerance."
+        }
+      },
+      {
+        "tweak_id": "twk_risk_tolerance_underneath_space_taken_004",
+        "parameter": "risk_tolerance",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 4,
+            "offense_call": "quick_game",
+            "defense_call": "redzone_bracket"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "underneath_space_taken",
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "observed_value": {
+              "event_tag": "underneath_space_taken",
+              "count": 4,
+              "offense_call": "quick_game",
+              "defense_call": "redzone_bracket"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "risk_tolerance",
+            "direction": "increase"
+          },
+          "rendered": "Plays 4, 5, 6, and 7 produced underneath_space_taken 4 times, so increase risk_tolerance."
+        }
+      }
+    ],
     "adaptation_chain": [
       {
         "play_index": 2,
@@ -3019,6 +3170,157 @@
     ],
     "next_adjustment": "Next try: Quick Game to counter Bear front constrains outside zone."
   },
+  "film_room_tweaks": [
+    {
+      "tweak_id": "twk_adaptation_speed_wide_zone_constrained_001",
+      "parameter": "adaptation_speed",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "wide_zone_constrained",
+          "count": 1,
+          "offense_call": "outside_zone",
+          "defense_call": "bear_front"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          1
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.outside_zone_vs_bear.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            1
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "wide_zone_constrained",
+          "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+          "observed_value": {
+            "event_tag": "wide_zone_constrained",
+            "count": 1,
+            "offense_call": "outside_zone",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "adaptation_speed",
+          "direction": "increase"
+        },
+        "rendered": "Play 1 produced wide_zone_constrained once, so increase adaptation_speed."
+      }
+    },
+    {
+      "tweak_id": "twk_counter_repeat_tolerance_run_tendency_exploited_002",
+      "parameter": "counter_repeat_tolerance",
+      "direction": "decrease",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "run_tendency_exploited",
+          "count": 2,
+          "offense_call": "play_action_flood",
+          "defense_call": "bear_front"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          2,
+          3
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            2,
+            3
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "run_tendency_exploited",
+          "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+          "observed_value": {
+            "event_tag": "run_tendency_exploited",
+            "count": 2,
+            "offense_call": "play_action_flood",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "counter_repeat_tolerance",
+          "direction": "decrease"
+        },
+        "rendered": "Plays 2 and 3 produced run_tendency_exploited twice, so decrease counter_repeat_tolerance."
+      }
+    },
+    {
+      "tweak_id": "twk_risk_tolerance_underneath_space_taken_004",
+      "parameter": "risk_tolerance",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "underneath_space_taken",
+          "count": 4,
+          "offense_call": "quick_game",
+          "defense_call": "redzone_bracket"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "underneath_space_taken",
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 4,
+            "offense_call": "quick_game",
+            "defense_call": "redzone_bracket"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "risk_tolerance",
+          "direction": "increase"
+        },
+        "rendered": "Plays 4, 5, 6, and 7 produced underneath_space_taken 4 times, so increase risk_tolerance."
+      }
+    }
+  ],
   "debug": {
     "fields": []
   }
