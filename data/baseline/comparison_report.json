@@ -33,30 +33,29 @@
     },
     {
       "case": "b_oc_vs_a_dc",
-      "mean_points": 2.5455,
-      "mean_plays": 5.3636,
+      "mean_points": 3.1818,
+      "mean_plays": 5.0,
       "results": {
-        "stopped": 7,
-        "touchdown": 4
+        "stopped": 6,
+        "touchdown": 5
       }
     },
     {
       "case": "a_oc_vs_b_dc",
-      "mean_points": 4.7273,
-      "mean_plays": 6.2727,
+      "mean_points": 5.0909,
+      "mean_plays": 5.7273,
       "results": {
-        "touchdown": 7,
-        "stopped": 3,
-        "field_goal": 1
+        "touchdown": 8,
+        "stopped": 3
       }
     },
     {
       "case": "b_oc_vs_b_dc",
-      "mean_points": 4.4545,
-      "mean_plays": 5.2727,
+      "mean_points": 3.1818,
+      "mean_plays": 5.1818,
       "results": {
-        "touchdown": 7,
-        "stopped": 4
+        "stopped": 6,
+        "touchdown": 5
       }
     }
   ],
@@ -67,9 +66,9 @@
     "graph_creates_no_obvious_degeneracies": true
   },
   "metrics": {
-    "adaptation_lift_offense": -3.1818,
-    "suppression_lift_defense": 1.0,
-    "sequencing_diversity_b_vs_b": 0.069,
+    "adaptation_lift_offense": -2.5455,
+    "suppression_lift_defense": 0.6364,
+    "sequencing_diversity_b_vs_b": 0.1579,
     "degenerate_strategy_flags": []
   }
 }

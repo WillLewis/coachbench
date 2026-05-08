@@ -55,11 +55,16 @@ def test_agent_garage_shell_has_plan_5_2_controls_or_dash_fallback() -> None:
         "pressure_frequency",
         "counter_repeat_tolerance",
     )
+    profile_fields = {"label", "source", "profile_key", "strategic_intent", "parameters", "expected_behavior", "known_counter", "notes"}
+    offense_params = offense.get("parameters") or {key: value for key, value in offense.items() if key in controls}
+    defense_params = defense.get("parameters") or {key: value for key, value in defense.items() if key in controls}
 
-    assert set(offense) <= set(controls) | {"label", "source"}
-    assert set(defense) <= set(controls) | {"label", "source"}
-    assert any(key not in offense for key in controls)
-    assert any(key not in defense for key in controls)
+    assert set(offense) <= set(controls) | profile_fields
+    assert set(defense) <= set(controls) | profile_fields
+    assert set(offense_params) <= set(controls)
+    assert set(defense_params) <= set(controls)
+    assert any(key not in offense_params for key in controls)
+    assert any(key not in defense_params for key in controls)
     script = Path("ui/app.js").read_text(encoding="utf-8")
     for key in controls:
         assert key in script

@@ -826,9 +826,11 @@ function compactProfileDiffs(garageState) {
   return ['offense_profile', 'defense_profile'].flatMap(profileKey => {
     const profile = garageState[profileKey] || {};
     const defaults = profileDefaults(profileKey, profile.profile_key);
-    return Object.entries(profile)
-      .filter(([key, raw]) => defaults[key] !== undefined && key !== 'profile_key' && key !== 'label' && raw !== defaults[key])
-      .map(([key, raw]) => ({ key, delta: typeof raw === 'number' ? `${raw > defaults[key] ? '+' : ''}${(raw - defaults[key]).toFixed(2)}` : `${label(defaults[key])} → ${label(raw)}` }));
+    const profileParams = profile.parameters || profile;
+    const defaultParams = defaults.parameters || defaults;
+    return Object.entries(profileParams)
+      .filter(([key, raw]) => defaultParams[key] !== undefined && raw !== defaultParams[key])
+      .map(([key, raw]) => ({ key, delta: typeof raw === 'number' ? `${raw > defaultParams[key] ? '+' : ''}${(raw - defaultParams[key]).toFixed(2)}` : `${label(defaultParams[key])} → ${label(raw)}` }));
   });
 }
 
@@ -848,7 +850,7 @@ function ensureGarageDefaults() {
   const defenseKey = Object.keys(runtime.profiles.defense_archetypes || {})[0];
   CBState.set({
     garageState: {
-      source: 'agent_garage_profiles_v0',
+      source: 'agent_garage_profiles_v1',
       offense_profile: { ...(runtime.profiles.offense_archetypes?.[offenseKey] || {}), profile_key: offenseKey },
       defense_profile: { ...(runtime.profiles.defense_archetypes?.[defenseKey] || {}), profile_key: defenseKey },
       draft_controls: {},
@@ -946,7 +948,9 @@ function garageControlValue(key) {
   if (draft[key] !== undefined) return draft[key];
   if (key === 'offensive_archetype') return state.offense_profile?.profile_key || Object.keys(runtime.profiles.offense_archetypes || {})[0] || '';
   if (key === 'defensive_archetype') return state.defense_profile?.profile_key || Object.keys(runtime.profiles.defense_archetypes || {})[0] || '';
-  return state.offense_profile?.[key] ?? state.defense_profile?.[key] ?? (numericControls.has(key) ? 0.5 : 'balanced');
+  const offenseParams = state.offense_profile?.parameters || state.offense_profile || {};
+  const defenseParams = state.defense_profile?.parameters || state.defense_profile || {};
+  return offenseParams[key] ?? defenseParams[key] ?? (numericControls.has(key) ? 0.5 : 'balanced');
 }
 
 function updateGarageControl(event) {

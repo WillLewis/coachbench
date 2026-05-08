@@ -17,9 +17,74 @@ from coachbench.contracts import validate_match_matrix_report
 from coachbench.engine import CoachBenchEngine
 
 
+GARAGE_SEED_PACK = Path("tests/fixtures/garage_knob_seeds.json")
+
+
 def case_seed(base_seed: int, case_label: str) -> int:
     digest = hashlib.sha256(f"{base_seed}:{case_label}".encode("utf-8")).hexdigest()
     return int(digest[:8], 16)
+
+
+def load_agent_garage_profiles() -> dict:
+    return json.loads(Path("agent_garage/profiles.json").read_text(encoding="utf-8"))
+
+
+def profile_config(profiles: dict, group: str, key: str) -> dict:
+    profile = dict(profiles[group][key])
+    profile["profile_key"] = key
+    return profile
+
+
+def garage_seed_pack() -> list[int]:
+    if not GARAGE_SEED_PACK.exists():
+        return [6, 10, 42, 72, 99]
+    payload = json.loads(GARAGE_SEED_PACK.read_text(encoding="utf-8"))
+    return [int(seed) for seed in payload["seeds"]]
+
+
+def garage_pack_case(base_seed: int, case_label: str, offense_profile: dict, defense_profile: dict) -> dict:
+    seeds = garage_seed_pack()
+    replays = [
+        CoachBenchEngine(seed=seed).run_drive(
+            AdaptiveOffense(offense_profile),
+            AdaptiveDefense(defense_profile),
+            agent_garage_config={
+                "matrix_case": case_label,
+                "source": "agent_garage_profiles_v1",
+                "offense_profile": offense_profile,
+                "defense_profile": defense_profile,
+            },
+        )
+        for seed in seeds
+    ]
+    points_by_seed = {str(seed): replay["score"]["points"] for seed, replay in zip(seeds, replays)}
+    counter_wins = sum(points < 7 for points in points_by_seed.values())
+    return {
+        "case": case_label,
+        "seed": case_seed(base_seed, case_label),
+        "points": sum(points_by_seed.values()),
+        "result": "counter_wins_majority" if counter_wins > len(seeds) // 2 else "offense_not_countered",
+        "plays": sum(len(replay["plays"]) for replay in replays),
+        "film_room_headline": f"Counter wins {counter_wins}/{len(seeds)} garage seeds",
+        "turning_point": replays[0]["film_room"]["turning_point"],
+        "seed_pack": seeds,
+        "points_by_seed": points_by_seed,
+        "offense_touchdowns": sum(points >= 7 for points in points_by_seed.values()),
+        "counter_wins": counter_wins,
+        "offense_profile_key": offense_profile.get("profile_key"),
+        "defense_profile_key": defense_profile.get("profile_key"),
+    }
+
+
+def garage_counter_cases(base_seed: int) -> list[dict]:
+    profiles = load_agent_garage_profiles()
+    offense = profile_config(profiles, "offense_archetypes", "aggressive_shot_taker")
+    coverage = profile_config(profiles, "defense_archetypes", "coverage_shell_conservative")
+    pressure = profile_config(profiles, "defense_archetypes", "pressure_look_defender")
+    return [
+        garage_pack_case(base_seed, "garage_baseline_aggressive_shot_taker_vs_coverage_shell_conservative", offense, coverage),
+        garage_pack_case(base_seed, "garage_counter_pressure_look_vs_aggressive_shot_taker", offense, pressure),
+    ]
 
 
 def matrix_questions(results: list[dict]) -> list[dict]:
@@ -29,7 +94,7 @@ def matrix_questions(results: list[dict]) -> list[dict]:
     static_offense_vs_adaptive_defense = by_case["A_static_offense_vs_B_adaptive_defense"]
     adaptive_vs_adaptive = by_case["B_adaptive_offense_vs_B_adaptive_defense"]
 
-    return [
+    questions = [
         {
             "id": "adaptive_offense_lift_vs_same_defense",
             "question": "Does adaptive offense outperform static offense against the same defense?",
@@ -71,6 +136,20 @@ def matrix_questions(results: list[dict]) -> list[dict]:
             "answer": "needs_review",
         },
     ]
+    garage_baseline = by_case.get("garage_baseline_aggressive_shot_taker_vs_coverage_shell_conservative")
+    garage_counter = by_case.get("garage_counter_pressure_look_vs_aggressive_shot_taker")
+    if garage_baseline and garage_counter:
+        questions.append({
+            "id": "garage_pressure_counter_demonstration",
+            "question": "Does Pressure-Look Defender counter Aggressive Shot-Taker across the fixed garage seed pack?",
+            "baseline_case": garage_baseline["case"],
+            "comparison_case": garage_counter["case"],
+            "metric": "counter_seed_wins",
+            "baseline_value": garage_baseline["counter_wins"],
+            "comparison_value": garage_counter["counter_wins"],
+            "answer": "yes" if garage_counter["counter_wins"] > len(garage_counter["seed_pack"]) // 2 else "no",
+        })
+    return questions
 
 
 def main() -> None:
@@ -100,6 +179,7 @@ def main() -> None:
             "film_room_headline": replay["film_room"]["headline"],
             "turning_point": replay["film_room"]["turning_point"],
         })
+    results.extend(garage_counter_cases(args.seed))
 
     report = {
         "report_id": "team-interaction-matrix-v0",

@@ -2,65 +2,138 @@
   "offense_archetypes": {
     "efficiency_optimizer": {
       "label": "Efficiency Optimizer",
-      "risk_tolerance": "low",
-      "adaptation_speed": 0.55,
-      "screen_trigger_confidence": 0.7,
-      "explosive_shot_tolerance": 0.25,
-      "run_pass_tendency": "balanced_pass"
+      "strategic_intent": "Protect success rate with low-risk underneath and play-action answers after the defense declares structure.",
+      "parameters": {
+        "risk_tolerance": "low",
+        "adaptation_speed": 0.85,
+        "screen_trigger_confidence": 0.85,
+        "explosive_shot_tolerance": 0.15,
+        "run_pass_tendency": "balanced_pass"
+      },
+      "expected_behavior": [
+        "conservative offense risk on every call",
+        "quick_game plus play_action_flood >= 20 calls across seed pack",
+        "no vertical_shot calls across seed pack"
+      ],
+      "known_counter": "defense_archetypes.pressure_look_defender"
     },
     "aggressive_shot_taker": {
       "label": "Aggressive Shot-Taker",
-      "risk_tolerance": "high",
-      "adaptation_speed": 0.45,
-      "screen_trigger_confidence": 0.55,
-      "explosive_shot_tolerance": 0.75,
-      "run_pass_tendency": "pass_heavy"
+      "strategic_intent": "Push high-risk pass answers into passive coverage shells before pressure counters arrive.",
+      "parameters": {
+        "risk_tolerance": "high",
+        "adaptation_speed": 0.5,
+        "screen_trigger_confidence": 0.9,
+        "explosive_shot_tolerance": 0.75,
+        "run_pass_tendency": "balanced_pass"
+      },
+      "expected_behavior": [
+        "aggressive offense risk >= 80% of calls",
+        "quick_game plus play_action_flood >= 20 calls across seed pack",
+        "touchdowns on every baseline seed"
+      ],
+      "known_counter": "defense_archetypes.pressure_look_defender",
+      "notes": "Name retained from the plan; the live graph exposes shot tolerance, but the winning aggregate signature is aggressive quick and play-action passing rather than frequent vertical_shot calls."
     },
     "misdirection_artist": {
       "label": "Misdirection Artist",
-      "risk_tolerance": "medium",
-      "adaptation_speed": 0.7,
-      "screen_trigger_confidence": 0.62,
-      "explosive_shot_tolerance": 0.45,
-      "run_pass_tendency": "constraint_heavy"
+      "strategic_intent": "Use quick throws, RPO space, and low-threshold screens to punish pressure and late-disguise looks.",
+      "parameters": {
+        "risk_tolerance": "medium_high",
+        "adaptation_speed": 0.5,
+        "screen_trigger_confidence": 0.1,
+        "explosive_shot_tolerance": 0.5,
+        "run_pass_tendency": "pass_heavy"
+      },
+      "expected_behavior": [
+        "rpo_glance calls >= 8 across seed pack",
+        "screen calls >= 3 across seed pack",
+        "offense spacing burn >= 40 across seed pack"
+      ],
+      "known_counter": "defense_archetypes.coverage_shell_conservative"
     },
     "run_game_builder": {
       "label": "Run-Game Builder",
-      "risk_tolerance": "medium_low",
-      "adaptation_speed": 0.5,
-      "screen_trigger_confidence": 0.45,
-      "explosive_shot_tolerance": 0.35,
-      "run_pass_tendency": "run_to_play_action"
+      "strategic_intent": "Build first-down run credibility, then convert defensive fit reactions into conservative play-action answers.",
+      "parameters": {
+        "risk_tolerance": "medium_low",
+        "adaptation_speed": 0.8,
+        "screen_trigger_confidence": 0.75,
+        "explosive_shot_tolerance": 0.2,
+        "run_pass_tendency": "run_to_play_action"
+      },
+      "expected_behavior": [
+        "inside_zone calls >= 7 across seed pack",
+        "play_action_flood calls >= 7 across seed pack",
+        "conservative offense risk on every call"
+      ],
+      "known_counter": "defense_archetypes.coverage_shell_conservative"
     }
   },
   "defense_archetypes": {
     "coverage_shell_conservative": {
       "label": "Coverage Shell Conservative",
-      "risk_tolerance": "low",
-      "disguise_sensitivity": 0.35,
-      "pressure_frequency": 0.25,
-      "counter_repeat_tolerance": 0.4
+      "strategic_intent": "Stay low-risk, close explosive windows, and force the offense to settle for underneath space.",
+      "parameters": {
+        "risk_tolerance": "low",
+        "disguise_sensitivity": 0.25,
+        "pressure_frequency": 0.1,
+        "counter_repeat_tolerance": 0.9
+      },
+      "expected_behavior": [
+        "conservative defense risk on every call",
+        "redzone_bracket plus bear_front >= 30 calls across seed pack",
+        "underneath_space_taken events >= 15 across seed pack"
+      ],
+      "known_counter": "offense_archetypes.aggressive_shot_taker"
     },
     "pressure_look_defender": {
       "label": "Pressure-Look Defender",
-      "risk_tolerance": "medium_high",
-      "disguise_sensitivity": 0.7,
-      "pressure_frequency": 0.55,
-      "counter_repeat_tolerance": 0.45
+      "strategic_intent": "Mix simulated and true pressure on long downs while accepting higher-risk calls.",
+      "parameters": {
+        "risk_tolerance": "medium_high",
+        "disguise_sensitivity": 0.75,
+        "pressure_frequency": 0.9,
+        "counter_repeat_tolerance": 0.45
+      },
+      "expected_behavior": [
+        "zero_pressure plus simulated_pressure >= 15 calls across seed pack",
+        "aggressive defense risk >= 15 calls across seed pack",
+        "defense rush burn >= 45 across seed pack"
+      ],
+      "known_counter": "offense_archetypes.misdirection_artist"
     },
     "disguise_specialist": {
       "label": "Disguise Specialist",
-      "risk_tolerance": "medium",
-      "disguise_sensitivity": 0.85,
-      "pressure_frequency": 0.4,
-      "counter_repeat_tolerance": 0.55
+      "strategic_intent": "Lean into late simulated pressure and coverage movement without escalating into true zero pressure.",
+      "parameters": {
+        "risk_tolerance": "medium",
+        "disguise_sensitivity": 0.9,
+        "pressure_frequency": 0.55,
+        "counter_repeat_tolerance": 0.7
+      },
+      "expected_behavior": [
+        "simulated_pressure calls >= 13 across seed pack",
+        "defense disguise burn >= 50 across seed pack",
+        "zero_pressure calls == 0 across seed pack"
+      ],
+      "known_counter": "offense_archetypes.misdirection_artist"
     },
     "man_coverage_bully": {
       "label": "Man-Coverage Bully",
-      "risk_tolerance": "high",
-      "disguise_sensitivity": 0.45,
-      "pressure_frequency": 0.5,
-      "counter_repeat_tolerance": 0.35
+      "strategic_intent": "Challenge long downs with assertive man calls while still fitting run and bracket reactions.",
+      "parameters": {
+        "risk_tolerance": "high",
+        "disguise_sensitivity": 0.3,
+        "pressure_frequency": 0.45,
+        "counter_repeat_tolerance": 0.2
+      },
+      "expected_behavior": [
+        "cover1_man calls >= 6 across seed pack",
+        "aggressive defense risk >= 6 calls across seed pack",
+        "redzone_bracket plus bear_front >= 26 calls across seed pack"
+      ],
+      "known_counter": "offense_archetypes.aggressive_shot_taker"
     }
   }
 }

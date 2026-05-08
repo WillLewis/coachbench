@@ -11,10 +11,11 @@ class AdaptiveDefense:
 
     def __init__(self, config: Dict[str, Any] | None = None) -> None:
         self.config = config or {}
-        self.risk_tolerance = str(self.config.get("risk_tolerance", "medium"))
-        self.disguise_sensitivity = float(self.config.get("disguise_sensitivity", 0.85))
-        self.pressure_frequency = float(self.config.get("pressure_frequency", 0.4))
-        self.counter_repeat_tolerance = float(self.config.get("counter_repeat_tolerance", 0.55))
+        params = self.config.get("parameters", self.config)
+        self.risk_tolerance = str(params.get("risk_tolerance", "medium"))
+        self.disguise_sensitivity = float(params.get("disguise_sensitivity", 0.85))
+        self.pressure_frequency = float(params.get("pressure_frequency", 0.4))
+        self.counter_repeat_tolerance = float(params.get("counter_repeat_tolerance", 0.55))
 
     def _risk_level(self, call: str, base: str = "balanced") -> str:
         if self.risk_tolerance in {"high", "medium_high"} and call in {
@@ -42,6 +43,14 @@ class AdaptiveDefense:
 
         if tendencies.get("screen_baited", 0) >= 1 or tendencies.get("pressure_punished", 0) >= 1:
             return build("trap_coverage")
+        if (
+            down >= 3
+            and distance >= 6
+            and self.risk_tolerance in {"high", "medium_high"}
+            and self.disguise_sensitivity <= 0.45
+            and self.pressure_frequency < 0.75
+        ):
+            return build("cover1_man", "aggressive")
         if tendencies.get("run_tendency_exploited", 0) >= 2:
             return build("redzone_bracket")
         if tendencies.get("coverage_switch_stress", 0) >= counter_threshold:

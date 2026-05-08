@@ -13,8 +13,9 @@ class ExampleCustomOffense:
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
         self.config = config or {}
-        self.screen_trigger_confidence = float(self.config.get("screen_trigger_confidence", 0.6))
-        self.explosive_shot_tolerance = float(self.config.get("explosive_shot_tolerance", 0.45))
+        params = self.config.get("parameters", self.config)
+        self.screen_trigger_confidence = float(params.get("screen_trigger_confidence", 0.6))
+        self.explosive_shot_tolerance = float(params.get("explosive_shot_tolerance", 0.45))
 
     def choose_action(
         self,
@@ -50,8 +51,9 @@ class ExampleCustomDefense:
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
         self.config = config or {}
-        self.disguise_sensitivity = float(self.config.get("disguise_sensitivity", 0.55))
-        self.counter_repeat_tolerance = float(self.config.get("counter_repeat_tolerance", 0.5))
+        params = self.config.get("parameters", self.config)
+        self.disguise_sensitivity = float(params.get("disguise_sensitivity", 0.55))
+        self.counter_repeat_tolerance = float(params.get("counter_repeat_tolerance", 0.5))
 
     def choose_action(
         self,

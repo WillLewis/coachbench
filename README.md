@@ -61,6 +61,17 @@ Daily Slate local report
 Zero-dependency replay UI
 ```
 
+## Agent Garage
+
+Agent Garage ships eight fictional presets built only from live, tested knobs:
+
+```text
+Offense: Efficiency Optimizer, Aggressive Shot-Taker, Misdirection Artist, Run-Game Builder
+Defense: Coverage Shell Conservative, Pressure-Look Defender, Disguise Specialist, Man-Coverage Bully
+```
+
+Each preset in `agent_garage/profiles.json` includes a one-line strategic intent, live parameters, aggregate expected-behavior signatures, and a known counter validated across the fixed garage seed pack.
+
 ## Repo Map
 
 ```text

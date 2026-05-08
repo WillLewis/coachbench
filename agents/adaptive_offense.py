@@ -11,11 +11,12 @@ class AdaptiveOffense:
 
     def __init__(self, config: Dict[str, Any] | None = None) -> None:
         self.config = config or {}
-        self.risk_tolerance = str(self.config.get("risk_tolerance", "medium"))
-        self.adaptation_speed = float(self.config.get("adaptation_speed", 0.7))
-        self.screen_trigger_confidence = float(self.config.get("screen_trigger_confidence", 0.62))
-        self.explosive_shot_tolerance = float(self.config.get("explosive_shot_tolerance", 0.45))
-        self.run_pass_tendency = str(self.config.get("run_pass_tendency", "constraint_heavy"))
+        params = self.config.get("parameters", self.config)
+        self.risk_tolerance = str(params.get("risk_tolerance", "medium"))
+        self.adaptation_speed = float(params.get("adaptation_speed", 0.7))
+        self.screen_trigger_confidence = float(params.get("screen_trigger_confidence", 0.62))
+        self.explosive_shot_tolerance = float(params.get("explosive_shot_tolerance", 0.45))
+        self.run_pass_tendency = str(params.get("run_pass_tendency", "balanced_pass"))
 
     def _risk_level(self, concept: str, base: str = "balanced") -> str:
         if self.risk_tolerance in {"high", "medium_high"} and concept in {
@@ -54,10 +55,15 @@ class AdaptiveOffense:
             fallback = sorted(legal_concepts)[0]
             return legal.build_offense_action(fallback, self._risk_level(fallback, "conservative"))
 
+        if self.explosive_shot_tolerance >= 0.85 and shot_ready:
+            return build("vertical_shot", "aggressive")
         if memory.own_recent_calls.count("play_action_flood") >= 2:
             return build("quick_game")
-        if self.run_pass_tendency == "pass_heavy" and shot_ready:
-            return build("vertical_shot", "aggressive")
+        if self.run_pass_tendency == "constraint_heavy" and tendencies.get("wide_zone_constrained", 0) >= adaptation_count:
+            if memory.own_recent_calls and memory.own_recent_calls[-1] in {"inside_zone", "outside_zone", "power_counter"}:
+                return build("bootleg")
+            if down >= 3 and distance >= 4 and beliefs.screen_trap_risk < 0.55:
+                return build("screen")
         if (
             beliefs.match_coverage_stress > stress_threshold
             and tendencies.get("coverage_switch_stress", 0) >= adaptation_count

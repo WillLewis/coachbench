@@ -30,10 +30,10 @@ def profile_config(profiles, side: str, key: str):
 
 def build_agents(offense: str, defense: str):
     profiles = load_agent_garage_profiles()
-    garage_config = {"source": "agent_garage_profiles_v0"}
+    garage_config = {"source": "agent_garage_profiles_v1"}
 
     if offense == "adaptive":
-        offense_profile = profile_config(profiles, "offense", "misdirection_artist")
+        offense_profile = profile_config(profiles, "offense", "aggressive_shot_taker")
         offense_agent = AdaptiveOffense(offense_profile)
         garage_config["offense_profile"] = offense_profile
     else:
@@ -41,7 +41,7 @@ def build_agents(offense: str, defense: str):
         garage_config["offense_profile"] = {"profile_key": "static_baseline", "label": "Static Baseline"}
 
     if defense == "adaptive":
-        defense_profile = profile_config(profiles, "defense", "disguise_specialist")
+        defense_profile = profile_config(profiles, "defense", "coverage_shell_conservative")
         defense_agent = AdaptiveDefense(defense_profile)
         garage_config["defense_profile"] = defense_profile
     else:
