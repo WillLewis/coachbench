@@ -63,15 +63,16 @@ def test_agent_garage_doc_lists_plan_5_2_controls() -> None:
         "defensive archetype",
         "risk tolerance",
         "adaptation speed",
-        "pressure-punish threshold",
         "screen trigger confidence",
         "explosive-shot tolerance",
         "run/pass tendency",
         "disguise sensitivity",
+        "pressure frequency",
         "counter-repeat tolerance",
-        "resource conservation",
     ]:
         assert control in text
+    assert "pressure-punish threshold" not in text
+    assert "resource conservation" not in text
 
 
 def test_action_schema_validator_requires_contract_fields() -> None:

@@ -48,13 +48,12 @@ def test_agent_garage_shell_has_plan_5_2_controls_or_dash_fallback() -> None:
         "defensive_archetype",
         "risk_tolerance",
         "adaptation_speed",
-        "pressure_punish_threshold",
         "screen_trigger_confidence",
         "explosive_shot_tolerance",
         "run_pass_tendency",
         "disguise_sensitivity",
+        "pressure_frequency",
         "counter_repeat_tolerance",
-        "resource_conservation",
     )
 
     assert set(offense) <= set(controls) | {"label", "source"}
@@ -64,6 +63,8 @@ def test_agent_garage_shell_has_plan_5_2_controls_or_dash_fallback() -> None:
     script = Path("ui/app.js").read_text(encoding="utf-8")
     for key in controls:
         assert key in script
+    assert "pressure_punish_threshold" not in script
+    assert "resource_conservation" not in script
 
 
 def test_ui_defaults_to_demo_replay_before_static_fallback() -> None:

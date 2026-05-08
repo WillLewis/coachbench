@@ -12,10 +12,9 @@ const inspectorTabs = [
 ];
 const garageControlSections = {
   identity: ['offensive_archetype', 'defensive_archetype'],
-  strategy: ['risk_tolerance', 'adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'counter_repeat_tolerance'],
-  resource: ['resource_conservation'],
+  strategy: ['risk_tolerance', 'adaptation_speed', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'pressure_frequency', 'counter_repeat_tolerance'],
 };
-const numericControls = new Set(['adaptation_speed', 'pressure_punish_threshold', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'disguise_sensitivity', 'counter_repeat_tolerance']);
+const numericControls = new Set(['adaptation_speed', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'disguise_sensitivity', 'pressure_frequency', 'counter_repeat_tolerance']);
 const CHIP_CARD_CONCEPT = {
   'redzone.bunch_mesh_vs_match.v1': 'bunch_mesh',
   'redzone.screen_vs_zero_pressure.v1': 'screen',
@@ -884,7 +883,6 @@ function renderGarageControls() {
   const sections = {
     identity: $('garageIdentityControls'),
     strategy: $('garageStrategyControls'),
-    resource: $('garageResourceControls'),
   };
   Object.entries(sections).forEach(([section, target]) => {
     const keys = tier === 'remote_endpoint' && section !== 'identity' ? [] : garageControlSections[section];
@@ -917,7 +915,6 @@ function garageOptions(key, current) {
   if (key === 'offensive_archetype') return archetypeOptions('offense_archetypes', current);
   if (key === 'defensive_archetype') return archetypeOptions('defense_archetypes', current);
   if (key === 'risk_tolerance') return ['low', 'medium_low', 'medium', 'medium_high', 'high'].map(value => ({ value, label: label(value) }));
-  if (key === 'resource_conservation') return ['low', 'balanced', 'high'].map(value => ({ value, label: label(value) }));
   if (key === 'run_pass_tendency') return ['balanced_pass', 'pass_heavy', 'constraint_heavy', 'run_to_play_action'].map(value => ({ value, label: label(value) }));
   return [{ value: current || 'balanced', label: label(current || 'balanced') }];
 }
@@ -933,13 +930,12 @@ function garageHelp(key) {
     defensive_archetype: 'Chooses the visible defense profile defaults.',
     risk_tolerance: 'Controls conservative versus aggressive call selection.',
     adaptation_speed: 'Range 0-1; higher reacts faster to observed patterns.',
-    pressure_punish_threshold: 'Range 0-1; higher waits for clearer pressure evidence.',
     screen_trigger_confidence: 'Range 0-1; minimum confidence before screen counters.',
     explosive_shot_tolerance: 'Range 0-1; higher permits more volatile calls.',
-    run_pass_tendency: 'Visible tendency label for local config review.',
+    run_pass_tendency: 'Visible tendency that shifts run, pass, and constraint call mix.',
     disguise_sensitivity: 'Range 0-1; higher reacts more to disguise signals.',
+    pressure_frequency: 'Range 0-1; higher calls more pressure looks.',
     counter_repeat_tolerance: 'Range 0-1; lower avoids repeated counters.',
-    resource_conservation: 'Controls how hard the agent spends limited resources.',
   };
   return help[key] || 'Local coordinator control.';
 }
@@ -966,7 +962,7 @@ function updateGarageControl(event) {
 
 function validateGarageControl(key, raw) {
   if (numericControls.has(key) && (!Number.isFinite(Number(raw)) || Number(raw) < 0 || Number(raw) > 1)) return 'Enter a value from 0 to 1.';
-  if ((key.includes('archetype') || key === 'risk_tolerance' || key === 'run_pass_tendency' || key === 'resource_conservation') && !raw) return 'Required.';
+  if ((key.includes('archetype') || key === 'risk_tolerance' || key === 'run_pass_tendency') && !raw) return 'Required.';
   return '';
 }
 

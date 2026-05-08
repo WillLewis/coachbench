@@ -19,13 +19,12 @@ offensive archetype
 defensive archetype
 risk tolerance
 adaptation speed
-pressure-punish threshold
 screen trigger confidence
 explosive-shot tolerance
 run/pass tendency
 disguise sensitivity
+pressure frequency
 counter-repeat tolerance
-resource conservation
 ```
 
 ## P0 output

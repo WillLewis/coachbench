@@ -21,7 +21,7 @@ def test_garage_route_declares_tier_selector_controls_and_rule_builder() -> None
 
     assert 'data-control-section="identity"' in html
     assert 'data-control-section="strategy"' in html
-    assert 'data-control-section="resource"' in html
+    assert 'data-control-section="resource"' not in html
     assert 'data-rule-builder' in html
     assert 'id="ruleChain"' in html
     assert "CBEmptyStates.emptyAgents()" in script

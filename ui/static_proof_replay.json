@@ -24,19 +24,17 @@
       "offensive_archetype": "Misdirection Artist",
       "risk_tolerance": "medium",
       "adaptation_speed": 0.7,
-      "pressure_punish_threshold": "medium",
       "screen_trigger_confidence": 0.62,
       "explosive_shot_tolerance": 0.45,
-      "run_pass_tendency": "constraint_heavy",
-      "resource_conservation": "balanced"
+      "run_pass_tendency": "constraint_heavy"
     },
     "defense_profile": {
       "label": "Coverage Shell Conservative",
       "defensive_archetype": "Coverage Shell Conservative",
       "risk_tolerance": "low",
       "disguise_sensitivity": 0.35,
-      "counter_repeat_tolerance": 0.6,
-      "resource_conservation": "high"
+      "pressure_frequency": 0.25,
+      "counter_repeat_tolerance": 0.6
     }
   },
   "legal_sets": {

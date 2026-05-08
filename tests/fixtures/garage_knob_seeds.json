@@ -1,0 +1,14 @@
+{
+  "phase": "2.5.2",
+  "seeds": [6, 10, 42, 72, 99],
+  "selection_notes": {
+    "default_adaptive_baseline": {
+      "6": "stopped:max_plays_reached",
+      "10": "field_goal:max_plays_reached",
+      "42": "touchdown:touchdown",
+      "72": "touchdown:touchdown",
+      "99": "stopped:turnover_on_downs"
+    },
+    "knob_extreme_coverage": "The same seeds include turnover terminals under low-adaptation or high-volatility knob extremes."
+  }
+}
