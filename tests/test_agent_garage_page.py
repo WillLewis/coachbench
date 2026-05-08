@@ -21,10 +21,14 @@ def test_garage_route_declares_tier_selector_controls_and_rule_builder() -> None
 
     assert 'data-control-section="identity"' in html
     assert 'data-control-section="strategy"' in html
-    assert 'data-control-section="resource"' not in html
+    assert 'data-control-section="resource"' in html
     assert 'data-rule-builder' in html
     assert 'id="ruleChain"' in html
     assert "CBEmptyStates.emptyAgents()" in script
+    assert "parameter_glossary.json" in script
+    assert "garage_runner/index.json" in script
+    assert "Showing nearest pre-baked drive" in script
+    assert "function runGarageTestDrive" in script
 
 
 def test_replay_detail_uses_compact_agent_card_not_big_garage_panel() -> None:

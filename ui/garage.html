@@ -28,6 +28,7 @@
               <label><input type="radio" name="garage_tier" value="prompt_policy"> Tier 1</label>
               <label><input type="radio" name="garage_tier" value="remote_endpoint"> Tier 2</label>
             </div>
+            <div id="garageTierExplainer" class="tier-explainer"></div>
           </section>
 
           <form id="garageForm" class="garage-form" novalidate>
@@ -38,6 +39,10 @@
             <section class="panel garage-control-section" data-control-section="strategy">
               <h2>Strategy</h2>
               <div id="garageStrategyControls"></div>
+            </section>
+            <section class="panel garage-control-section" data-control-section="resource">
+              <h2>Resource</h2>
+              <div id="garageResourceControls"></div>
             </section>
           </form>
 
@@ -51,17 +56,18 @@
           </section>
 
           <section class="panel garage-actions">
-            <button id="testDriveButton" class="btn progress-button" type="button" disabled title="Local script execution is unavailable from a static browser host."><span>Run test drive</span><i></i></button>
-            <a id="garageReplayLink" class="btn" href="/ui/replay.html?seed=42" hidden>Open replay -></a>
+            <button id="testDriveButton" class="btn btn--primary progress-button" type="button" disabled title="Build the garage runner matrix first."><span>Run test drive</span><i></i></button>
+            <a id="garageReplayLink" class="btn" href="replay.html#/replays/seed-42" hidden>Open resolved replay -></a>
+            <p class="muted compact">Runs use pre-baked Tier 0 replay files. Exact custom configs run in Phase 2.75.</p>
           </section>
         </div>
 
         <aside class="panel garage-drafts">
-          <h2>Save / Load</h2>
+          <h2>Recent Drafts / Runs</h2>
           <label class="control-row">
             <span class="label">Draft Name</span>
             <input id="garageDraftName" type="text" value="coachdraft">
-            <small class="help-text">Stores as a browser-local mirror of ui/garage_drafts/{name}.json.</small>
+            <small class="help-text">Stores the draft in this browser. Recent drafts and runs are capped at 10 each.</small>
           </label>
           <button id="saveGarageDraft" class="ghost-button" type="button">Save Draft</button>
           <div id="garageDrafts"></div>

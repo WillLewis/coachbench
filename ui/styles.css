@@ -907,6 +907,11 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   color: var(--brand);
 }
 .tier-selector input { accent-color: var(--brand); }
+.tier-explainer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
 .garage-form {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -919,12 +924,53 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   margin: 12px 0;
 }
 .control-row select, .control-row input { width: 100%; }
+.range-readout {
+  justify-self: end;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
 .help-text, .validation-message {
   color: var(--text-faint);
   font-size: 12px;
   line-height: 1.35;
 }
+.garage-tooltip {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg-elev-1);
+}
+.garage-tooltip strong { color: var(--text-muted); }
 .has-error .validation-message { color: var(--negative); }
+.garage-validation {
+  display: grid;
+  gap: 10px;
+}
+.garage-validation .validation-badge {
+  justify-self: start;
+}
+.garage-validation-grid {
+  display: grid;
+  gap: 2px;
+}
+.garage-nearest-banner {
+  width: auto;
+  border-color: rgba(196,181,253,0.32);
+  background: var(--insight-soft);
+  color: var(--insight);
+}
+.validation-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
 .rule-builder { display: grid; gap: 12px; }
 .rule-row {
   display: grid;
@@ -963,6 +1009,12 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
 }
 .progress-button.ready i { width: 100%; }
 .garage-drafts { display: grid; gap: 12px; }
+.recent-panel {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
 .draft-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -978,6 +1030,22 @@ h3 { margin: 16px 0 8px; font-size: 13px; color: var(--text); }
   color: var(--text-muted);
   padding: 6px 8px;
   cursor: pointer;
+}
+.run-row {
+  display: grid;
+  gap: 3px;
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+}
+.run-row small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.run-row:hover, .run-row:focus-visible {
+  color: var(--brand);
+  outline: none;
 }
 .film-room-panel { display: grid; gap: 14px; }
 .film-compressed { display: grid; gap: 14px; }

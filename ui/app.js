@@ -1,4 +1,4 @@
-const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null, manifest: null };
+const runtime = { graphCards: {}, conceptLabels: {}, profiles: {}, parameterGlossary: {}, garageRunnerIndex: null, auto: null, autoScrolling: false, skipNextRouteScroll: false, sharedLoaded: false, replayIndex: null, replaySources: {}, replayId: null, manifest: null };
 const $ = id => document.getElementById(id);
 const fallbackReplaySources = {
   'seed-42': 'demo_replay.json',
@@ -11,10 +11,14 @@ const inspectorTabs = [
   { id: 'graph', label: 'Graph Evidence' },
 ];
 const garageControlSections = {
-  identity: ['offensive_archetype', 'defensive_archetype'],
-  strategy: ['risk_tolerance', 'adaptation_speed', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency', 'disguise_sensitivity', 'pressure_frequency', 'counter_repeat_tolerance'],
+  identity: ['offensive_archetype', 'defensive_archetype', 'runner_seed'],
+  strategy: [],
+  resource: [],
 };
 const numericControls = new Set(['adaptation_speed', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'disguise_sensitivity', 'pressure_frequency', 'counter_repeat_tolerance']);
+const offenseParameterOrder = ['risk_tolerance', 'adaptation_speed', 'screen_trigger_confidence', 'explosive_shot_tolerance', 'run_pass_tendency'];
+const defenseParameterOrder = ['risk_tolerance', 'disguise_sensitivity', 'pressure_frequency', 'counter_repeat_tolerance'];
+const riskOrder = ['low', 'medium_low', 'medium', 'medium_high', 'high'];
 const CHIP_CARD_CONCEPT = {
   'redzone.bunch_mesh_vs_match.v1': 'bunch_mesh',
   'redzone.screen_vs_zero_pressure.v1': 'screen',
@@ -26,6 +30,9 @@ const CHIP_CARD_CONCEPT = {
   'redzone.rpo_vs_static_zone.v1': 'rpo_glance',
 };
 const garageDraftPrefix = 'coachbench.garageDraft.';
+const garageActiveDraftKey = 'coachbench.garageActiveDraft';
+const garageRecentRunsKey = 'coachbench.garageRecentRuns';
+const garageRecentLimit = 10;
 const motionQuery = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 const reduced = () => typeof document !== 'undefined' && document.documentElement.classList.contains('reduced-motion');
 const label = key => runtime.conceptLabels[key] || String(key || '').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -69,7 +76,29 @@ async function loadReplayIndex() {
     ...fallbackReplaySources,
     ...Object.fromEntries(runtime.replayIndex.map(item => [item.id, item.path])),
   };
+  await loadGarageRunnerIndex();
+  mergeGarageRunnerSources();
   return runtime.replayIndex;
+}
+
+async function loadGarageRunnerIndex() {
+  if (runtime.garageRunnerIndex) return runtime.garageRunnerIndex;
+  runtime.garageRunnerIndex = await fetchJson('../data/garage_runner/index.json').catch(() => ({ entries: [], seed_pack: [] }));
+  mergeGarageRunnerSources();
+  return runtime.garageRunnerIndex;
+}
+
+function garageRunnerEntries() {
+  return runtime.garageRunnerIndex?.entries || [];
+}
+
+function mergeGarageRunnerSources() {
+  const entries = garageRunnerEntries();
+  if (!entries.length) return;
+  runtime.replaySources = {
+    ...runtime.replaySources,
+    ...Object.fromEntries(entries.map(item => [item.id, item.path])),
+  };
 }
 
 async function loadManifest() {
@@ -80,15 +109,20 @@ async function loadManifest() {
 
 async function loadSharedData() {
   if (runtime.sharedLoaded) return;
-  const [graph, concepts, loadedProfiles] = await Promise.all([
+  const [graph, concepts, loadedProfiles, glossary, runnerIndex] = await Promise.all([
     fetchJson('../graph/redzone_v0/interactions.json').catch(() => ({ interactions: [] })),
     fetchJson('../graph/redzone_v0/concepts.json').catch(() => ({ offense: [], defense: [] })),
     fetchJson('../agent_garage/profiles.json').catch(() => ({})),
+    fetchJson('../agent_garage/parameter_glossary.json').catch(() => ({})),
+    fetchJson('../data/garage_runner/index.json').catch(() => ({ entries: [], seed_pack: [] })),
   ]);
   runtime.graphCards = Object.fromEntries((graph.interactions || []).map(card => [card.id, card]));
   runtime.conceptLabels = {};
   [...(concepts.offense || []), ...(concepts.defense || [])].forEach(item => runtime.conceptLabels[item.id] = item.label || item.name);
   runtime.profiles = loadedProfiles;
+  runtime.parameterGlossary = glossary;
+  runtime.garageRunnerIndex = runnerIndex;
+  mergeGarageRunnerSources();
   runtime.sharedLoaded = true;
 }
 
@@ -397,7 +431,9 @@ function renderHeader() {
 }
 
 function renderReplayHero(replay) {
-  const seed = new URLSearchParams(window.location.search).get('seed') || String(runtime.replayId || '').match(/^seed-(\d+)$/)?.[1];
+  const seed = new URLSearchParams(window.location.search).get('seed')
+    || String(runtime.replayId || '').match(/^seed-(\d+)$/)?.[1]
+    || replay.agent_garage_config?.runner_seed;
   const meta = (runtime.manifest?.replays || []).find(item => String(item.seed) === String(seed));
   const offenseHandle = displayHandle(meta?.offense_handle || replay.agents?.offense || 'team a');
   const defenseHandle = displayHandle(meta?.defense_handle || replay.agents?.defense || 'team b');
@@ -846,6 +882,17 @@ function ensureGarageDefaults() {
     CBState.set({ garageDrafts: loadGarageDrafts() });
     return;
   }
+  const activeDraft = loadGarageActiveDraft();
+  if (activeDraft?.garageState?.offense_profile && activeDraft?.garageState?.defense_profile) {
+    CBState.set({
+      garageState: activeDraft.garageState,
+      garageTier: activeDraft.garageTier || 'declarative',
+      garageRules: activeDraft.garageRules || [],
+      garageDraftName: toHandle(activeDraft.name || activeDraft.garageDraftName) || 'coachdraft',
+      garageDrafts: loadGarageDrafts(),
+    });
+    return;
+  }
   const offenseKey = Object.keys(runtime.profiles.offense_archetypes || {})[0];
   const defenseKey = Object.keys(runtime.profiles.defense_archetypes || {})[0];
   CBState.set({
@@ -855,8 +902,10 @@ function ensureGarageDefaults() {
       defense_profile: { ...(runtime.profiles.defense_archetypes?.[defenseKey] || {}), profile_key: defenseKey },
       draft_controls: {},
     },
+    garageDraftName: 'coachdraft',
     garageDrafts: loadGarageDrafts(),
   });
+  persistGarageActiveDraft();
 }
 
 function renderGaragePage(params = {}) {
@@ -875,9 +924,12 @@ function renderTierSelector() {
     input.checked = input.value === CBState.get().garageTier;
     input.onchange = () => {
       CBState.set({ garageTier: input.value });
+      persistGarageActiveDraft();
       renderGaragePage(CBRouter.current().params);
     };
   });
+  const explainer = $('garageTierExplainer');
+  if (explainer) explainer.innerHTML = tierExplainerHtml(CBState.get().garageTier);
 }
 
 function renderGarageControls() {
@@ -885,9 +937,15 @@ function renderGarageControls() {
   const sections = {
     identity: $('garageIdentityControls'),
     strategy: $('garageStrategyControls'),
+    resource: $('garageResourceControls'),
   };
   Object.entries(sections).forEach(([section, target]) => {
-    const keys = tier === 'remote_endpoint' && section !== 'identity' ? [] : garageControlSections[section];
+    if (!target) return;
+    if (section === 'resource') {
+      target.innerHTML = renderGarageResourceValidation();
+      return;
+    }
+    const keys = tier === 'remote_endpoint' && section !== 'identity' ? [] : garageControlKeys(section);
     target.innerHTML = keys.length
       ? keys.map(key => garageControlRow(key)).join('')
       : '<p class="muted compact">This tier uses endpoint-owned strategy; local controls are hidden.</p>';
@@ -898,17 +956,39 @@ function renderGarageControls() {
   });
 }
 
+function tierExplainerHtml(tier) {
+  const rows = [
+    ['Tier 0', 'Declarative presets and legal knobs. Runs locally today through the pre-baked replay matrix.'],
+    ['Tier 1', 'Prompt-policy editing is documentation-only in this static UI until the local policy runner lands.'],
+    ['Tier 2', 'Remote endpoint testing needs sandbox and network review, so it is not runnable from this page.'],
+  ];
+  const suffix = tier === 'declarative'
+    ? 'Current mode: Tier 0 can launch a static pre-baked test drive.'
+    : 'Current mode: only Tier 0 can run locally today.';
+  return `<p class="muted compact">${rows.map(([name, copy]) => `<strong>${name}</strong>: ${copy}`).join('<br>')}<br>${suffix}</p>`;
+}
+
+function garageControlKeys(section) {
+  if (section === 'identity') return garageControlSections.identity;
+  if (section !== 'strategy') return [];
+  const offense = selectedProfile('offense')?.parameters || {};
+  const defense = selectedProfile('defense')?.parameters || {};
+  const ordered = [...offenseParameterOrder, ...defenseParameterOrder];
+  return [...new Set(ordered.filter(key => offense[key] !== undefined || defense[key] !== undefined))];
+}
+
 function garageControlRow(key) {
   const current = garageControlValue(key);
   const error = validateGarageControl(key, current);
-  const message = error || 'Valid for the selected tier.';
+  const message = error || garageValidationMessage(key);
   const field = numericControls.has(key)
     ? `<input data-garage-control="${key}" type="range" min="0" max="1" step="0.01" value="${current}">`
     : `<select data-garage-control="${key}">${garageOptions(key, current).map(item => `<option value="${escapeHtml(item.value)}" ${item.value === current ? 'selected' : ''}>${escapeHtml(item.label)}</option>`).join('')}</select>`;
   return `<label class="control-row ${error ? 'has-error' : ''}">
     <span class="label">${label(key)}</span>
     ${field}
-    <small class="help-text">${garageHelp(key)}</small>
+    ${numericControls.has(key) ? `<span class="range-readout">${Math.round(Number(current || 0) * 100)}%</span>` : ''}
+    ${garageTooltipHtml(key)}
     <small class="validation-message">${message}</small>
   </label>`;
 }
@@ -916,7 +996,8 @@ function garageControlRow(key) {
 function garageOptions(key, current) {
   if (key === 'offensive_archetype') return archetypeOptions('offense_archetypes', current);
   if (key === 'defensive_archetype') return archetypeOptions('defense_archetypes', current);
-  if (key === 'risk_tolerance') return ['low', 'medium_low', 'medium', 'medium_high', 'high'].map(value => ({ value, label: label(value) }));
+  if (key === 'runner_seed') return garageRunnerSeeds().map(value => ({ value: String(value), label: `Seed ${value}` }));
+  if (key === 'risk_tolerance') return riskOrder.map(value => ({ value, label: label(value) }));
   if (key === 'run_pass_tendency') return ['balanced_pass', 'pass_heavy', 'constraint_heavy', 'run_to_play_action'].map(value => ({ value, label: label(value) }));
   return [{ value: current || 'balanced', label: label(current || 'balanced') }];
 }
@@ -930,6 +1011,7 @@ function garageHelp(key) {
   const help = {
     offensive_archetype: 'Chooses the visible offense profile defaults.',
     defensive_archetype: 'Chooses the visible defense profile defaults.',
+    runner_seed: 'Chooses one fixed pre-baked seed from the local runner matrix.',
     risk_tolerance: 'Controls conservative versus aggressive call selection.',
     adaptation_speed: 'Range 0-1; higher reacts faster to observed patterns.',
     screen_trigger_confidence: 'Range 0-1; minimum confidence before screen counters.',
@@ -942,12 +1024,28 @@ function garageHelp(key) {
   return help[key] || 'Local coordinator control.';
 }
 
+function garageTooltipHtml(key) {
+  const glossary = runtime.parameterGlossary[key];
+  const fallback = garageHelp(key);
+  const football = glossary?.football_terms || fallback;
+  const ai = glossary?.ai_terms || 'Sets a visible policy input used by the local preset resolver.';
+  return `<small class="help-text garage-tooltip"><span><strong>Football terms:</strong> ${escapeHtml(football)}</span><span><strong>AI terms:</strong> ${escapeHtml(ai)}</span></small>`;
+}
+
+function garageValidationMessage(key) {
+  if (key === 'runner_seed') return garageRunnerEntries().length ? 'Seed is available in the pre-baked matrix.' : 'Build the garage runner matrix before running.';
+  if (key.includes('archetype')) return 'Preset is available in the pre-baked matrix.';
+  if (CBState.get().garageTier !== 'declarative') return 'Only Tier 0 runs locally today.';
+  return 'Legal for the selected pre-baked Tier 0 matrix.';
+}
+
 function garageControlValue(key) {
   const state = CBState.get().garageState || {};
   const draft = state.draft_controls || {};
   if (draft[key] !== undefined) return draft[key];
   if (key === 'offensive_archetype') return state.offense_profile?.profile_key || Object.keys(runtime.profiles.offense_archetypes || {})[0] || '';
   if (key === 'defensive_archetype') return state.defense_profile?.profile_key || Object.keys(runtime.profiles.defense_archetypes || {})[0] || '';
+  if (key === 'runner_seed') return String(garageRunnerSeeds()[0] || 42);
   const offenseParams = state.offense_profile?.parameters || state.offense_profile || {};
   const defenseParams = state.defense_profile?.parameters || state.defense_profile || {};
   return offenseParams[key] ?? defenseParams[key] ?? (numericControls.has(key) ? 0.5 : 'balanced');
@@ -961,13 +1059,120 @@ function updateGarageControl(event) {
   if (key === 'offensive_archetype') next.offense_profile = { ...(runtime.profiles.offense_archetypes?.[raw] || {}), profile_key: raw };
   if (key === 'defensive_archetype') next.defense_profile = { ...(runtime.profiles.defense_archetypes?.[raw] || {}), profile_key: raw };
   CBState.set({ garageState: next });
+  persistGarageActiveDraft();
   renderGaragePage(CBRouter.current().params);
 }
 
 function validateGarageControl(key, raw) {
   if (numericControls.has(key) && (!Number.isFinite(Number(raw)) || Number(raw) < 0 || Number(raw) > 1)) return 'Enter a value from 0 to 1.';
-  if ((key.includes('archetype') || key === 'risk_tolerance' || key === 'run_pass_tendency') && !raw) return 'Required.';
+  if ((key.includes('archetype') || key === 'runner_seed' || key === 'risk_tolerance' || key === 'run_pass_tendency') && !raw) return 'Required.';
+  if (key === 'runner_seed' && !garageRunnerSeeds().map(String).includes(String(raw))) return 'Pick a seed from the pre-baked matrix.';
   return '';
+}
+
+function selectedProfile(side) {
+  const bucket = side === 'defense' ? 'defense_archetypes' : 'offense_archetypes';
+  const control = side === 'defense' ? 'defensive_archetype' : 'offensive_archetype';
+  const key = garageControlValue(control);
+  return runtime.profiles[bucket]?.[key] ? { ...runtime.profiles[bucket][key], profile_key: key } : null;
+}
+
+function garageRunnerSeeds() {
+  const fromIndex = runtime.garageRunnerIndex?.seed_pack || [];
+  if (fromIndex.length) return fromIndex;
+  const fromEntries = [...new Set(garageRunnerEntries().map(item => Number(item.seed)).filter(Number.isFinite))];
+  return fromEntries.length ? fromEntries : [42];
+}
+
+function currentGarageParams(side) {
+  const profile = selectedProfile(side) || {};
+  const params = { ...(profile.parameters || {}) };
+  const keys = side === 'defense' ? defenseParameterOrder : offenseParameterOrder;
+  keys.forEach(key => {
+    const draft = CBState.get().garageState?.draft_controls || {};
+    if (draft[key] !== undefined) params[key] = draft[key];
+  });
+  return params;
+}
+
+function profileDistance(params, profileParams) {
+  return Object.keys(profileParams || {}).reduce((total, key) => {
+    const left = params[key];
+    const right = profileParams[key];
+    if (typeof right === 'number') return total + Math.abs(Number(left) - right);
+    if (key === 'risk_tolerance') {
+      const leftIndex = Math.max(0, riskOrder.indexOf(String(left)));
+      const rightIndex = Math.max(0, riskOrder.indexOf(String(right)));
+      return total + Math.abs(leftIndex - rightIndex) / Math.max(1, riskOrder.length - 1);
+    }
+    return total + (String(left) === String(right) ? 0 : 1);
+  }, 0);
+}
+
+function nearestPreset(side) {
+  const bucket = side === 'defense' ? 'defense_archetypes' : 'offense_archetypes';
+  const params = currentGarageParams(side);
+  return Object.entries(runtime.profiles[bucket] || {})
+    .map(([key, profile]) => ({ key, profile, distance: profileDistance(params, profile.parameters || {}) }))
+    .sort((a, b) => a.distance - b.distance || a.key.localeCompare(b.key))[0] || null;
+}
+
+function garageResolvedRunner() {
+  const offense = nearestPreset('offense');
+  const defense = nearestPreset('defense');
+  const seed = Number(garageControlValue('runner_seed'));
+  const entry = garageRunnerEntries().find(item =>
+    item.offense_preset_id === offense?.key
+    && item.defense_preset_id === defense?.key
+    && Number(item.seed) === seed
+  );
+  return {
+    offense,
+    defense,
+    seed,
+    entry,
+    exact: Boolean(offense && defense && offense.distance === 0 && defense.distance === 0),
+  };
+}
+
+function renderGarageResourceValidation() {
+  const resolved = garageResolvedRunner();
+  const errors = garageValidationErrors(resolved);
+  const warnings = garageValidationWarnings(resolved);
+  const entry = resolved.entry;
+  const status = errors.length ? 'is-warn' : warnings.length ? 'is-caution' : 'is-ok';
+  const rows = [
+    ['Nearest offense preset', resolved.offense?.profile?.label || '-'],
+    ['Nearest defense preset', resolved.defense?.profile?.label || '-'],
+    ['Runner seed', Number.isFinite(resolved.seed) ? resolved.seed : '-'],
+    ['Replay result', entry ? `${label(entry.result)} · ${entry.points} pts · ${entry.plays} plays` : '-'],
+  ];
+  const list = [...errors, ...warnings, ...(errors.length || warnings.length ? [] : ['Legal-action validation and resource budgets are clean for this pre-baked drive.'])];
+  return `<div class="garage-validation ${status}">
+    <div class="validation-badge ${errors.length ? 'is-warn' : 'is-ok'}">${errors.length ? 'Blocked' : 'Runnable'}</div>
+    ${!resolved.exact && entry ? '<p class="mode-banner garage-nearest-banner">Showing nearest pre-baked drive — exact custom configs run in Phase 2.75.</p>' : ''}
+    <div class="garage-validation-grid">${rows.map(([name, raw]) => `<div class="kv"><span>${escapeHtml(name)}</span><span>${escapeHtml(raw)}</span></div>`).join('')}</div>
+    <ul class="validation-list">${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+  </div>`;
+}
+
+function garageValidationErrors(resolved = garageResolvedRunner()) {
+  const tier = CBState.get().garageTier;
+  const controlKeys = [...garageControlKeys('identity'), ...garageControlKeys('strategy')];
+  const controlErrors = controlKeys.map(key => validateGarageControl(key, garageControlValue(key))).filter(Boolean);
+  const errors = [...controlErrors];
+  if (tier !== 'declarative') errors.push('Only Tier 0 declarative presets run locally today.');
+  if (!garageRunnerEntries().length) errors.push('No pre-baked garage runner matrix found. Run python scripts/build_garage_runner_matrix.py.');
+  if (!resolved.entry) errors.push('No pre-baked replay exists for the resolved preset matchup and seed.');
+  if (resolved.entry?.invalid_actions) errors.push('The selected pre-baked drive contains a legal-action validation fallback.');
+  if (resolved.entry && resolved.entry.resource_ok === false) errors.push('The selected pre-baked drive exceeds a resource budget.');
+  return [...new Set(errors)];
+}
+
+function garageValidationWarnings(resolved = garageResolvedRunner()) {
+  const warnings = [];
+  if (!resolved.exact && resolved.entry) warnings.push('Showing nearest pre-baked drive — exact custom configs run in Phase 2.75.');
+  return warnings;
 }
 
 function renderRuleBuilder() {
@@ -1008,6 +1213,7 @@ function addRule() {
   const rules = CBState.get().garageRules || [];
   if (rules.length >= 8) return;
   CBState.set({ garageRules: [...rules, firstRule()] });
+  persistGarageActiveDraft();
   renderGaragePage(CBRouter.current().params);
 }
 
@@ -1021,6 +1227,7 @@ function updateRule(event) {
     rules[index].action = (card.counters || [])[0] || rules[index].action || '';
   }
   CBState.set({ garageRules: rules });
+  persistGarageActiveDraft();
   renderGaragePage(CBRouter.current().params);
 }
 
@@ -1032,53 +1239,96 @@ function moveRule(event) {
   if (nextIndex < 0 || nextIndex >= rules.length) return;
   [rules[index], rules[nextIndex]] = [rules[nextIndex], rules[index]];
   CBState.set({ garageRules: rules });
+  persistGarageActiveDraft();
   renderGaragePage(CBRouter.current().params);
 }
 
 function deleteRule(event) {
   const index = Number(event.target.closest('[data-rule-index]').dataset.ruleIndex);
   CBState.set({ garageRules: (CBState.get().garageRules || []).filter((_, i) => i !== index) });
+  persistGarageActiveDraft();
   renderGaragePage(CBRouter.current().params);
 }
 
 function renderGarageActions() {
   const button = $('testDriveButton');
-  const valid = garageIsValid();
-  button.disabled = true;
-  button.title = valid ? 'Local script execution is unavailable from a static browser host.' : 'Add one valid rule and fix validation errors first.';
+  const resolved = garageResolvedRunner();
+  const errors = garageValidationErrors(resolved);
+  const valid = errors.length === 0;
+  button.disabled = !valid;
+  button.title = valid ? 'Run the nearest pre-baked Tier 0 drive.' : errors[0] || 'Fix validation errors first.';
   button.classList.toggle('ready', valid);
+  button.onclick = runGarageTestDrive;
+  const link = $('garageReplayLink');
+  if (link) {
+    link.hidden = !valid || !resolved.entry;
+    link.href = resolved.entry ? replayUrlForRunnerEntry(resolved.entry) : '#';
+  }
 }
 
 function garageIsValid() {
-  const tier = CBState.get().garageTier;
-  const keys = Object.values(garageControlSections).flat().filter(key => tier !== 'remote_endpoint' || garageControlSections.identity.includes(key));
-  const controlsValid = keys.every(key => !validateGarageControl(key, garageControlValue(key)));
-  const rulesValid = (CBState.get().garageRules || []).some(rule => rule.trigger && rule.action);
-  return controlsValid && rulesValid;
+  return garageValidationErrors().length === 0;
+}
+
+function replayUrlForRunnerEntry(entry) {
+  return `replay.html#/replays/${encodeURIComponent(entry.id)}`;
+}
+
+function runGarageTestDrive() {
+  const resolved = garageResolvedRunner();
+  const errors = garageValidationErrors(resolved);
+  if (errors.length || !resolved.entry) {
+    renderGaragePage(CBRouter.current().params);
+    return;
+  }
+  const run = {
+    id: resolved.entry.id,
+    href: replayUrlForRunnerEntry(resolved.entry),
+    offense: resolved.offense.profile.label,
+    defense: resolved.defense.profile.label,
+    seed: resolved.seed,
+    exact: resolved.exact,
+    points: resolved.entry.points,
+    result: resolved.entry.result,
+    saved_at: new Date().toISOString(),
+  };
+  saveGarageRecentRun(run);
+  persistGarageActiveDraft();
+  window.location.href = run.href;
 }
 
 function renderGarageDrafts() {
   const drafts = loadGarageDrafts();
+  const runs = loadGarageRecentRuns();
   CBState.set({ garageDrafts: drafts });
   $('garageDraftName').value = toHandle(CBState.get().garageDraftName) || 'coachdraft';
   $('garageDraftName').oninput = event => {
     const next = toHandle(event.target.value) || 'coachdraft';
     event.target.value = next;
     CBState.set({ garageDraftName: next });
+    persistGarageActiveDraft();
   };
   $('saveGarageDraft').onclick = saveGarageDraft;
-  $('garageDrafts').innerHTML = drafts.length
-    ? drafts.map(draft => `<div class="draft-row"><span>${escapeHtml(toHandle(draft.name))}</span><button type="button" data-draft-load="${escapeHtml(draft.name)}">Load</button><button type="button" data-draft-delete="${escapeHtml(draft.name)}">Delete</button></div>`).join('')
-    : '<p class="muted compact">No saved drafts in this browser.</p>';
+  $('garageDrafts').innerHTML = `<div class="recent-panel"><h3>Recent Drafts</h3>${
+    drafts.length
+      ? drafts.map(draft => `<div class="draft-row"><span>${escapeHtml(toHandle(draft.name))}</span><button type="button" data-draft-load="${escapeHtml(draft.name)}">Load</button><button type="button" data-draft-delete="${escapeHtml(draft.name)}">Delete</button></div>`).join('')
+      : '<p class="muted compact">No saved drafts in this browser.</p>'
+  }</div><div class="recent-panel"><h3>Recent Runs</h3>${
+    runs.length
+      ? runs.map(run => `<a class="run-row" href="${escapeHtml(run.href)}"><span>${escapeHtml(run.offense)} vs ${escapeHtml(run.defense)}</span><small>Seed ${escapeHtml(run.seed)} · ${escapeHtml(label(run.result))} · ${escapeHtml(run.points)} pts${run.exact ? '' : ' · nearest'}</small></a>`).join('')
+      : '<p class="muted compact">No test drives launched in this browser.</p>'
+  }</div>`;
   $('garageDrafts').querySelectorAll('[data-draft-load]').forEach(button => button.onclick = loadGarageDraft);
   $('garageDrafts').querySelectorAll('[data-draft-delete]').forEach(button => button.onclick = deleteGarageDraft);
 }
 
 function saveGarageDraft() {
   const name = toHandle(CBState.get().garageDraftName) || 'coachdraft';
-  const payload = { name, garageState: CBState.get().garageState, garageTier: CBState.get().garageTier, garageRules: CBState.get().garageRules || [] };
+  const payload = { name, garageState: CBState.get().garageState, garageTier: CBState.get().garageTier, garageRules: CBState.get().garageRules || [], saved_at: new Date().toISOString() };
   try { localStorage.setItem(`${garageDraftPrefix}${name}`, JSON.stringify(payload)); } catch {}
   CBState.set({ garageDraftName: name });
+  enforceGarageDraftCap();
+  persistGarageActiveDraft();
   renderGaragePage(CBRouter.current().params);
 }
 
@@ -1087,16 +1337,48 @@ function loadGarageDrafts() {
     return Object.keys(localStorage)
       .filter(key => key.startsWith(garageDraftPrefix))
       .map(key => JSON.parse(localStorage.getItem(key)))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => String(b.saved_at || '').localeCompare(String(a.saved_at || '')) || a.name.localeCompare(b.name))
+      .slice(0, garageRecentLimit);
   } catch {
     return [];
   }
+}
+
+function enforceGarageDraftCap() {
+  try {
+    const drafts = Object.keys(localStorage)
+      .filter(key => key.startsWith(garageDraftPrefix))
+      .map(key => ({ key, value: JSON.parse(localStorage.getItem(key)) }))
+      .sort((a, b) => String(b.value.saved_at || '').localeCompare(String(a.value.saved_at || '')) || a.value.name.localeCompare(b.value.name));
+    drafts.slice(garageRecentLimit).forEach(item => localStorage.removeItem(item.key));
+  } catch {}
+}
+
+function loadGarageActiveDraft() {
+  try {
+    return JSON.parse(localStorage.getItem(garageActiveDraftKey));
+  } catch {
+    return null;
+  }
+}
+
+function persistGarageActiveDraft() {
+  try {
+    localStorage.setItem(garageActiveDraftKey, JSON.stringify({
+      name: CBState.get().garageDraftName,
+      garageState: CBState.get().garageState,
+      garageTier: CBState.get().garageTier,
+      garageRules: CBState.get().garageRules || [],
+      saved_at: new Date().toISOString(),
+    }));
+  } catch {}
 }
 
 function loadGarageDraft(event) {
   const draft = loadGarageDrafts().find(item => item.name === event.target.dataset.draftLoad);
   if (!draft) return;
   CBState.set({ garageState: draft.garageState, garageTier: draft.garageTier, garageRules: draft.garageRules || [], garageDraftName: toHandle(draft.name) || 'coachdraft' });
+  persistGarageActiveDraft();
   renderGaragePage(CBRouter.current().params);
 }
 
@@ -1105,6 +1387,22 @@ function deleteGarageDraft(event) {
   if (!confirm(`Delete ${name}?`)) return;
   try { localStorage.removeItem(`${garageDraftPrefix}${name}`); } catch {}
   renderGaragePage(CBRouter.current().params);
+}
+
+function loadGarageRecentRuns() {
+  try {
+    const runs = JSON.parse(localStorage.getItem(garageRecentRunsKey) || '[]');
+    return Array.isArray(runs) ? runs.slice(0, garageRecentLimit) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveGarageRecentRun(run) {
+  try {
+    const runs = [run, ...loadGarageRecentRuns().filter(item => item.id !== run.id)].slice(0, garageRecentLimit);
+    localStorage.setItem(garageRecentRunsKey, JSON.stringify(runs));
+  } catch {}
 }
 
 async function renderDailySlate() {
