@@ -43,7 +43,10 @@ The packer never forwards raw replay blobs, raw seeds, `seed_hash`, legal-action
 - `BudgetExceeded`: existing route returns clean 429 before any model call.
 - `LLMUnavailable`, timeout, HTTP/API failure: deterministic stub.
 - Invalid JSON or validator rejection: one stricter retry, then deterministic stub.
+- Canonical launch prompt returns `clarify`: treated as invalid launch behavior, retried once with stricter instruction, then deterministic stub if still unclear.
 - Success: proposal validates in router and validates again in the route boundary; `budget.release()` records real token/cost usage.
+
+Prompt tuning note: `pack_context()` now includes `canonical_prompt_examples`, derived from the deterministic Assistant templates, and the system prompt explicitly states that identity/replay evidence is optional for clear create requests. Legal graph cards plus legal parameters are enough grounding for the five launch prompt examples.
 
 Admin kill switch is process-local. `POST /v1/admin/llm/kill_switch` overrides runtime state until process restart; restart falls back to `LLM_GLOBAL_KILL_SWITCH`.
 

@@ -21,6 +21,7 @@ from arena.assistant.proposal import (
     load_parameter_glossary,
     parameter_specs,
 )
+from arena.assistant.templates import propose_from_prompt
 
 
 DENIED_KEY_RE = re.compile(r"^(seed.*|secret.*|api_key.*|admin.*|debug.*|.*_internal)$", re.IGNORECASE)
@@ -36,6 +37,13 @@ SAFE_REPLAY_PLAY_FIELDS = {
     "film_room_event_id",
     "film_room_events",
 }
+CANONICAL_PROMPTS = (
+    "Build an offense that punishes pressure without throwing picks.",
+    "Make my defense disguise more without burning the rush budget.",
+    "We got baited by simulated pressure. What should I change?",
+    "Build a run-first coordinator that unlocks play-action.",
+    "Give me a safe red-zone defense that prevents explosives.",
+)
 
 
 def _target_side(server_context: dict[str, Any], prompt: str) -> str | None:
@@ -83,6 +91,16 @@ def _schema() -> dict[str, Any]:
             "requires_confirmation": "boolean",
         },
     }
+
+
+def _canonical_prompt_examples() -> list[dict[str, Any]]:
+    return [
+        {
+            "prompt": prompt,
+            "proposal": propose_from_prompt(prompt, {}, session_id="context-pack", ip="0.0.0.0"),
+        }
+        for prompt in CANONICAL_PROMPTS
+    ]
 
 
 def _selected_identity(identity_id: str | None) -> dict[str, Any] | None:
@@ -192,6 +210,7 @@ def pack_context(*, prompt: str, server_context: dict[str, Any], budget_state: d
     replay_summary = _replay_summary(server_context.get("replay"))
     payload = {
         "task_schema": _schema(),
+        "canonical_prompt_examples": _canonical_prompt_examples(),
         "parameter_glossary": load_parameter_glossary(),
         "legal_parameters": _legal_parameters(side),
         "legal_concepts": sorted(_all_concepts(side)) if side else sorted(_all_concepts("offense") | _all_concepts("defense")),

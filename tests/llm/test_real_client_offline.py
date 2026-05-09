@@ -46,9 +46,11 @@ class FakeResponse:
 def test_recorded_tape_outputs_are_schema_valid_and_grounded(monkeypatch) -> None:
     tapes = json.loads(Path("tests/fixtures/llm_tapes/canonical_responses.json").read_text(encoding="utf-8"))
     queue: list[str] = []
+    captured_kwargs: list[dict] = []
 
     class FakeMessages:
         def create(self, **kwargs):
+            captured_kwargs.append(kwargs)
             return FakeResponse(queue.pop(0))
 
     class FakeAnthropic:
@@ -73,3 +75,5 @@ def test_recorded_tape_outputs_are_schema_valid_and_grounded(monkeypatch) -> Non
                     assert ref["id"] in legal_ids
             assert usage.tokens_in > 0
             assert usage.tokens_out > 0
+    assert captured_kwargs
+    assert all("temperature" not in kwargs for kwargs in captured_kwargs)

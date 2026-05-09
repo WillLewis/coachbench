@@ -113,6 +113,7 @@ def estimate_cost_usd(model: str, usage: Any) -> LLMUsage:
 def _split_context(context: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     static_keys = {
         "task_schema",
+        "canonical_prompt_examples",
         "parameter_glossary",
         "legal_parameters",
         "legal_concepts",
@@ -171,7 +172,6 @@ def call_llm_real(
         response = client.messages.create(
             model=model,
             max_tokens=max_tokens,
-            temperature=0,
             system=[
                 {
                     "type": "text",
@@ -206,7 +206,14 @@ def call_llm_real(
         name = exc.__class__.__name__.lower()
         if "timeout" in name:
             raise LLMTimeout("Anthropic request timed out") from exc
-        if "api" in name or "http" in name or "connection" in name:
+        if (
+            "api" in name
+            or "http" in name
+            or "connection" in name
+            or "badrequest" in name
+            or "rate" in name
+            or hasattr(exc, "status_code")
+        ):
             raise LLMHttpError(str(exc)) from exc
         raise
     return _parse_json_response(response), estimate_cost_usd(model, getattr(response, "usage", {}))

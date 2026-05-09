@@ -16,4 +16,6 @@ def test_pack_context_is_byte_deterministic_for_identical_inputs() -> None:
     budget_state = {"remaining_calls_in_session": 7, "kill_switch": False}
     first = pack_context(prompt="Build an offense that punishes pressure without throwing picks.", server_context=server_context, budget_state=budget_state)
     second = pack_context(prompt="Build an offense that punishes pressure without throwing picks.", server_context=server_context, budget_state=budget_state)
+    assert first["canonical_prompt_examples"]
+    assert all(item["proposal"]["intent"] != "clarify" for item in first["canonical_prompt_examples"])
     assert json.dumps(first, sort_keys=True, separators=(",", ":")) == json.dumps(second, sort_keys=True, separators=(",", ":"))

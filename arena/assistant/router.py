@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from typing import Any
 
@@ -23,9 +24,17 @@ from .templates import propose_from_prompt
 
 RETRY_REMINDER = (
     "\n\nReturn JSON only. The object must match task_schema exactly, use only legal_parameters, "
-    "and cite only supplied graph cards, identity facts, or replay events."
+    "and cite only supplied graph cards, identity facts, or replay events. If this matches a "
+    "canonical_prompt_examples entry, return that non-clarify proposal shape."
 )
 LOGGER = logging.getLogger("coachbench.llm")
+CANONICAL_PROMPTS = {
+    "build an offense that punishes pressure without throwing picks.",
+    "make my defense disguise more without burning the rush budget.",
+    "we got baited by simulated pressure. what should i change?",
+    "build a run-first coordinator that unlocks play-action.",
+    "give me a safe red-zone defense that prevents explosives.",
+}
 
 
 def _log(path: str, *, tokens_in: int = 0, tokens_out: int = 0, latency_ms: int = 0, reason: str | None = None) -> None:
@@ -39,6 +48,31 @@ def _log(path: str, *, tokens_in: int = 0, tokens_out: int = 0, latency_ms: int 
     if reason:
         payload["reason"] = reason
     LOGGER.info("assistant_llm_route %s", json.dumps(payload, sort_keys=True))
+
+
+def _is_provider_error(exc: Exception) -> bool:
+    name = exc.__class__.__name__.lower()
+    return (
+        hasattr(exc, "status_code")
+        or "api" in name
+        or "http" in name
+        or "connection" in name
+        or "badrequest" in name
+        or "rate" in name
+    )
+
+
+def _clean_prompt(prompt: str) -> str:
+    return re.sub(r"\s+", " ", prompt.split(RETRY_REMINDER, 1)[0].lower()).strip()
+
+
+def _requires_non_clarify(prompt: str) -> bool:
+    return _clean_prompt(prompt) in CANONICAL_PROMPTS
+
+
+def _enforce_launch_semantics(prompt: str, proposal: dict[str, Any]) -> None:
+    if _requires_non_clarify(prompt) and proposal.get("intent") == "clarify":
+        raise ProposalRejected("canonical launch prompt returned clarify")
 
 
 def _stub(prompt: str, context: dict[str, Any], *, session_id: str, ip: str) -> tuple[dict[str, Any], LLMUsage]:
@@ -79,6 +113,7 @@ def _real_once(
     proposal, usage = call_llm_real(prompt, packed, session_id=session_id, ip=ip)
     proposal = _normalize_film_room_evidence(proposal, context)
     validate_proposal(proposal, current_draft=current_draft, context=context)
+    _enforce_launch_semantics(prompt, proposal)
     latency_ms = int((time.monotonic() - started) * 1000)
     return proposal, usage, latency_ms
 
@@ -129,3 +164,15 @@ def select_proposer(
             proposal, usage = _stub(prompt, context, session_id=session_id, ip=ip)
             _log("retry_failed_stub", reason=retry_exc.__class__.__name__)
             return proposal, usage
+        except Exception as retry_exc:
+            if not _is_provider_error(retry_exc):
+                raise
+            proposal, usage = _stub(prompt, context, session_id=session_id, ip=ip)
+            _log("retry_failed_stub", reason=retry_exc.__class__.__name__)
+            return proposal, usage
+    except Exception as exc:
+        if not _is_provider_error(exc):
+            raise
+        proposal, usage = _stub(prompt, context, session_id=session_id, ip=ip)
+        _log("error_stub", reason=exc.__class__.__name__)
+        return proposal, usage
