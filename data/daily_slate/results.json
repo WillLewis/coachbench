@@ -16,6 +16,7 @@
       "replay_path": "data/daily_slate/replays/daily-slate-local-v0_42.json",
       "film_room": {
         "headline": "Turnover on downs",
+        "narrative": null,
         "turning_point": {
           "play_index": 3,
           "expected_value_delta": 0.5,
@@ -48,6 +49,7 @@
       "replay_path": "data/daily_slate/replays/daily-slate-local-v0_99.json",
       "film_room": {
         "headline": "Turnover on downs",
+        "narrative": "You attacked Play-action gains value after credible run tendency with Play-Action Flood against Bear Front. The offense adjusted to Play-Action Flood, then the defense held on downs.",
         "turning_point": {
           "play_index": 2,
           "expected_value_delta": 0.76,
@@ -329,6 +331,7 @@
       "replay_path": "data/daily_slate/replays/daily-slate-local-v0_202.json",
       "film_room": {
         "headline": "Touchdown drive",
+        "narrative": "You attacked Bunch mesh stresses match coverage communication with Bunch Mesh against Cover 3 Match. The drive scored 7 points.",
         "turning_point": {
           "play_index": 2,
           "expected_value_delta": 0.85,

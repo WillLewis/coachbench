@@ -18,23 +18,42 @@
     "defense": "Team B Adaptive Defense"
   },
   "agent_garage_config": {
-    "source": "agent_garage_profiles_v0",
+    "source": "agent_garage_profiles_v1",
     "offense_profile": {
-      "label": "Misdirection Artist",
-      "risk_tolerance": "medium",
-      "adaptation_speed": 0.7,
-      "screen_trigger_confidence": 0.62,
-      "explosive_shot_tolerance": 0.45,
-      "run_pass_tendency": "constraint_heavy",
-      "profile_key": "misdirection_artist"
+      "label": "Aggressive Shot-Taker",
+      "strategic_intent": "Push high-risk pass answers into passive coverage shells before pressure counters arrive.",
+      "parameters": {
+        "risk_tolerance": "high",
+        "adaptation_speed": 0.5,
+        "screen_trigger_confidence": 0.9,
+        "explosive_shot_tolerance": 0.75,
+        "run_pass_tendency": "balanced_pass"
+      },
+      "expected_behavior": [
+        "aggressive offense risk >= 80% of calls",
+        "quick_game plus play_action_flood >= 20 calls across seed pack",
+        "touchdowns on every baseline seed"
+      ],
+      "known_counter": "defense_archetypes.pressure_look_defender",
+      "notes": "Name retained from the plan; the live graph exposes shot tolerance, but the winning aggregate signature is aggressive quick and play-action passing rather than frequent vertical_shot calls.",
+      "profile_key": "aggressive_shot_taker"
     },
     "defense_profile": {
-      "label": "Disguise Specialist",
-      "risk_tolerance": "medium",
-      "disguise_sensitivity": 0.85,
-      "pressure_frequency": 0.4,
-      "counter_repeat_tolerance": 0.55,
-      "profile_key": "disguise_specialist"
+      "label": "Coverage Shell Conservative",
+      "strategic_intent": "Stay low-risk, close explosive windows, and force the offense to settle for underneath space.",
+      "parameters": {
+        "risk_tolerance": "low",
+        "disguise_sensitivity": 0.25,
+        "pressure_frequency": 0.1,
+        "counter_repeat_tolerance": 0.9
+      },
+      "expected_behavior": [
+        "conservative defense risk on every call",
+        "redzone_bracket plus bear_front >= 30 calls across seed pack",
+        "underneath_space_taken events >= 15 across seed pack"
+      ],
+      "known_counter": "offense_archetypes.aggressive_shot_taker",
+      "profile_key": "coverage_shell_conservative"
     }
   },
   "legal_sets": {
@@ -83,7 +102,7 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:bear_front"
         },
         "yards_gained": 3,
@@ -330,7 +349,7 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:bear_front"
         },
         "events": [
@@ -497,7 +516,7 @@
           "motion_family": "none",
           "concept_family": "play_action_flood",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:play_action_flood"
         },
         "defense_action": {
@@ -507,11 +526,11 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:bear_front"
         },
         "yards_gained": 5,
-        "expected_value_delta": 0.76,
+        "expected_value_delta": 0.84,
         "success": true,
         "terminal": false,
         "terminal_reason": null,
@@ -744,7 +763,7 @@
           "motion_family": "none",
           "concept_family": "play_action_flood",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:play_action_flood"
         },
         "defense_action": {
@@ -754,7 +773,7 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:bear_front"
         },
         "events": [
@@ -787,7 +806,7 @@
           }
         ],
         "yards_gained": 5,
-        "expected_value_delta": 0.76,
+        "expected_value_delta": 0.84,
         "success": true,
         "terminal": false,
         "terminal_reason": null,
@@ -921,7 +940,7 @@
           "motion_family": "none",
           "concept_family": "play_action_flood",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:play_action_flood"
         },
         "defense_action": {
@@ -931,11 +950,11 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:bear_front"
         },
         "yards_gained": 5,
-        "expected_value_delta": 0.76,
+        "expected_value_delta": 0.84,
         "success": true,
         "terminal": false,
         "terminal_reason": null,
@@ -1168,7 +1187,7 @@
           "motion_family": "none",
           "concept_family": "play_action_flood",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:play_action_flood"
         },
         "defense_action": {
@@ -1178,7 +1197,7 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:bear_front"
         },
         "events": [
@@ -1211,7 +1230,7 @@
           }
         ],
         "yards_gained": 5,
-        "expected_value_delta": 0.76,
+        "expected_value_delta": 0.84,
         "success": true,
         "terminal": false,
         "terminal_reason": null,
@@ -1345,7 +1364,7 @@
           "motion_family": "none",
           "concept_family": "quick_game",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:quick_game"
         },
         "defense_action": {
@@ -1355,11 +1374,11 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:redzone_bracket"
         },
         "yards_gained": 5,
-        "expected_value_delta": 0.63,
+        "expected_value_delta": 0.71,
         "success": true,
         "terminal": false,
         "terminal_reason": null,
@@ -1576,7 +1595,7 @@
           "motion_family": "none",
           "concept_family": "quick_game",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:quick_game"
         },
         "defense_action": {
@@ -1586,7 +1605,7 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:redzone_bracket"
         },
         "events": [
@@ -1605,7 +1624,7 @@
           }
         ],
         "yards_gained": 5,
-        "expected_value_delta": 0.63,
+        "expected_value_delta": 0.71,
         "success": true,
         "terminal": false,
         "terminal_reason": null,
@@ -1739,7 +1758,7 @@
           "motion_family": "none",
           "concept_family": "quick_game",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:quick_game"
         },
         "defense_action": {
@@ -1749,11 +1768,11 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:redzone_bracket"
         },
         "yards_gained": 7,
-        "expected_value_delta": 0.63,
+        "expected_value_delta": 0.71,
         "success": true,
         "terminal": true,
         "terminal_reason": "touchdown",
@@ -1970,7 +1989,7 @@
           "motion_family": "none",
           "concept_family": "quick_game",
           "protection_family": "standard",
-          "risk_level": "balanced",
+          "risk_level": "aggressive",
           "constraint_tag": "legal:quick_game"
         },
         "defense_action": {
@@ -1980,7 +1999,7 @@
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
+          "risk_level": "conservative",
           "constraint_tag": "legal:redzone_bracket"
         },
         "events": [
@@ -1999,7 +2018,7 @@
           }
         ],
         "yards_gained": 7,
-        "expected_value_delta": 0.63,
+        "expected_value_delta": 0.71,
         "success": true,
         "terminal": true,
         "terminal_reason": "touchdown",
@@ -2132,9 +2151,10 @@
   },
   "film_room": {
     "headline": "Touchdown drive",
+    "narrative": "You attacked Play-action gains value after credible run tendency with Play-Action Flood against Bear Front. The offense adjusted to Play-Action Flood, then scored 7 points.",
     "turning_point": {
       "play_index": 2,
-      "expected_value_delta": 0.76,
+      "expected_value_delta": 0.84,
       "graph_card_ids": [
         "redzone.play_action_after_run_tendency.v1"
       ],
@@ -2151,6 +2171,153 @@
       "Try Bootleg, Play-Action Flood, Quick Game against Bear front constrains outside zone.",
       "Try Red-Zone Bracket, Two-High Shell against Play-action gains value after credible run tendency.",
       "Try Cover 1 Man, Trap Coverage against Quick game can take conceded underneath space."
+    ],
+    "film_room_tweaks": [
+      {
+        "tweak_id": "twk_adaptation_speed_wide_zone_constrained_001",
+        "parameter": "adaptation_speed",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "wide_zone_constrained",
+            "count": 1,
+            "offense_call": "outside_zone",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            1
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.outside_zone_vs_bear.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              1
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "wide_zone_constrained",
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "observed_value": {
+              "event_tag": "wide_zone_constrained",
+              "count": 1,
+              "offense_call": "outside_zone",
+              "defense_call": "bear_front"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "adaptation_speed",
+            "direction": "increase"
+          },
+          "rendered": "Play 1 produced wide_zone_constrained once, so increase adaptation_speed."
+        }
+      },
+      {
+        "tweak_id": "twk_counter_repeat_tolerance_run_tendency_exploited_002",
+        "parameter": "counter_repeat_tolerance",
+        "direction": "decrease",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "run_tendency_exploited",
+            "count": 2,
+            "offense_call": "play_action_flood",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            2,
+            3
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.play_action_after_run_tendency.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              2,
+              3
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "run_tendency_exploited",
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "observed_value": {
+              "event_tag": "run_tendency_exploited",
+              "count": 2,
+              "offense_call": "play_action_flood",
+              "defense_call": "bear_front"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "counter_repeat_tolerance",
+            "direction": "decrease"
+          },
+          "rendered": "Plays 2 and 3 produced run_tendency_exploited twice, so decrease counter_repeat_tolerance."
+        }
+      },
+      {
+        "tweak_id": "twk_risk_tolerance_underneath_space_taken_004",
+        "parameter": "risk_tolerance",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 2,
+            "offense_call": "quick_game",
+            "defense_call": "redzone_bracket"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            4,
+            5
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              4,
+              5
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "underneath_space_taken",
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "observed_value": {
+              "event_tag": "underneath_space_taken",
+              "count": 2,
+              "offense_call": "quick_game",
+              "defense_call": "redzone_bracket"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "risk_tolerance",
+            "direction": "increase"
+          },
+          "rendered": "Plays 4 and 5 produced underneath_space_taken twice, so increase risk_tolerance."
+        }
+      }
     ],
     "adaptation_chain": [
       {
@@ -2246,6 +2413,153 @@
     ],
     "next_adjustment": "Next try: Quick Game to counter Bear front constrains outside zone."
   },
+  "film_room_tweaks": [
+    {
+      "tweak_id": "twk_adaptation_speed_wide_zone_constrained_001",
+      "parameter": "adaptation_speed",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "wide_zone_constrained",
+          "count": 1,
+          "offense_call": "outside_zone",
+          "defense_call": "bear_front"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          1
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.outside_zone_vs_bear.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            1
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "wide_zone_constrained",
+          "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+          "observed_value": {
+            "event_tag": "wide_zone_constrained",
+            "count": 1,
+            "offense_call": "outside_zone",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "adaptation_speed",
+          "direction": "increase"
+        },
+        "rendered": "Play 1 produced wide_zone_constrained once, so increase adaptation_speed."
+      }
+    },
+    {
+      "tweak_id": "twk_counter_repeat_tolerance_run_tendency_exploited_002",
+      "parameter": "counter_repeat_tolerance",
+      "direction": "decrease",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "run_tendency_exploited",
+          "count": 2,
+          "offense_call": "play_action_flood",
+          "defense_call": "bear_front"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          2,
+          3
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            2,
+            3
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "run_tendency_exploited",
+          "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+          "observed_value": {
+            "event_tag": "run_tendency_exploited",
+            "count": 2,
+            "offense_call": "play_action_flood",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "counter_repeat_tolerance",
+          "direction": "decrease"
+        },
+        "rendered": "Plays 2 and 3 produced run_tendency_exploited twice, so decrease counter_repeat_tolerance."
+      }
+    },
+    {
+      "tweak_id": "twk_risk_tolerance_underneath_space_taken_004",
+      "parameter": "risk_tolerance",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "underneath_space_taken",
+          "count": 2,
+          "offense_call": "quick_game",
+          "defense_call": "redzone_bracket"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          4,
+          5
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            4,
+            5
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "underneath_space_taken",
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 2,
+            "offense_call": "quick_game",
+            "defense_call": "redzone_bracket"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "risk_tolerance",
+          "direction": "increase"
+        },
+        "rendered": "Plays 4 and 5 produced underneath_space_taken twice, so increase risk_tolerance."
+      }
+    }
+  ],
   "debug": {
     "fields": []
   }

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from .film_room import (
+    NARRATIVE_MAX_CHARS,
     NO_EVENT_FILM_ROOM_NOTE,
     NO_EVENT_FILM_ROOM_TWEAK,
     TWEAK_DIRECTIONS,
@@ -123,6 +124,7 @@ OBSERVATION_ALLOWED_FIELDS = {
 
 FILM_ROOM_FIELDS = {
     "headline",
+    "narrative",
     "turning_point",
     "notes",
     "suggested_tweaks",
@@ -398,12 +400,18 @@ def validate_film_room_tweak_schema(tweak: Dict[str, Any]) -> None:
 
 
 def validate_film_room_schema(film_room: Dict[str, Any], *, require_enriched: bool = True) -> None:
-    fields = FILM_ROOM_FIELDS if require_enriched else FILM_ROOM_FIELDS - {"adaptation_chain", "next_adjustment"}
+    fields = FILM_ROOM_FIELDS if require_enriched else FILM_ROOM_FIELDS - {"adaptation_chain", "next_adjustment", "narrative"}
     _require_fields(film_room, fields, "film_room")
     if not isinstance(film_room["notes"], list):
         raise ContractValidationError("film_room notes must be a list")
     if not isinstance(film_room["suggested_tweaks"], list):
         raise ContractValidationError("film_room suggested_tweaks must be a list")
+    narrative = film_room.get("narrative")
+    if narrative is not None:
+        if not isinstance(narrative, str):
+            raise ContractValidationError("film_room narrative must be a string or null")
+        if len(narrative) > NARRATIVE_MAX_CHARS:
+            raise ContractValidationError("film_room narrative exceeds max length")
     if require_enriched and not isinstance(film_room["adaptation_chain"], list):
         raise ContractValidationError("film_room adaptation_chain must be a list")
     if require_enriched and not isinstance(film_room["next_adjustment"], str):

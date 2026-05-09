@@ -8,6 +8,7 @@ from .labels import card_label, concept_label, is_legal_concept
 
 NO_EVENT_FILM_ROOM_NOTE = "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
 NO_EVENT_FILM_ROOM_TWEAK = "Review call sequencing, resource use, and risk level against nearby fixed seeds."
+NARRATIVE_MAX_CHARS = 200
 
 TWEAK_PARAMETERS = {
     "risk_tolerance",
@@ -287,10 +288,121 @@ def headline_for_terminal(points: int, terminal_reason: str | None) -> str:
     return "Drive stopped"
 
 
+def _outcome_phrase(points: int | None, terminal_reason: str | None) -> str:
+    if terminal_reason == "touchdown" or (points is not None and points >= 7):
+        return f"scored {points} points" if points is not None else "scored"
+    if terminal_reason == "turnover":
+        return "the defense forced a turnover"
+    if terminal_reason == "turnover_on_downs":
+        return "the defense held on downs"
+    if terminal_reason == "max_plays_reached":
+        return "the drive stalled out of plays" if not points else "the drive ended with field position"
+    if points == 3:
+        return "the drive ended with field position"
+    return "the drive stopped"
+
+
+def _terminal_points(plays: List[Dict[str, Any]]) -> int | None:
+    if not plays:
+        return None
+    next_state = _public_play(plays[-1]).get("next_state", {})
+    points = next_state.get("points") if isinstance(next_state, dict) else None
+    return int(points) if isinstance(points, int) else None
+
+
+def _fit_narrative(sentences: List[str]) -> str | None:
+    text = "".join(sentences)
+    if len(text) <= NARRATIVE_MAX_CHARS:
+        return text
+    if sentences and len(sentences[0]) <= NARRATIVE_MAX_CHARS:
+        return sentences[0]
+    return None
+
+
+def _event_candidates(plays: List[Dict[str, Any]], graph: StrategyGraph | None) -> List[Dict[str, Any]]:
+    cards_by_id = _graph_cards_by_id(graph)
+    candidates: List[Dict[str, Any]] = []
+    for fallback_index, play in enumerate(plays, start=1):
+        public = _public_play(play)
+        play_index = int(public.get("play_index", fallback_index))
+        offense_call = public.get("offense_action", {}).get("concept_family")
+        defense_call = public.get("defense_action", {}).get("coverage_family")
+        if not offense_call or not defense_call:
+            continue
+        for event in _observed_events(play):
+            card_id = event.get("graph_card_id")
+            if not card_id or str(card_id) not in cards_by_id:
+                continue
+            candidates.append({
+                "card_id": str(card_id),
+                "play_index": play_index,
+                "max_abs_ep": abs(float(public.get("expected_value_delta", 0.0))),
+                "offense_call": str(offense_call),
+                "defense_call": str(defense_call),
+            })
+    return candidates
+
+
+def _adaptation_candidate(card_id: str, play_index: int, candidates: List[Dict[str, Any]]) -> Dict[str, Any] | None:
+    for candidate in candidates:
+        if candidate["card_id"] == card_id and candidate["play_index"] == play_index:
+            return candidate
+    return None
+
+
+def narrative_for_drive(
+    film_room_data: Dict[str, Any],
+    plays: List[Dict[str, Any]],
+    graph: StrategyGraph | None = None,
+) -> str | None:
+    if not plays:
+        return None
+    if film_room_data.get("notes") == [NO_EVENT_FILM_ROOM_NOTE]:
+        return None
+
+    candidates = _event_candidates(plays, graph)
+    if not candidates:
+        return None
+
+    primary = sorted(candidates, key=lambda item: (-float(item["max_abs_ep"]), int(item["play_index"]), item["card_id"]))[0]
+    points = film_room_data.get("points")
+    points = int(points) if isinstance(points, int) else _terminal_points(plays)
+    terminal_reason = _public_play(plays[-1]).get("terminal_reason")
+    outcome = _outcome_phrase(points, terminal_reason)
+
+    first = (
+        f"You attacked {card_label(primary['card_id'], graph)} with "
+        f"{concept_label(primary['offense_call'], graph)} against {concept_label(primary['defense_call'], graph)}."
+    )
+
+    second_candidate: Dict[str, Any] | None = None
+    adaptation_chain = sorted(
+        [entry for entry in film_room_data.get("adaptation_chain", []) if entry.get("graph_card_id")],
+        key=lambda entry: int(entry.get("play_index") or 0),
+    )
+    for entry in adaptation_chain:
+        candidate = _adaptation_candidate(str(entry["graph_card_id"]), int(entry.get("play_index") or 0), candidates)
+        if candidate and (candidate["play_index"] > primary["play_index"] or candidate["card_id"] != primary["card_id"]):
+            second_candidate = candidate
+            break
+    if second_candidate is None:
+        for candidate in sorted(candidates, key=lambda item: (int(item["play_index"]), item["card_id"])):
+            if candidate["play_index"] > primary["play_index"] or candidate["card_id"] != primary["card_id"]:
+                second_candidate = candidate
+                break
+
+    if second_candidate:
+        second = f" The offense adjusted to {concept_label(second_candidate['offense_call'], graph)}, then {outcome}."
+    else:
+        second = f" The drive {outcome}."
+    return _fit_narrative([first, second])
+
+
 def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: StrategyGraph | None = None) -> Dict[str, Any]:
     if not play_results:
         return {
             "headline": "No plays were resolved.",
+            "narrative": None,
             "turning_point": None,
             "notes": [],
             "suggested_tweaks": [],
@@ -409,15 +521,26 @@ def build_film_room(play_results: List[Dict[str, Any]], points: int, graph: Stra
             next_adjustment = f"Next try: {concept_label(legal_counters[0])} to counter {card_label(first_card['id'])}."
 
     terminal_reason = _public_play(play_results[-1]).get("terminal_reason")
-
-    return {
+    film_room_data = {
         "headline": headline_for_terminal(points, terminal_reason),
+        "points": points,
         "turning_point": {
             "play_index": _public_play(turning).get("play_index"),
             "expected_value_delta": _internal_play(turning).get("expected_value_delta"),
             "graph_card_ids": _public_play(turning).get("graph_card_ids", []),
             "metric": "largest_abs_expected_value_delta",
         },
+        "notes": notes,
+        "suggested_tweaks": tweaks,
+        "film_room_tweaks": structured_tweaks,
+        "adaptation_chain": adaptation_chain,
+        "next_adjustment": next_adjustment,
+    }
+    narrative = narrative_for_drive(film_room_data, play_results, graph)
+    return {
+        "headline": film_room_data["headline"],
+        "narrative": narrative,
+        "turning_point": film_room_data["turning_point"],
         "notes": notes,
         "suggested_tweaks": tweaks,
         "film_room_tweaks": structured_tweaks,

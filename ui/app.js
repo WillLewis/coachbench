@@ -272,7 +272,7 @@ async function handleRoute(route) {
   } else if (route.name === 'garage') {
     renderRouteStub('garageRouteCopy', 'Saved drafts load from the local backend. Assistant proposals save through validated draft routes.');
   } else if (route.name === 'reports') {
-    renderReports(route.params.compare);
+    await renderReports(route.params.compare);
   } else if (route.name === 'arena') {
     renderRouteStub('arenaRouteCopy', 'Run Best-of-N, gauntlets, and tournaments from saved drafts through the local backend.');
   }
@@ -306,9 +306,98 @@ function renderRouteStub(id, copy) {
   $(id).textContent = copy;
 }
 
-function renderReports(compare) {
+async function renderReports(compare) {
   const ids = String(compare || '').split(',').filter(Boolean);
-  renderRouteStub('reportsRouteCopy', ids.length ? `Reserved comparison: ${ids.join(', ')}.` : 'Open an Arena report or pin replays to compare fixed-seed outcomes.');
+  renderRouteStub('reportsRouteCopy', ids.length ? `Pinned comparison: ${ids.join(', ')}.` : 'Open a completed Arena report, watch match film, or discuss a grounded adjustment.');
+  const list = $('reportsList');
+  const detail = $('reportDetail');
+  if (!list || !detail) return;
+  detail.innerHTML = '';
+  list.innerHTML = '<p class="muted compact">Loading Arena reports...</p>';
+  try {
+    const payload = await fetchJson('/v1/arena/reports?limit=20');
+    const reports = payload.reports || [];
+    if (!reports.length) {
+      list.innerHTML = '<p class="offline-state">No completed Arena reports yet. Run an Arena job from saved drafts, then return here.</p>';
+      return;
+    }
+    list.innerHTML = reports.map(report => `<button class="report-row" type="button" data-report-job="${escapeHtml(report.job_id)}">
+      <span class="report-kind">${escapeHtml(label(report.kind))}</span>
+      <strong>${escapeHtml(report.job_id)}</strong>
+      <span>${escapeHtml(relativeTime(report.completed_at || report.created_at))}</span>
+      <span>${Number(report.completed_runs || 0)}/${Number(report.total_runs || 0)} runs</span>
+    </button>`).join('');
+    list.querySelectorAll('[data-report-job]').forEach(button => {
+      button.onclick = () => loadArenaReport(button.dataset.reportJob);
+    });
+  } catch {
+    list.innerHTML = '<p class="offline-state">Backend offline. Arena reports unavailable.</p>';
+  }
+}
+
+function relativeTime(raw) {
+  if (!raw) return 'recent';
+  const then = new Date(raw).getTime();
+  if (!Number.isFinite(then)) return 'recent';
+  const diff = Math.max(0, Date.now() - then);
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
+function runIdFromReplayUrl(url) {
+  const match = String(url || '').match(/\/v1\/replays\/([^/]+)/);
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
+async function loadArenaReport(jobId) {
+  const detail = $('reportDetail');
+  if (!detail) return;
+  detail.innerHTML = '<p class="muted compact">Loading report matches...</p>';
+  try {
+    const report = await fetchJson(`/v1/arena/jobs/${encodeURIComponent(jobId)}/report`);
+    detail.innerHTML = renderArenaReportDetail(report);
+    detail.querySelectorAll('[data-discuss-film]').forEach(button => {
+      button.onclick = async () => {
+        const runId = button.dataset.discussFilm;
+        const replay = await fetchReplayById(runId).catch(() => null);
+        const playIndex = Number(replay?.film_room?.turning_point?.play_index || 1);
+        dispatchAssistantRequest({ type: 'film_room_tweak', run_id: runId, play_index: playIndex });
+      };
+    });
+    window.CBLeftRail?.bindReplayButtons?.(detail);
+  } catch {
+    detail.innerHTML = '<p class="offline-state">Report unavailable. The job may still be running or the local report file may be missing.</p>';
+  }
+}
+
+function renderArenaReportDetail(report) {
+  const matches = report.matches || [];
+  return `<section class="report-match-panel">
+    <div class="panel-title">
+      <h3>${escapeHtml(label(report.kind))}</h3>
+      <span>${matches.length} matches</span>
+    </div>
+    <div class="report-match-list">
+      ${matches.map(match => {
+        const runId = runIdFromReplayUrl(match.replay_url);
+        const matchup = `${launchName(match.offense_label, match.technical_label?.offense || 'Offense')} ⇌ ${launchName(match.defense_label, match.technical_label?.defense || 'Defense')}`;
+        return `<article class="report-match-card">
+          <div>
+            <strong>${escapeHtml(matchup)}</strong>
+            <span>Seed ${escapeHtml(match.seed)} · ${escapeHtml(label(match.winner_side))} · ${escapeHtml(match.points)} pts</span>
+          </div>
+          <div class="report-actions">
+            <button class="btn" type="button" data-open-replay="${escapeHtml(runId)}"${runId ? '' : ' disabled'}>Watch Film</button>
+            <button class="ghost-button" type="button" data-discuss-film="${escapeHtml(runId)}"${runId ? '' : ' disabled'}>Discuss with Assistant</button>
+          </div>
+        </article>`;
+      }).join('')}
+    </div>
+  </section>`;
 }
 
 function renderReplayCard(item) {
@@ -824,10 +913,15 @@ function renderFilmRoomHtml(replay) {
   const primaryCardId = turningCards[0];
   const evidence = filmRoomEvidence(replay, nextTry);
   const tweakChips = renderFilmRoomTweakChips(replay);
+  const narrative = typeof room.narrative === 'string' ? truncate(room.narrative.trim(), 200) : '';
   return `<section class="film-compressed">
     <div class="film-actions">
       <button class="ghost-button" type="button" data-tune-agent>Tune Agent</button>
     </div>
+    ${narrative ? `<div class="film-story">
+      <h3>Drive Story</h3>
+      <p>${escapeHtml(narrative)}</p>
+    </div>` : ''}
     <div class="film-line">
       <h3>Turning Point</h3>
       <p>Play ${room.turning_point.play_index} · ${escapeHtml(shortCardLabel(primaryCardId))}</p>

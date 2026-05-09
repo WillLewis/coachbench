@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from arena.api.deps import error
 from arena.runs.arena import total_runs_for
 from arena.storage import arena_jobs, drafts, sessions
-from arena.worker.queue import enqueue, get_job
+from arena.worker.queue import enqueue, get_job, list_jobs
 
 
 router = APIRouter()
@@ -126,6 +126,31 @@ def arena_job_report(job_id: str) -> dict:
     if not path.exists():
         error("not_found", "arena report file not found", 404)
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+@router.get("/v1/arena/reports")
+def arena_reports(limit: int = 20) -> dict:
+    conn = _db()
+    reports = []
+    for job in list_jobs(conn):
+        if not str(job["kind"]).startswith("arena_"):
+            continue
+        progress = arena_jobs.get_progress(conn, job["job_id"])
+        if not progress or not progress.get("report_path"):
+            continue
+        reports.append({
+            "job_id": job["job_id"],
+            "kind": str(job["kind"]).removeprefix("arena_"),
+            "created_at": job["created_at"],
+            "completed_at": job["completed_at"],
+            "status": job["status"],
+            "completed_runs": progress["completed_runs"],
+            "total_runs": progress["total_runs"],
+            "failed_runs": progress["failed_runs"],
+            "has_report": True,
+        })
+    reports.sort(key=lambda row: str(row.get("created_at") or ""), reverse=True)
+    return {"reports": reports[: max(0, int(limit))]}
 
 
 @router.get("/v1/arena/sessions")

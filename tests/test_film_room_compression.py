@@ -41,14 +41,27 @@ process.stdout.write(context.outputHtml);
     return result.stdout
 
 
-def test_compressed_film_room_renders_four_headers_for_demo_replay() -> None:
+def test_compressed_film_room_renders_drive_story_and_four_evidence_headers_for_demo_replay() -> None:
     replay = json.loads(Path("ui/demo_replay.json").read_text(encoding="utf-8"))
     html = _render_film_room(replay)
 
-    for header in ("Turning Point", "Why It Mattered", "Next Try", "Evidence"):
+    for header in ("Drive Story", "Turning Point", "Why It Mattered", "Next Try", "Evidence"):
         assert header in html
+    assert replay["film_room"]["narrative"] in html
     assert "<li title=" in html
     assert "Recommendation derived from sequencing" not in html
+    assert "View full notes" in html
+
+
+def test_compressed_film_room_omits_drive_story_when_narrative_absent() -> None:
+    replay = json.loads(Path("ui/demo_replay.json").read_text(encoding="utf-8"))
+    no_story = copy.deepcopy(replay)
+    no_story["film_room"]["narrative"] = None
+
+    html = _render_film_room(no_story)
+
+    assert "Drive Story" not in html
+    assert "Turning Point" in html
     assert "View full notes" in html
 
 

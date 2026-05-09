@@ -15,22 +15,45 @@
   },
   "agents": {
     "offense": "Team B Adaptive Offense",
-    "defense": "Team A Static Defense"
+    "defense": "Team B Adaptive Defense"
   },
   "agent_garage_config": {
-    "source": "agent_garage_profiles_v0",
+    "source": "agent_garage_profiles_v1",
     "offense_profile": {
-      "label": "Misdirection Artist",
-      "risk_tolerance": "medium",
-      "adaptation_speed": 0.7,
-      "screen_trigger_confidence": 0.62,
-      "explosive_shot_tolerance": 0.45,
-      "run_pass_tendency": "constraint_heavy",
-      "profile_key": "misdirection_artist"
+      "label": "Aggressive Shot-Taker",
+      "strategic_intent": "Push high-risk pass answers into passive coverage shells before pressure counters arrive.",
+      "parameters": {
+        "risk_tolerance": "high",
+        "adaptation_speed": 0.5,
+        "screen_trigger_confidence": 0.9,
+        "explosive_shot_tolerance": 0.75,
+        "run_pass_tendency": "balanced_pass"
+      },
+      "expected_behavior": [
+        "aggressive offense risk >= 80% of calls",
+        "quick_game plus play_action_flood >= 20 calls across seed pack",
+        "touchdowns on every baseline seed"
+      ],
+      "known_counter": "defense_archetypes.pressure_look_defender",
+      "notes": "Name retained from the plan; the live graph exposes shot tolerance, but the winning aggregate signature is aggressive quick and play-action passing rather than frequent vertical_shot calls.",
+      "profile_key": "aggressive_shot_taker"
     },
     "defense_profile": {
-      "profile_key": "static_baseline",
-      "label": "Static Baseline"
+      "label": "Coverage Shell Conservative",
+      "strategic_intent": "Stay low-risk, close explosive windows, and force the offense to settle for underneath space.",
+      "parameters": {
+        "risk_tolerance": "low",
+        "disguise_sensitivity": 0.25,
+        "pressure_frequency": 0.1,
+        "counter_repeat_tolerance": 0.9
+      },
+      "expected_behavior": [
+        "conservative defense risk on every call",
+        "redzone_bracket plus bear_front >= 30 calls across seed pack",
+        "underneath_space_taken events >= 15 across seed pack"
+      ],
+      "known_counter": "offense_archetypes.aggressive_shot_taker",
+      "profile_key": "coverage_shell_conservative"
     }
   },
   "legal_sets": {
@@ -74,2533 +97,49 @@
         },
         "defense_action": {
           "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "base_cover3",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:base_cover3"
-        },
-        "yards_gained": 0,
-        "expected_value_delta": 0.17,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 2,
-          "distance": 10,
-          "yardline": 22,
-          "play_index": 1,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 1,
-            "volatility": 1
-          },
-          "offense_remaining": {
-            "protection": 13,
-            "spacing": 17,
-            "deception": 13,
-            "volatility": 13
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 2,
-            "disguise": 0
-          },
-          "defense_remaining": {
-            "rush": 15,
-            "coverage": 18,
-            "box": 14,
-            "disguise": 14
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      },
-      "offense_observed": {
-        "play_index": 1,
-        "yards_gained": 0,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 2,
-          "distance": 10,
-          "yardline": 22,
-          "play_index": 1,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 1,
-        "yards_gained": 0,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 2,
-          "distance": 10,
-          "yardline": 22,
-          "play_index": 1,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 1,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "none",
-          "concept_family": "outside_zone",
-          "protection_family": "standard",
-          "risk_level": "conservative",
-          "constraint_tag": "legal:outside_zone"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "base_cover3",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:base_cover3"
-        },
-        "events": [],
-        "yards_gained": 0,
-        "expected_value_delta": 0.17,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "next_state": {
-          "down": 2,
-          "distance": 10,
-          "yardline": 22,
-          "play_index": 1,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 1,
-            "volatility": 1
-          },
-          "offense_remaining": {
-            "protection": 13,
-            "spacing": 17,
-            "deception": 13,
-            "volatility": 13
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 2,
-            "disguise": 0
-          },
-          "defense_remaining": {
-            "rush": 15,
-            "coverage": 18,
-            "box": 14,
-            "disguise": 14
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      }
-    },
-    {
-      "public": {
-        "play_index": 2,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
-        },
-        "yards_gained": 1,
-        "expected_value_delta": 0.42,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 3,
-          "distance": 9,
-          "yardline": 21,
-          "play_index": 2,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 13,
-            "spacing": 17,
-            "deception": 13,
-            "volatility": 13
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 12,
-            "spacing": 15,
-            "deception": 11,
-            "volatility": 11
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 15,
-            "coverage": 18,
-            "box": 14,
-            "disguise": 14
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 14,
-            "coverage": 15,
-            "box": 13,
-            "disguise": 13
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      },
-      "offense_observed": {
-        "play_index": 2,
-        "yards_gained": 1,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 3,
-          "distance": 9,
-          "yardline": 21,
-          "play_index": 2,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 2,
-        "yards_gained": 1,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 3,
-          "distance": 9,
-          "yardline": 21,
-          "play_index": 2,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 2,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
-        },
-        "events": [],
-        "yards_gained": 1,
-        "expected_value_delta": 0.42,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "next_state": {
-          "down": 3,
-          "distance": 9,
-          "yardline": 21,
-          "play_index": 2,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 13,
-            "spacing": 17,
-            "deception": 13,
-            "volatility": 13
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 12,
-            "spacing": 15,
-            "deception": 11,
-            "volatility": 11
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 15,
-            "coverage": 18,
-            "box": 14,
-            "disguise": 14
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 14,
-            "coverage": 15,
-            "box": 13,
-            "disguise": 13
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      }
-    },
-    {
-      "public": {
-        "play_index": 3,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "bunch",
-          "motion_family": "none",
-          "concept_family": "bunch_mesh",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:bunch_mesh"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "two_high_shell",
+          "front_family": "bear",
+          "coverage_family": "bear_front",
           "pressure_family": "four_man",
           "disguise_family": "none",
           "matchup_focus": "red_zone_space",
           "risk_level": "conservative",
-          "constraint_tag": "legal:two_high_shell"
-        },
-        "yards_gained": 8,
-        "expected_value_delta": 0.5,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 13,
-          "play_index": 3,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 12,
-            "spacing": 15,
-            "deception": 11,
-            "volatility": 11
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 3,
-            "deception": 1,
-            "volatility": 1
-          },
-          "offense_remaining": {
-            "protection": 11,
-            "spacing": 12,
-            "deception": 10,
-            "volatility": 10
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 14,
-            "coverage": 15,
-            "box": 13,
-            "disguise": 13
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 0,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 13,
-            "coverage": 12,
-            "box": 13,
-            "disguise": 12
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      },
-      "offense_observed": {
-        "play_index": 3,
-        "yards_gained": 8,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 13,
-          "play_index": 3,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 3,
-        "yards_gained": 8,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 13,
-          "play_index": 3,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 3,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "bunch",
-          "motion_family": "none",
-          "concept_family": "bunch_mesh",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:bunch_mesh"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "two_high_shell",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "conservative",
-          "constraint_tag": "legal:two_high_shell"
-        },
-        "events": [],
-        "yards_gained": 8,
-        "expected_value_delta": 0.5,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 13,
-          "play_index": 3,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 12,
-            "spacing": 15,
-            "deception": 11,
-            "volatility": 11
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 3,
-            "deception": 1,
-            "volatility": 1
-          },
-          "offense_remaining": {
-            "protection": 11,
-            "spacing": 12,
-            "deception": 10,
-            "volatility": 10
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 14,
-            "coverage": 15,
-            "box": 13,
-            "disguise": 13
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 0,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 13,
-            "coverage": 12,
-            "box": 13,
-            "disguise": 12
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      }
-    },
-    {
-      "public": {
-        "play_index": 4,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
-        },
-        "yards_gained": 5,
-        "expected_value_delta": 0.42,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 1,
-          "distance": 8,
-          "yardline": 8,
-          "play_index": 4,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 11,
-            "spacing": 12,
-            "deception": 10,
-            "volatility": 10
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 10,
-            "spacing": 10,
-            "deception": 8,
-            "volatility": 8
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 13,
-            "coverage": 12,
-            "box": 13,
-            "disguise": 12
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 12,
-            "coverage": 9,
-            "box": 12,
-            "disguise": 11
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      },
-      "offense_observed": {
-        "play_index": 4,
-        "yards_gained": 5,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 1,
-          "distance": 8,
-          "yardline": 8,
-          "play_index": 4,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 4,
-        "yards_gained": 5,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 1,
-          "distance": 8,
-          "yardline": 8,
-          "play_index": 4,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 4,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
-        },
-        "events": [],
-        "yards_gained": 5,
-        "expected_value_delta": 0.42,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "next_state": {
-          "down": 1,
-          "distance": 8,
-          "yardline": 8,
-          "play_index": 4,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 11,
-            "spacing": 12,
-            "deception": 10,
-            "volatility": 10
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 10,
-            "spacing": 10,
-            "deception": 8,
-            "volatility": 8
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 13,
-            "coverage": 12,
-            "box": 13,
-            "disguise": 12
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 12,
-            "coverage": 9,
-            "box": 12,
-            "disguise": 11
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      }
-    },
-    {
-      "public": {
-        "play_index": 5,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "none",
-          "concept_family": "outside_zone",
-          "protection_family": "standard",
-          "risk_level": "conservative",
-          "constraint_tag": "legal:outside_zone"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "base_cover3",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:base_cover3"
-        },
-        "yards_gained": 3,
-        "expected_value_delta": 0.17,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 2,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 5,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 10,
-            "spacing": 10,
-            "deception": 8,
-            "volatility": 8
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 1,
-            "volatility": 1
-          },
-          "offense_remaining": {
-            "protection": 9,
-            "spacing": 9,
-            "deception": 7,
-            "volatility": 7
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 12,
-            "coverage": 9,
-            "box": 12,
-            "disguise": 11
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 2,
-            "disguise": 0
-          },
-          "defense_remaining": {
-            "rush": 11,
-            "coverage": 7,
-            "box": 10,
-            "disguise": 11
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      },
-      "offense_observed": {
-        "play_index": 5,
-        "yards_gained": 3,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 2,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 5,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 5,
-        "yards_gained": 3,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 2,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 5,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 5,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "none",
-          "concept_family": "outside_zone",
-          "protection_family": "standard",
-          "risk_level": "conservative",
-          "constraint_tag": "legal:outside_zone"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "base_cover3",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:base_cover3"
-        },
-        "events": [],
-        "yards_gained": 3,
-        "expected_value_delta": 0.17,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "next_state": {
-          "down": 2,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 5,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 10,
-            "spacing": 10,
-            "deception": 8,
-            "volatility": 8
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 1,
-            "deception": 1,
-            "volatility": 1
-          },
-          "offense_remaining": {
-            "protection": 9,
-            "spacing": 9,
-            "deception": 7,
-            "volatility": 7
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 12,
-            "coverage": 9,
-            "box": 12,
-            "disguise": 11
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 2,
-            "box": 2,
-            "disguise": 0
-          },
-          "defense_remaining": {
-            "rush": 11,
-            "coverage": 7,
-            "box": 10,
-            "disguise": 11
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      }
-    },
-    {
-      "public": {
-        "play_index": 6,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
+          "constraint_tag": "legal:bear_front"
         },
         "yards_gained": 0,
-        "expected_value_delta": 0.42,
+        "expected_value_delta": -0.15,
         "success": false,
         "terminal": false,
         "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 3,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 6,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 9,
-            "spacing": 9,
-            "deception": 7,
-            "volatility": 7
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 8,
-            "spacing": 7,
-            "deception": 5,
-            "volatility": 5
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 11,
-            "coverage": 7,
-            "box": 10,
-            "disguise": 11
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 10,
-            "coverage": 4,
-            "box": 9,
-            "disguise": 10
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      },
-      "offense_observed": {
-        "play_index": 6,
-        "yards_gained": 0,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 3,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 6,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 6,
-        "yards_gained": 0,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 3,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 6,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 6,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
-        },
-        "events": [],
-        "yards_gained": 0,
-        "expected_value_delta": 0.42,
-        "success": false,
-        "terminal": false,
-        "terminal_reason": null,
-        "next_state": {
-          "down": 3,
-          "distance": 5,
-          "yardline": 5,
-          "play_index": 6,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 9,
-            "spacing": 9,
-            "deception": 7,
-            "volatility": 7
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 8,
-            "spacing": 7,
-            "deception": 5,
-            "volatility": 5
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 11,
-            "coverage": 7,
-            "box": 10,
-            "disguise": 11
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 10,
-            "coverage": 4,
-            "box": 9,
-            "disguise": 10
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      }
-    },
-    {
-      "public": {
-        "play_index": 7,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
-        },
-        "yards_gained": 4,
-        "expected_value_delta": 0.42,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 1,
-          "play_index": 7,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 8,
-            "spacing": 7,
-            "deception": 5,
-            "volatility": 5
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 7,
-            "spacing": 5,
-            "deception": 3,
-            "volatility": 3
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 10,
-            "coverage": 4,
-            "box": 9,
-            "disguise": 10
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 9,
-            "coverage": 1,
-            "box": 8,
-            "disguise": 9
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      },
-      "offense_observed": {
-        "play_index": 7,
-        "yards_gained": 4,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 1,
-          "play_index": 7,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 7,
-        "yards_gained": 4,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 1,
-          "play_index": 7,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 7,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "cover3_match",
-          "pressure_family": "four_man",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:cover3_match"
-        },
-        "events": [],
-        "yards_gained": 4,
-        "expected_value_delta": 0.42,
-        "success": true,
-        "terminal": false,
-        "terminal_reason": null,
-        "next_state": {
-          "down": 4,
-          "distance": 1,
-          "yardline": 1,
-          "play_index": 7,
-          "max_plays": 8,
-          "points": 0,
-          "terminal": false,
-          "terminal_reason": null
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "17ce87638ea1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "base_cover3",
-            "cover3_match",
-            "quarters_match",
-            "cover1_man",
-            "two_high_shell",
-            "zero_pressure",
-            "simulated_pressure",
-            "bear_front",
-            "trap_coverage",
-            "redzone_bracket"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 8,
-            "spacing": 7,
-            "deception": 5,
-            "volatility": 5
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 7,
-            "spacing": 5,
-            "deception": 3,
-            "volatility": 3
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 10,
-            "coverage": 4,
-            "box": 9,
-            "disguise": 10
-          },
-          "defense_cost": {
-            "rush": 1,
-            "coverage": 3,
-            "box": 1,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 9,
-            "coverage": 1,
-            "box": 8,
-            "disguise": 9
-          }
-        },
-        "validation_result": {
-          "ok": true,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          }
-        }
-      }
-    },
-    {
-      "public": {
-        "play_index": 8,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "zero_pressure",
-          "pressure_family": "pressure",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "conservative",
-          "constraint_tag": "legal:zero_pressure"
-        },
-        "yards_gained": 5,
-        "expected_value_delta": 0.42,
-        "success": true,
-        "terminal": true,
-        "terminal_reason": "touchdown",
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 1,
-          "distance": 1,
-          "yardline": 0,
-          "play_index": 8,
-          "max_plays": 8,
-          "points": 7,
-          "terminal": true,
-          "terminal_reason": "touchdown"
-        },
-        "legal_action_set_id": "c88bde8904a1",
-        "legal_action_sets": {
-          "offense": [
-            "inside_zone",
-            "outside_zone",
-            "power_counter",
-            "quick_game",
-            "bunch_mesh",
-            "rpo_glance",
-            "play_action_flood",
-            "vertical_shot",
-            "screen",
-            "bootleg"
-          ],
-          "defense": [
-            "zero_pressure",
-            "bear_front"
-          ]
-        },
-        "resource_budget_snapshot": {
-          "offense_drive_budget": {
-            "protection": 14,
-            "spacing": 18,
-            "deception": 14,
-            "volatility": 14
-          },
-          "offense_before": {
-            "protection": 7,
-            "spacing": 5,
-            "deception": 3,
-            "volatility": 3
-          },
-          "offense_cost": {
-            "protection": 1,
-            "spacing": 2,
-            "deception": 2,
-            "volatility": 2
-          },
-          "offense_remaining": {
-            "protection": 6,
-            "spacing": 3,
-            "deception": 1,
-            "volatility": 1
-          },
-          "defense_drive_budget": {
-            "rush": 16,
-            "coverage": 20,
-            "box": 16,
-            "disguise": 14
-          },
-          "defense_before": {
-            "rush": 9,
-            "coverage": 1,
-            "box": 8,
-            "disguise": 9
-          },
-          "defense_cost": {
-            "rush": 3,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
-          },
-          "defense_remaining": {
-            "rush": 6,
-            "coverage": 1,
-            "box": 6,
-            "disguise": 8
-          }
-        },
-        "validation_result": {
-          "ok": false,
-          "offense": {
-            "ok": true,
-            "reasons": [],
-            "fallback_used": false,
-            "fallback_action_source": null
-          },
-          "defense": {
-            "ok": false,
-            "reasons": [
-              "Illegal or resource-impossible defense call: cover3_match"
+        "events": [
+          {
+            "tag": "wide_zone_constrained",
+            "visible_to": [
+              "offense",
+              "defense"
             ],
-            "fallback_used": true,
-            "fallback_action_source": "validator_safe_fallback"
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "description": "Bear front constrains outside zone",
+            "counters": [
+              "quick_game",
+              "play_action_flood",
+              "bootleg"
+            ]
           }
-        }
-      },
-      "offense_observed": {
-        "play_index": 8,
-        "yards_gained": 5,
-        "success": true,
-        "terminal": true,
-        "terminal_reason": "touchdown",
-        "events": [],
-        "graph_card_ids": [],
+        ],
+        "graph_card_ids": [
+          "redzone.outside_zone_vs_bear.v1"
+        ],
         "next_state": {
-          "down": 1,
-          "distance": 1,
-          "yardline": 0,
-          "play_index": 8,
+          "down": 2,
+          "distance": 10,
+          "yardline": 22,
+          "play_index": 1,
           "max_plays": 8,
-          "points": 7,
-          "terminal": true,
-          "terminal_reason": "touchdown"
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
         },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "defense_observed": {
-        "play_index": 8,
-        "yards_gained": 5,
-        "success": true,
-        "terminal": true,
-        "terminal_reason": "touchdown",
-        "events": [],
-        "graph_card_ids": [],
-        "next_state": {
-          "down": 1,
-          "distance": 1,
-          "yardline": 0,
-          "play_index": 8,
-          "max_plays": 8,
-          "points": 7,
-          "terminal": true,
-          "terminal_reason": "touchdown"
-        },
-        "belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        }
-      },
-      "engine_internal": {
-        "play_index": 8,
-        "offense_action": {
-          "personnel_family": "fictional_11",
-          "formation_family": "compact",
-          "motion_family": "orbit",
-          "concept_family": "rpo_glance",
-          "protection_family": "standard",
-          "risk_level": "balanced",
-          "constraint_tag": "legal:rpo_glance"
-        },
-        "defense_action": {
-          "personnel_family": "fictional_nickel",
-          "front_family": "even",
-          "coverage_family": "zero_pressure",
-          "pressure_family": "pressure",
-          "disguise_family": "none",
-          "matchup_focus": "red_zone_space",
-          "risk_level": "conservative",
-          "constraint_tag": "legal:zero_pressure"
-        },
-        "events": [],
-        "yards_gained": 5,
-        "expected_value_delta": 0.42,
-        "success": true,
-        "terminal": true,
-        "terminal_reason": "touchdown",
-        "next_state": {
-          "down": 1,
-          "distance": 1,
-          "yardline": 0,
-          "play_index": 8,
-          "max_plays": 8,
-          "points": 7,
-          "terminal": true,
-          "terminal_reason": "touchdown"
-        },
-        "graph_card_ids": [],
-        "offense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "defense_belief_after": {
-          "true_pressure_confidence": 0.3,
-          "simulated_pressure_risk": 0.3,
-          "match_coverage_stress": 0.25,
-          "run_fit_aggression": 0.25,
-          "screen_trap_risk": 0.25
-        },
-        "legal_action_set_id": "c88bde8904a1",
+        "legal_action_set_id": "17ce87638ea1",
         "legal_action_sets": {
           "offense": [
             "inside_zone",
@@ -2615,8 +154,16 @@
             "bootleg"
           ],
           "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
             "zero_pressure",
-            "bear_front"
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
           ]
         },
         "resource_budget_snapshot": {
@@ -2627,22 +174,1687 @@
             "volatility": 14
           },
           "offense_before": {
-            "protection": 7,
-            "spacing": 5,
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_cost": {
+            "protection": 1,
+            "spacing": 1,
+            "deception": 1,
+            "volatility": 1
+          },
+          "offense_remaining": {
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 2,
+            "coverage": 1,
+            "box": 3,
+            "disguise": 0
+          },
+          "defense_remaining": {
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      },
+      "offense_observed": {
+        "play_index": 1,
+        "yards_gained": 0,
+        "success": false,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "wide_zone_constrained",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "description": "Bear front constrains outside zone",
+            "counters": [
+              "quick_game",
+              "play_action_flood",
+              "bootleg"
+            ]
+          },
+          {
+            "tag": "front_strength_declared",
+            "visible_to": [
+              "offense"
+            ],
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "description": "Bear front constrains outside zone",
+            "counters": [
+              "quick_game",
+              "play_action_flood",
+              "bootleg"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.outside_zone_vs_bear.v1"
+        ],
+        "next_state": {
+          "down": 2,
+          "distance": 10,
+          "yardline": 22,
+          "play_index": 1,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "defense_observed": {
+        "play_index": 1,
+        "yards_gained": 0,
+        "success": false,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "wide_zone_constrained",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "description": "Bear front constrains outside zone",
+            "counters": [
+              "quick_game",
+              "play_action_flood",
+              "bootleg"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.outside_zone_vs_bear.v1"
+        ],
+        "next_state": {
+          "down": 2,
+          "distance": 10,
+          "yardline": 22,
+          "play_index": 1,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.35,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "engine_internal": {
+        "play_index": 1,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "outside_zone",
+          "protection_family": "standard",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:outside_zone"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "bear",
+          "coverage_family": "bear_front",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:bear_front"
+        },
+        "events": [
+          {
+            "tag": "wide_zone_constrained",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "description": "Bear front constrains outside zone",
+            "counters": [
+              "quick_game",
+              "play_action_flood",
+              "bootleg"
+            ]
+          },
+          {
+            "tag": "front_strength_declared",
+            "visible_to": [
+              "offense"
+            ],
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "description": "Bear front constrains outside zone",
+            "counters": [
+              "quick_game",
+              "play_action_flood",
+              "bootleg"
+            ]
+          }
+        ],
+        "yards_gained": 0,
+        "expected_value_delta": -0.15,
+        "success": false,
+        "terminal": false,
+        "terminal_reason": null,
+        "next_state": {
+          "down": 2,
+          "distance": 10,
+          "yardline": 22,
+          "play_index": 1,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "graph_card_ids": [
+          "redzone.outside_zone_vs_bear.v1"
+        ],
+        "offense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        },
+        "defense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.35,
+          "screen_trap_risk": 0.25
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_cost": {
+            "protection": 1,
+            "spacing": 1,
+            "deception": 1,
+            "volatility": 1
+          },
+          "offense_remaining": {
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 2,
+            "coverage": 1,
+            "box": 3,
+            "disguise": 0
+          },
+          "defense_remaining": {
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      }
+    },
+    {
+      "public": {
+        "play_index": 2,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "play_action_flood",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:play_action_flood"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "bear",
+          "coverage_family": "bear_front",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:bear_front"
+        },
+        "yards_gained": 2,
+        "expected_value_delta": 0.84,
+        "success": false,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "next_state": {
+          "down": 3,
+          "distance": 8,
+          "yardline": 20,
+          "play_index": 2,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
+          },
+          "offense_cost": {
+            "protection": 2,
+            "spacing": 2,
             "deception": 3,
-            "volatility": 3
+            "volatility": 2
+          },
+          "offense_remaining": {
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 2,
+            "coverage": 1,
+            "box": 3,
+            "disguise": 0
+          },
+          "defense_remaining": {
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      },
+      "offense_observed": {
+        "play_index": 2,
+        "yards_gained": 2,
+        "success": false,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          },
+          {
+            "tag": "second_level_conflict",
+            "visible_to": [
+              "offense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "next_state": {
+          "down": 3,
+          "distance": 8,
+          "yardline": 20,
+          "play_index": 2,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "defense_observed": {
+        "play_index": 2,
+        "yards_gained": 2,
+        "success": false,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "next_state": {
+          "down": 3,
+          "distance": 8,
+          "yardline": 20,
+          "play_index": 2,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.43,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "engine_internal": {
+        "play_index": 2,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "play_action_flood",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:play_action_flood"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "bear",
+          "coverage_family": "bear_front",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:bear_front"
+        },
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          },
+          {
+            "tag": "second_level_conflict",
+            "visible_to": [
+              "offense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "yards_gained": 2,
+        "expected_value_delta": 0.84,
+        "success": false,
+        "terminal": false,
+        "terminal_reason": null,
+        "next_state": {
+          "down": 3,
+          "distance": 8,
+          "yardline": 20,
+          "play_index": 2,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "offense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        },
+        "defense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.43,
+          "screen_trap_risk": 0.25
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 13,
+            "spacing": 17,
+            "deception": 13,
+            "volatility": 13
+          },
+          "offense_cost": {
+            "protection": 2,
+            "spacing": 2,
+            "deception": 3,
+            "volatility": 2
+          },
+          "offense_remaining": {
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 14,
+            "coverage": 19,
+            "box": 13,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 2,
+            "coverage": 1,
+            "box": 3,
+            "disguise": 0
+          },
+          "defense_remaining": {
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      }
+    },
+    {
+      "public": {
+        "play_index": 3,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "play_action_flood",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:play_action_flood"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "bear",
+          "coverage_family": "bear_front",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:bear_front"
+        },
+        "yards_gained": 9,
+        "expected_value_delta": 0.84,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "next_state": {
+          "down": 1,
+          "distance": 10,
+          "yardline": 11,
+          "play_index": 3,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
+          },
+          "offense_cost": {
+            "protection": 2,
+            "spacing": 2,
+            "deception": 3,
+            "volatility": 2
+          },
+          "offense_remaining": {
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 2,
+            "coverage": 1,
+            "box": 3,
+            "disguise": 0
+          },
+          "defense_remaining": {
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      },
+      "offense_observed": {
+        "play_index": 3,
+        "yards_gained": 9,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          },
+          {
+            "tag": "second_level_conflict",
+            "visible_to": [
+              "offense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "next_state": {
+          "down": 1,
+          "distance": 10,
+          "yardline": 11,
+          "play_index": 3,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "defense_observed": {
+        "play_index": 3,
+        "yards_gained": 9,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "next_state": {
+          "down": 1,
+          "distance": 10,
+          "yardline": 11,
+          "play_index": 3,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.51,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "engine_internal": {
+        "play_index": 3,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "play_action_flood",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:play_action_flood"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "bear",
+          "coverage_family": "bear_front",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:bear_front"
+        },
+        "events": [
+          {
+            "tag": "run_tendency_exploited",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          },
+          {
+            "tag": "second_level_conflict",
+            "visible_to": [
+              "offense"
+            ],
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "description": "Play-action gains value after credible run tendency",
+            "counters": [
+              "edge_contain",
+              "two_high_shell",
+              "redzone_bracket"
+            ]
+          }
+        ],
+        "yards_gained": 9,
+        "expected_value_delta": 0.84,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "next_state": {
+          "down": 1,
+          "distance": 10,
+          "yardline": 11,
+          "play_index": 3,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "graph_card_ids": [
+          "redzone.play_action_after_run_tendency.v1"
+        ],
+        "offense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        },
+        "defense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.51,
+          "screen_trap_risk": 0.25
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 11,
+            "spacing": 15,
+            "deception": 10,
+            "volatility": 11
+          },
+          "offense_cost": {
+            "protection": 2,
+            "spacing": 2,
+            "deception": 3,
+            "volatility": 2
+          },
+          "offense_remaining": {
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 12,
+            "coverage": 18,
+            "box": 10,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 2,
+            "coverage": 1,
+            "box": 3,
+            "disguise": 0
+          },
+          "defense_remaining": {
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      }
+    },
+    {
+      "public": {
+        "play_index": 4,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "quick_game",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:quick_game"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "even",
+          "coverage_family": "redzone_bracket",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:redzone_bracket"
+        },
+        "yards_gained": 6,
+        "expected_value_delta": 0.71,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "next_state": {
+          "down": 2,
+          "distance": 4,
+          "yardline": 5,
+          "play_index": 4,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
           },
           "offense_cost": {
             "protection": 1,
             "spacing": 2,
-            "deception": 2,
-            "volatility": 2
+            "deception": 0,
+            "volatility": 1
           },
           "offense_remaining": {
-            "protection": 6,
-            "spacing": 3,
-            "deception": 1,
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 1,
+            "coverage": 3,
+            "box": 1,
+            "disguise": 2
+          },
+          "defense_remaining": {
+            "rush": 9,
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      },
+      "offense_observed": {
+        "play_index": 4,
+        "yards_gained": 6,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "next_state": {
+          "down": 2,
+          "distance": 4,
+          "yardline": 5,
+          "play_index": 4,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "defense_observed": {
+        "play_index": 4,
+        "yards_gained": 6,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "next_state": {
+          "down": 2,
+          "distance": 4,
+          "yardline": 5,
+          "play_index": 4,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.33,
+          "run_fit_aggression": 0.51,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "engine_internal": {
+        "play_index": 4,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "quick_game",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:quick_game"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "even",
+          "coverage_family": "redzone_bracket",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:redzone_bracket"
+        },
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "yards_gained": 6,
+        "expected_value_delta": 0.71,
+        "success": true,
+        "terminal": false,
+        "terminal_reason": null,
+        "next_state": {
+          "down": 2,
+          "distance": 4,
+          "yardline": 5,
+          "play_index": 4,
+          "max_plays": 8,
+          "points": 0,
+          "terminal": false,
+          "terminal_reason": null
+        },
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "offense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        },
+        "defense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.33,
+          "run_fit_aggression": 0.51,
+          "screen_trap_risk": 0.25
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 9,
+            "spacing": 13,
+            "deception": 7,
+            "volatility": 9
+          },
+          "offense_cost": {
+            "protection": 1,
+            "spacing": 2,
+            "deception": 0,
             "volatility": 1
+          },
+          "offense_remaining": {
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 10,
+            "coverage": 17,
+            "box": 7,
+            "disguise": 14
+          },
+          "defense_cost": {
+            "rush": 1,
+            "coverage": 3,
+            "box": 1,
+            "disguise": 2
+          },
+          "defense_remaining": {
+            "rush": 9,
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      }
+    },
+    {
+      "public": {
+        "play_index": 5,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "quick_game",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:quick_game"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "even",
+          "coverage_family": "redzone_bracket",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:redzone_bracket"
+        },
+        "yards_gained": 5,
+        "expected_value_delta": 0.71,
+        "success": true,
+        "terminal": true,
+        "terminal_reason": "touchdown",
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "next_state": {
+          "down": 1,
+          "distance": 1,
+          "yardline": 0,
+          "play_index": 5,
+          "max_plays": 8,
+          "points": 7,
+          "terminal": true,
+          "terminal_reason": "touchdown"
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
+          },
+          "offense_cost": {
+            "protection": 1,
+            "spacing": 2,
+            "deception": 0,
+            "volatility": 1
+          },
+          "offense_remaining": {
+            "protection": 7,
+            "spacing": 9,
+            "deception": 7,
+            "volatility": 7
           },
           "defense_drive_budget": {
             "rush": 16,
@@ -2652,25 +1864,25 @@
           },
           "defense_before": {
             "rush": 9,
-            "coverage": 1,
-            "box": 8,
-            "disguise": 9
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
           },
           "defense_cost": {
-            "rush": 3,
-            "coverage": 0,
-            "box": 2,
-            "disguise": 1
+            "rush": 1,
+            "coverage": 3,
+            "box": 1,
+            "disguise": 2
           },
           "defense_remaining": {
-            "rush": 6,
-            "coverage": 1,
-            "box": 6,
-            "disguise": 8
+            "rush": 8,
+            "coverage": 11,
+            "box": 5,
+            "disguise": 10
           }
         },
         "validation_result": {
-          "ok": false,
+          "ok": true,
           "offense": {
             "ok": true,
             "reasons": [],
@@ -2678,12 +1890,255 @@
             "fallback_action_source": null
           },
           "defense": {
-            "ok": false,
-            "reasons": [
-              "Illegal or resource-impossible defense call: cover3_match"
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          }
+        }
+      },
+      "offense_observed": {
+        "play_index": 5,
+        "yards_gained": 5,
+        "success": true,
+        "terminal": true,
+        "terminal_reason": "touchdown",
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
             ],
-            "fallback_used": true,
-            "fallback_action_source": "validator_safe_fallback"
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "next_state": {
+          "down": 1,
+          "distance": 1,
+          "yardline": 0,
+          "play_index": 5,
+          "max_plays": 8,
+          "points": 7,
+          "terminal": true,
+          "terminal_reason": "touchdown"
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "defense_observed": {
+        "play_index": 5,
+        "yards_gained": 5,
+        "success": true,
+        "terminal": true,
+        "terminal_reason": "touchdown",
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "next_state": {
+          "down": 1,
+          "distance": 1,
+          "yardline": 0,
+          "play_index": 5,
+          "max_plays": 8,
+          "points": 7,
+          "terminal": true,
+          "terminal_reason": "touchdown"
+        },
+        "belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.41,
+          "run_fit_aggression": 0.51,
+          "screen_trap_risk": 0.25
+        }
+      },
+      "engine_internal": {
+        "play_index": 5,
+        "offense_action": {
+          "personnel_family": "fictional_11",
+          "formation_family": "compact",
+          "motion_family": "none",
+          "concept_family": "quick_game",
+          "protection_family": "standard",
+          "risk_level": "aggressive",
+          "constraint_tag": "legal:quick_game"
+        },
+        "defense_action": {
+          "personnel_family": "fictional_nickel",
+          "front_family": "even",
+          "coverage_family": "redzone_bracket",
+          "pressure_family": "four_man",
+          "disguise_family": "none",
+          "matchup_focus": "red_zone_space",
+          "risk_level": "conservative",
+          "constraint_tag": "legal:redzone_bracket"
+        },
+        "events": [
+          {
+            "tag": "underneath_space_taken",
+            "visible_to": [
+              "offense",
+              "defense"
+            ],
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "description": "Quick game can take conceded underneath space",
+            "counters": [
+              "trap_coverage",
+              "cover1_man"
+            ]
+          }
+        ],
+        "yards_gained": 5,
+        "expected_value_delta": 0.71,
+        "success": true,
+        "terminal": true,
+        "terminal_reason": "touchdown",
+        "next_state": {
+          "down": 1,
+          "distance": 1,
+          "yardline": 0,
+          "play_index": 5,
+          "max_plays": 8,
+          "points": 7,
+          "terminal": true,
+          "terminal_reason": "touchdown"
+        },
+        "graph_card_ids": [
+          "redzone.quick_game_vs_two_high.v1"
+        ],
+        "offense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.25,
+          "run_fit_aggression": 0.61,
+          "screen_trap_risk": 0.25
+        },
+        "defense_belief_after": {
+          "true_pressure_confidence": 0.3,
+          "simulated_pressure_risk": 0.3,
+          "match_coverage_stress": 0.41,
+          "run_fit_aggression": 0.51,
+          "screen_trap_risk": 0.25
+        },
+        "legal_action_set_id": "17ce87638ea1",
+        "legal_action_sets": {
+          "offense": [
+            "inside_zone",
+            "outside_zone",
+            "power_counter",
+            "quick_game",
+            "bunch_mesh",
+            "rpo_glance",
+            "play_action_flood",
+            "vertical_shot",
+            "screen",
+            "bootleg"
+          ],
+          "defense": [
+            "base_cover3",
+            "cover3_match",
+            "quarters_match",
+            "cover1_man",
+            "two_high_shell",
+            "zero_pressure",
+            "simulated_pressure",
+            "bear_front",
+            "trap_coverage",
+            "redzone_bracket"
+          ]
+        },
+        "resource_budget_snapshot": {
+          "offense_drive_budget": {
+            "protection": 14,
+            "spacing": 18,
+            "deception": 14,
+            "volatility": 14
+          },
+          "offense_before": {
+            "protection": 8,
+            "spacing": 11,
+            "deception": 7,
+            "volatility": 8
+          },
+          "offense_cost": {
+            "protection": 1,
+            "spacing": 2,
+            "deception": 0,
+            "volatility": 1
+          },
+          "offense_remaining": {
+            "protection": 7,
+            "spacing": 9,
+            "deception": 7,
+            "volatility": 7
+          },
+          "defense_drive_budget": {
+            "rush": 16,
+            "coverage": 20,
+            "box": 16,
+            "disguise": 14
+          },
+          "defense_before": {
+            "rush": 9,
+            "coverage": 14,
+            "box": 6,
+            "disguise": 12
+          },
+          "defense_cost": {
+            "rush": 1,
+            "coverage": 3,
+            "box": 1,
+            "disguise": 2
+          },
+          "defense_remaining": {
+            "rush": 8,
+            "coverage": 11,
+            "box": 5,
+            "disguise": 10
+          }
+        },
+        "validation_result": {
+          "ok": true,
+          "offense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
+          },
+          "defense": {
+            "ok": true,
+            "reasons": [],
+            "fallback_used": false,
+            "fallback_action_source": null
           }
         }
       }
@@ -2692,25 +2147,419 @@
   "score": {
     "points": 7,
     "result": "touchdown",
-    "invalid_action_count": 1
+    "invalid_action_count": 0
   },
   "film_room": {
     "headline": "Touchdown drive",
+    "narrative": "You attacked Play-action gains value after credible run tendency with Play-Action Flood against Bear Front. The offense adjusted to Play-Action Flood, then scored 7 points.",
     "turning_point": {
-      "play_index": 3,
-      "expected_value_delta": 0.5,
-      "graph_card_ids": [],
+      "play_index": 2,
+      "expected_value_delta": 0.84,
+      "graph_card_ids": [
+        "redzone.play_action_after_run_tendency.v1"
+      ],
       "metric": "largest_abs_expected_value_delta"
     },
     "notes": [
-      "No high-leverage graph event dominated the drive; compare call sequencing and risk level across seeds."
+      "Bear front constrains outside zone (Wide Zone Constrained) - see Bear front constrains outside zone. Limitation: No full blocking surface model.",
+      "Bear front constrains outside zone (Front Strength Declared) - see Bear front constrains outside zone. Limitation: No full blocking surface model.",
+      "Play-action gains value after credible run tendency (Run Tendency Exploited) - see Play-action gains value after credible run tendency. Limitation: Run tendency is counted by concept family in P0.",
+      "Play-action gains value after credible run tendency (Second Level Conflict) - see Play-action gains value after credible run tendency. Limitation: Run tendency is counted by concept family in P0.",
+      "Quick game can take conceded underneath space (Underneath Space Taken) - see Quick game can take conceded underneath space. Limitation: Yards after catch modeled coarsely."
     ],
     "suggested_tweaks": [
-      "Review call sequencing, resource use, and risk level against nearby fixed seeds."
+      "Try Bootleg, Play-Action Flood, Quick Game against Bear front constrains outside zone.",
+      "Try Red-Zone Bracket, Two-High Shell against Play-action gains value after credible run tendency.",
+      "Try Cover 1 Man, Trap Coverage against Quick game can take conceded underneath space."
     ],
-    "adaptation_chain": [],
-    "next_adjustment": "Next try: review call sequencing across nearby seeds."
+    "film_room_tweaks": [
+      {
+        "tweak_id": "twk_adaptation_speed_wide_zone_constrained_001",
+        "parameter": "adaptation_speed",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "wide_zone_constrained",
+            "count": 1,
+            "offense_call": "outside_zone",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            1
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.outside_zone_vs_bear.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              1
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "wide_zone_constrained",
+            "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+            "observed_value": {
+              "event_tag": "wide_zone_constrained",
+              "count": 1,
+              "offense_call": "outside_zone",
+              "defense_call": "bear_front"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "adaptation_speed",
+            "direction": "increase"
+          },
+          "rendered": "Play 1 produced wide_zone_constrained once, so increase adaptation_speed."
+        }
+      },
+      {
+        "tweak_id": "twk_counter_repeat_tolerance_run_tendency_exploited_002",
+        "parameter": "counter_repeat_tolerance",
+        "direction": "decrease",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "run_tendency_exploited",
+            "count": 2,
+            "offense_call": "play_action_flood",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            2,
+            3
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.play_action_after_run_tendency.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              2,
+              3
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "run_tendency_exploited",
+            "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+            "observed_value": {
+              "event_tag": "run_tendency_exploited",
+              "count": 2,
+              "offense_call": "play_action_flood",
+              "defense_call": "bear_front"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "counter_repeat_tolerance",
+            "direction": "decrease"
+          },
+          "rendered": "Plays 2 and 3 produced run_tendency_exploited twice, so decrease counter_repeat_tolerance."
+        }
+      },
+      {
+        "tweak_id": "twk_risk_tolerance_underneath_space_taken_004",
+        "parameter": "risk_tolerance",
+        "direction": "increase",
+        "magnitude": "small",
+        "evidence": {
+          "signal": "graph_event_frequency",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 2,
+            "offense_call": "quick_game",
+            "defense_call": "redzone_bracket"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "play_indices": [
+            4,
+            5
+          ]
+        },
+        "source": {
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+        },
+        "rationale": {
+          "template_id": "event_count_crossed_threshold",
+          "arguments": {
+            "play_indices": [
+              4,
+              5
+            ],
+            "signal": "graph_event_frequency",
+            "event_tag": "underneath_space_taken",
+            "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+            "observed_value": {
+              "event_tag": "underneath_space_taken",
+              "count": 2,
+              "offense_call": "quick_game",
+              "defense_call": "redzone_bracket"
+            },
+            "threshold": {
+              "event_count": 1
+            },
+            "parameter": "risk_tolerance",
+            "direction": "increase"
+          },
+          "rendered": "Plays 4 and 5 produced underneath_space_taken twice, so increase risk_tolerance."
+        }
+      }
+    ],
+    "adaptation_chain": [
+      {
+        "play_index": 2,
+        "trigger_event": "Run Tendency Exploited",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 11,
+          "spacing": 15,
+          "deception": 10,
+          "volatility": 11
+        }
+      },
+      {
+        "play_index": 2,
+        "trigger_event": "Second Level Conflict",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 11,
+          "spacing": 15,
+          "deception": 10,
+          "volatility": 11
+        }
+      },
+      {
+        "play_index": 3,
+        "trigger_event": "Run Tendency Exploited",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 9,
+          "spacing": 13,
+          "deception": 7,
+          "volatility": 9
+        }
+      },
+      {
+        "play_index": 3,
+        "trigger_event": "Second Level Conflict",
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+        "card_label": "Play-action gains value after credible run tendency",
+        "offense_call": "Play-Action Flood",
+        "defense_call": "Bear Front",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 9,
+          "spacing": 13,
+          "deception": 7,
+          "volatility": 9
+        }
+      },
+      {
+        "play_index": 4,
+        "trigger_event": "Underneath Space Taken",
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+        "card_label": "Quick game can take conceded underneath space",
+        "offense_call": "Quick Game",
+        "defense_call": "Red-Zone Bracket",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 8,
+          "spacing": 11,
+          "deception": 7,
+          "volatility": 8
+        }
+      },
+      {
+        "play_index": 5,
+        "trigger_event": "Underneath Space Taken",
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+        "card_label": "Quick game can take conceded underneath space",
+        "offense_call": "Quick Game",
+        "defense_call": "Red-Zone Bracket",
+        "belief_shift": {},
+        "resource_remaining": {
+          "protection": 7,
+          "spacing": 9,
+          "deception": 7,
+          "volatility": 7
+        }
+      }
+    ],
+    "next_adjustment": "Next try: Quick Game to counter Bear front constrains outside zone."
   },
+  "film_room_tweaks": [
+    {
+      "tweak_id": "twk_adaptation_speed_wide_zone_constrained_001",
+      "parameter": "adaptation_speed",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "wide_zone_constrained",
+          "count": 1,
+          "offense_call": "outside_zone",
+          "defense_call": "bear_front"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          1
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.outside_zone_vs_bear.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            1
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "wide_zone_constrained",
+          "graph_card_id": "redzone.outside_zone_vs_bear.v1",
+          "observed_value": {
+            "event_tag": "wide_zone_constrained",
+            "count": 1,
+            "offense_call": "outside_zone",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "adaptation_speed",
+          "direction": "increase"
+        },
+        "rendered": "Play 1 produced wide_zone_constrained once, so increase adaptation_speed."
+      }
+    },
+    {
+      "tweak_id": "twk_counter_repeat_tolerance_run_tendency_exploited_002",
+      "parameter": "counter_repeat_tolerance",
+      "direction": "decrease",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "run_tendency_exploited",
+          "count": 2,
+          "offense_call": "play_action_flood",
+          "defense_call": "bear_front"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          2,
+          3
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.play_action_after_run_tendency.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            2,
+            3
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "run_tendency_exploited",
+          "graph_card_id": "redzone.play_action_after_run_tendency.v1",
+          "observed_value": {
+            "event_tag": "run_tendency_exploited",
+            "count": 2,
+            "offense_call": "play_action_flood",
+            "defense_call": "bear_front"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "counter_repeat_tolerance",
+          "direction": "decrease"
+        },
+        "rendered": "Plays 2 and 3 produced run_tendency_exploited twice, so decrease counter_repeat_tolerance."
+      }
+    },
+    {
+      "tweak_id": "twk_risk_tolerance_underneath_space_taken_004",
+      "parameter": "risk_tolerance",
+      "direction": "increase",
+      "magnitude": "small",
+      "evidence": {
+        "signal": "graph_event_frequency",
+        "observed_value": {
+          "event_tag": "underneath_space_taken",
+          "count": 2,
+          "offense_call": "quick_game",
+          "defense_call": "redzone_bracket"
+        },
+        "threshold": {
+          "event_count": 1
+        },
+        "play_indices": [
+          4,
+          5
+        ]
+      },
+      "source": {
+        "graph_card_id": "redzone.quick_game_vs_two_high.v1"
+      },
+      "rationale": {
+        "template_id": "event_count_crossed_threshold",
+        "arguments": {
+          "play_indices": [
+            4,
+            5
+          ],
+          "signal": "graph_event_frequency",
+          "event_tag": "underneath_space_taken",
+          "graph_card_id": "redzone.quick_game_vs_two_high.v1",
+          "observed_value": {
+            "event_tag": "underneath_space_taken",
+            "count": 2,
+            "offense_call": "quick_game",
+            "defense_call": "redzone_bracket"
+          },
+          "threshold": {
+            "event_count": 1
+          },
+          "parameter": "risk_tolerance",
+          "direction": "increase"
+        },
+        "rendered": "Plays 4 and 5 produced underneath_space_taken twice, so increase risk_tolerance."
+      }
+    }
+  ],
   "debug": {
     "fields": []
   }

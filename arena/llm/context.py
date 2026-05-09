@@ -25,6 +25,7 @@ from arena.assistant.templates import propose_from_prompt
 
 
 DENIED_KEY_RE = re.compile(r"^(seed.*|secret.*|api_key.*|admin.*|debug.*|.*_internal)$", re.IGNORECASE)
+DENIED_TEXT_RE = re.compile(r"\b(seed|secret|api_key|admin|debug|tier 0|tier 1|tier 2)\b", re.IGNORECASE)
 EXPLICIT_DENY_KEYS = set(HIDDEN_OBSERVATION_FIELDS) | {"session_id", "ip", "current_draft_id"}
 SAFE_REPLAY_PLAY_FIELDS = {
     "play_index",
@@ -182,6 +183,17 @@ def _sanitize_user_override(raw: Any) -> dict[str, Any] | None:
     return result or None
 
 
+def _film_room_narrative(replay: dict[str, Any] | None) -> str | None:
+    if not isinstance(replay, dict):
+        return None
+    narrative = replay.get("film_room", {}).get("narrative")
+    if not isinstance(narrative, str) or not narrative.strip():
+        return None
+    if DENIED_TEXT_RE.search(narrative):
+        raise ValueError("unsafe LLM context narrative")
+    return narrative
+
+
 def assert_safe_context(payload: Any) -> None:
     def walk(value: Any) -> None:
         if isinstance(value, dict):
@@ -208,6 +220,7 @@ def pack_context(*, prompt: str, server_context: dict[str, Any], budget_state: d
             "config_json": deepcopy(current_draft["config_json"]),
         }
     replay_summary = _replay_summary(server_context.get("replay"))
+    film_room_narrative = _film_room_narrative(server_context.get("replay"))
     payload = {
         "task_schema": _schema(),
         "canonical_prompt_examples": _canonical_prompt_examples(),
@@ -218,6 +231,7 @@ def pack_context(*, prompt: str, server_context: dict[str, Any], budget_state: d
         "legal_identity_ids": sorted(_identity_ids()),
         "current_policy": current_policy,
         "selected_identity": _selected_identity(server_context.get("selected_identity_id")),
+        "film_room_narrative": film_room_narrative,
         "replay_summary": replay_summary,
         "selected_play": _selected_play(replay_summary, server_context.get("replay"), server_context.get("selected_play_index")),
         "user_override": _sanitize_user_override(server_context.get("user_override")),
