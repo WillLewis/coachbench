@@ -52,7 +52,7 @@ Legal action enumerator
 Resource feasibility validation
 Concept interaction engine
 Static and adaptive starter agents
-Team A / Team B configuration files
+Fictional launch identities over technical baseline configs
 Engine-generated showcase replay
 Best-of-N and comparison reports
 Golden replay drift tests
@@ -74,6 +74,8 @@ Defense: Coverage Shell Conservative, Pressure-Look Defender, Disguise Specialis
 
 Each preset in `agent_garage/profiles.json` includes a one-line strategic intent, live parameters, aggregate expected-behavior signatures, and a known counter validated across the fixed garage seed pack.
 
+Launch identities are fictional; tactical behavior is inherited from the Agent Garage archetype and the strategy graph, not from prose.
+
 The 2.5 loop is closed for static Tier 0 runs: Film Room emits structured, event-derived tweak chips; Apply Suggested Tweak opens Garage with the matching live knob pre-moved and highlighted; Run Test Drive records the parent run and replay detail shows a scoped before/after panel for the affected signal. Runs still resolve to the nearest pre-baked replay matrix entry. Arbitrary custom-config execution is intentionally deferred to Phase 2.75.
 
 ## Repo Map
@@ -94,7 +96,7 @@ tests/                          smoke, contract, drift, calibration tests
 
 ## Product Boundary
 
-CoachBench is a fictional, local-first strategy benchmark. Do not add real teams, real players, licensed logos, official ratings products, or hosted third-party execution without a sandbox design review.
+CoachBench is a fictional, local-first strategy benchmark. Do not add AGENTS.md-prohibited identity, league, rating, monetization, or hosted third-party execution scope without the required design review.
 
 ## Quality Gates
 

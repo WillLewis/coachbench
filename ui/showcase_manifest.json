@@ -4,9 +4,9 @@
     {
       "seed": 42,
       "offense_handle": "zone_runner_22",
-      "offense_label": "zone_runner_22",
+      "offense_label": "Cinder Flash",
       "defense_handle": "disguise_chef",
-      "defense_label": "disguise_chef",
+      "defense_label": "Iron Veil",
       "offense_tier": "prompt_policy",
       "defense_tier": "prompt_policy",
       "offense_kind": "adaptive",
@@ -27,14 +27,20 @@
         0.63,
         0.63,
         0.63
-      ]
+      ],
+      "technical_label": {
+        "offense": "zone_runner_22",
+        "defense": "disguise_chef"
+      },
+      "offense_identity_id": "cinder_flash",
+      "defense_identity_id": "iron_veil"
     },
     {
       "seed": 99,
       "offense_handle": "quick_game_queen",
-      "offense_label": "quick_game_queen",
+      "offense_label": "Cinder Flash",
       "defense_handle": "cover_shell_sam",
-      "defense_label": "cover_shell_sam",
+      "defense_label": "Harbor Hawk",
       "offense_tier": "prompt_policy",
       "defense_tier": "declarative",
       "offense_kind": "adaptive",
@@ -56,14 +62,20 @@
         0.42,
         0.5,
         0.5
-      ]
+      ],
+      "technical_label": {
+        "offense": "quick_game_queen",
+        "defense": "cover_shell_sam"
+      },
+      "offense_identity_id": "cinder_flash",
+      "defense_identity_id": "harbor_hawk"
     },
     {
       "seed": 202,
       "offense_handle": "bunch_mesh_king",
-      "offense_label": "bunch_mesh_king",
+      "offense_label": "Mesa Anchor",
       "defense_handle": "edge_chaser",
-      "defense_label": "edge_chaser",
+      "defense_label": "Iron Veil",
       "offense_tier": "declarative",
       "defense_tier": "prompt_policy",
       "offense_kind": "static",
@@ -84,14 +96,20 @@
         0.27,
         0.5,
         0.5
-      ]
+      ],
+      "technical_label": {
+        "offense": "bunch_mesh_king",
+        "defense": "edge_chaser"
+      },
+      "offense_identity_id": "mesa_anchor",
+      "defense_identity_id": "iron_veil"
     },
     {
       "seed": 311,
       "offense_handle": "pressure_lab",
-      "offense_label": "pressure_lab",
+      "offense_label": "Cinder Flash",
       "defense_handle": "rpo_lover_88",
-      "defense_label": "rpo_lover_88",
+      "defense_label": "Harbor Hawk",
       "offense_tier": "prompt_policy",
       "defense_tier": "declarative",
       "offense_kind": "adaptive",
@@ -114,14 +132,20 @@
         0.42,
         0.42,
         0.42
-      ]
+      ],
+      "technical_label": {
+        "offense": "pressure_lab",
+        "defense": "rpo_lover_88"
+      },
+      "offense_identity_id": "cinder_flash",
+      "defense_identity_id": "harbor_hawk"
     },
     {
       "seed": 404,
       "offense_handle": "two_high_tilly",
-      "offense_label": "two_high_tilly",
+      "offense_label": "Mesa Anchor",
       "defense_handle": "blitz_pilot",
-      "defense_label": "blitz_pilot",
+      "defense_label": "Iron Veil",
       "offense_tier": "declarative",
       "defense_tier": "prompt_policy",
       "offense_kind": "static",
@@ -141,14 +165,20 @@
         0.27,
         0.5,
         0.5
-      ]
+      ],
+      "technical_label": {
+        "offense": "two_high_tilly",
+        "defense": "blitz_pilot"
+      },
+      "offense_identity_id": "mesa_anchor",
+      "defense_identity_id": "iron_veil"
     },
     {
       "seed": 515,
       "offense_handle": "route_schemer",
-      "offense_label": "route_schemer",
+      "offense_label": "Mesa Anchor",
       "defense_handle": "redzone_ryder",
-      "defense_label": "redzone_ryder",
+      "defense_label": "Iron Veil",
       "offense_tier": "prompt_policy",
       "defense_tier": "prompt_policy",
       "offense_kind": "adaptive",
@@ -168,14 +198,20 @@
         0.76,
         0.63,
         0.63
-      ]
+      ],
+      "technical_label": {
+        "offense": "route_schemer",
+        "defense": "redzone_ryder"
+      },
+      "offense_identity_id": "mesa_anchor",
+      "defense_identity_id": "iron_veil"
     },
     {
       "seed": 628,
       "offense_handle": "trap_coverage_v0",
-      "offense_label": "trap_coverage_v0",
+      "offense_label": "Cinder Flash",
       "defense_handle": "front_strength_fiend",
-      "defense_label": "front_strength_fiend",
+      "defense_label": "Harbor Hawk",
       "offense_tier": "prompt_policy",
       "defense_tier": "declarative",
       "offense_kind": "adaptive",
@@ -194,14 +230,20 @@
         0.42,
         0.5,
         0.5
-      ]
+      ],
+      "technical_label": {
+        "offense": "trap_coverage_v0",
+        "defense": "front_strength_fiend"
+      },
+      "offense_identity_id": "cinder_flash",
+      "defense_identity_id": "harbor_hawk"
     },
     {
       "seed": 733,
       "offense_handle": "screen_sorcerer",
-      "offense_label": "screen_sorcerer",
+      "offense_label": "Cinder Flash",
       "defense_handle": "match_point_man",
-      "defense_label": "match_point_man",
+      "defense_label": "Harbor Hawk",
       "offense_tier": "prompt_policy",
       "defense_tier": "declarative",
       "offense_kind": "adaptive",
@@ -220,14 +262,20 @@
         0.42,
         0.5,
         0.5
-      ]
+      ],
+      "technical_label": {
+        "offense": "screen_sorcerer",
+        "defense": "match_point_man"
+      },
+      "offense_identity_id": "cinder_flash",
+      "defense_identity_id": "harbor_hawk"
     },
     {
       "seed": 841,
       "offense_handle": "bootleg_baron",
-      "offense_label": "bootleg_baron",
+      "offense_label": "Mesa Anchor",
       "defense_handle": "bracket_boss",
-      "defense_label": "bracket_boss",
+      "defense_label": "Iron Veil",
       "offense_tier": "declarative",
       "defense_tier": "prompt_policy",
       "offense_kind": "static",
@@ -247,14 +295,20 @@
         0.5,
         0.27,
         0.5
-      ]
+      ],
+      "technical_label": {
+        "offense": "bootleg_baron",
+        "defense": "bracket_boss"
+      },
+      "offense_identity_id": "mesa_anchor",
+      "defense_identity_id": "iron_veil"
     },
     {
       "seed": 956,
       "offense_handle": "rpo_architect",
-      "offense_label": "rpo_architect",
+      "offense_label": "Cinder Flash",
       "defense_handle": "zero_pressure_zoe",
-      "defense_label": "zero_pressure_zoe",
+      "defense_label": "Iron Veil",
       "offense_tier": "prompt_policy",
       "defense_tier": "prompt_policy",
       "offense_kind": "adaptive",
@@ -277,14 +331,20 @@
         0.63,
         0.63,
         0.48
-      ]
+      ],
+      "technical_label": {
+        "offense": "rpo_architect",
+        "defense": "zero_pressure_zoe"
+      },
+      "offense_identity_id": "cinder_flash",
+      "defense_identity_id": "iron_veil"
     },
     {
       "seed": 1063,
       "offense_handle": "qb_decision_engine",
-      "offense_label": "qb_decision_engine",
+      "offense_label": "Mesa Anchor",
       "defense_handle": "disguise_specialist",
-      "defense_label": "disguise_specialist",
+      "defense_label": "Iron Veil",
       "offense_tier": "prompt_policy",
       "defense_tier": "prompt_policy",
       "offense_kind": "adaptive",
@@ -303,14 +363,20 @@
         0.76,
         0.76,
         0.63
-      ]
+      ],
+      "technical_label": {
+        "offense": "qb_decision_engine",
+        "defense": "disguise_specialist"
+      },
+      "offense_identity_id": "mesa_anchor",
+      "defense_identity_id": "iron_veil"
     },
     {
       "seed": 1170,
       "offense_handle": "static_baseline_a",
-      "offense_label": "static_baseline_a",
+      "offense_label": "Mesa Anchor",
       "defense_handle": "static_baseline_b",
-      "defense_label": "static_baseline_b",
+      "defense_label": "Harbor Hawk",
       "offense_tier": "declarative",
       "defense_tier": "declarative",
       "offense_kind": "static",
@@ -329,7 +395,13 @@
         0.85,
         0.27,
         0.85
-      ]
+      ],
+      "technical_label": {
+        "offense": "static_baseline_a",
+        "defense": "static_baseline_b"
+      },
+      "offense_identity_id": "mesa_anchor",
+      "defense_identity_id": "harbor_hawk"
     }
   ]
 }

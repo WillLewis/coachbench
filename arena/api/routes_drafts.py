@@ -24,6 +24,7 @@ class DraftCreateRequest(BaseModel):
     side_eligibility: str
     tier: str
     config_json: Any
+    identity_id: str | None = None
 
 
 class DraftUpdateRequest(BaseModel):
@@ -31,6 +32,7 @@ class DraftUpdateRequest(BaseModel):
     side_eligibility: str | None = None
     tier: str | None = None
     config_json: Any | None = None
+    identity_id: str | None = None
 
 
 def _public_draft(row: dict[str, Any]) -> dict[str, Any]:
@@ -49,6 +51,7 @@ def create_draft(payload: DraftCreateRequest) -> dict:
             side_eligibility=payload.side_eligibility,
             tier=payload.tier,
             config_json=payload.config_json,
+            identity_id=payload.identity_id,
         )
     except ValueError as exc:
         error("invalid_draft_config", str(exc), 422)
@@ -80,6 +83,7 @@ def update_draft(draft_id: str, payload: DraftUpdateRequest) -> dict:
             side_eligibility=payload.side_eligibility,
             tier=payload.tier,
             config_json=payload.config_json,
+            identity_id=payload.identity_id,
         )
     except ValueError as exc:
         error("invalid_draft_config", str(exc), 422)

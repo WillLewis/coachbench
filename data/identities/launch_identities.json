@@ -1,0 +1,93 @@
+{
+  "version": "1",
+  "identities": [
+    {
+      "id": "harbor_hawk",
+      "display_name": "Harbor Hawk",
+      "side_eligibility": ["offense", "defense"],
+      "coordinator_style": "patient spacing builder",
+      "default_archetype": {
+        "offense": "efficiency_optimizer",
+        "defense": "coverage_shell_conservative"
+      },
+      "default_policy_overrides": {
+        "risk_tolerance": "low",
+        "adaptation_speed": 0.85
+      },
+      "preferred_concept_families": ["quick_game", "inside_zone", "redzone_bracket", "cover3_match"],
+      "known_vulnerabilities": [
+        {
+          "counter_concept": "simulated_pressure",
+          "note": "Late pressure can force quick answers before spacing develops."
+        }
+      ],
+      "bio": "Harbor Hawk protects success rate with underneath answers and compact red-zone spacing. The identity maps to conservative graph-backed policies only."
+    },
+    {
+      "id": "cinder_flash",
+      "display_name": "Cinder Flash",
+      "side_eligibility": ["offense", "defense"],
+      "coordinator_style": "pressure answer specialist",
+      "default_archetype": {
+        "offense": "misdirection_artist",
+        "defense": "pressure_look_defender"
+      },
+      "default_policy_overrides": {
+        "risk_tolerance": "medium_high",
+        "adaptation_speed": 0.5
+      },
+      "preferred_concept_families": ["rpo_glance", "screen", "simulated_pressure", "zero_pressure"],
+      "known_vulnerabilities": [
+        {
+          "counter_concept": "redzone_bracket",
+          "note": "Bracket coverage can take away easy space when pressure answers arrive late."
+        }
+      ],
+      "bio": "Cinder Flash leans into motion, RPO space, and pressure looks. Its behavior comes from existing archetype parameters and legal graph concepts."
+    },
+    {
+      "id": "iron_veil",
+      "display_name": "Iron Veil",
+      "side_eligibility": ["defense"],
+      "coordinator_style": "late disguise closer",
+      "default_archetype": {
+        "offense": "run_game_builder",
+        "defense": "disguise_specialist"
+      },
+      "default_policy_overrides": {
+        "risk_tolerance": "medium",
+        "adaptation_speed": 0.7
+      },
+      "preferred_concept_families": ["simulated_pressure", "trap_coverage", "redzone_bracket"],
+      "known_vulnerabilities": [
+        {
+          "counter_concept": "screen",
+          "note": "Screens can punish late movement when the rush picture changes."
+        }
+      ],
+      "bio": "Iron Veil disguises structure without adding new tactical rules. It references only existing coverage and pressure concepts."
+    },
+    {
+      "id": "mesa_anchor",
+      "display_name": "Mesa Anchor",
+      "side_eligibility": ["offense"],
+      "coordinator_style": "run action sequencer",
+      "default_archetype": {
+        "offense": "run_game_builder",
+        "defense": "coverage_shell_conservative"
+      },
+      "default_policy_overrides": {
+        "risk_tolerance": "medium_low",
+        "adaptation_speed": 0.8
+      },
+      "preferred_concept_families": ["inside_zone", "outside_zone", "play_action_flood", "bootleg"],
+      "known_vulnerabilities": [
+        {
+          "counter_concept": "bear_front",
+          "note": "Bear fronts can compress zone runs before play-action opens."
+        }
+      ],
+      "bio": "Mesa Anchor builds run credibility before shifting into play-action. The launch identity is fictional and backed by existing graph vocabulary."
+    }
+  ]
+}

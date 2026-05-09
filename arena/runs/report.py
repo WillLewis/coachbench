@@ -53,6 +53,7 @@ def match_from_replay(
     seed: int,
     replay_url: str,
     film_room_url: str,
+    technical_label: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     return {
         "match_id": match_id,
@@ -64,6 +65,10 @@ def match_from_replay(
         "summary": replay_match_summary(replay),
         "replay_url": replay_url,
         "film_room_url": film_room_url,
+        "technical_label": technical_label or {
+            "offense": replay["agents"]["offense"],
+            "defense": replay["agents"]["defense"],
+        },
     }
 
 
@@ -74,6 +79,7 @@ def failed_match(
     defense_label: str,
     seed: int,
     error: str,
+    technical_label: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     return {
         "match_id": match_id,
@@ -85,6 +91,10 @@ def failed_match(
         "summary": {"success_rate": 0.0, "ev_delta": 0.0, "top_concept": ""},
         "replay_url": "",
         "film_room_url": "",
+        "technical_label": technical_label or {
+            "offense": offense_label,
+            "defense": defense_label,
+        },
         "failed": True,
         "error": error,
     }

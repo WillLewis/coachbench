@@ -25,6 +25,7 @@ if app:
     from arena.api.routes_arena import router as arena_router
     from arena.api.routes_challenges import router as challenges_router
     from arena.api.routes_drafts import router as drafts_router
+    from arena.api.routes_identities import router as identities_router
     from arena.api.routes_jobs import router as jobs_router
     from arena.api.routes_leaderboard import router as leaderboard_router
     from arena.api.routes_llm_status import router as llm_status_router
@@ -35,6 +36,7 @@ if app:
     app.include_router(arena_router)
     app.include_router(challenges_router)
     app.include_router(drafts_router)
+    app.include_router(identities_router)
     app.include_router(jobs_router)
     app.include_router(leaderboard_router)
     app.include_router(llm_status_router)

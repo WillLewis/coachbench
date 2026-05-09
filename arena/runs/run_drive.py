@@ -10,6 +10,7 @@ from arena.api.deps import ROOT
 from arena.storage.registry import connect
 from arena.storage import drafts, sessions
 from arena.tiers.factory import tiered_agent_from_submission
+from coachbench.identities import get_identity
 from coachbench.contracts import validate_replay_contract
 from coachbench.engine import CoachBenchEngine
 
@@ -40,6 +41,13 @@ def _config_payload(draft: dict[str, Any]) -> dict[str, Any]:
     return json.loads(draft["config_json"])
 
 
+def _display_label(draft: dict[str, Any]) -> str:
+    identity_id = draft.get("identity_id")
+    if not identity_id:
+        return draft["name"]
+    return get_identity(identity_id).display_name
+
+
 def _ensure_slot_compatible(draft: dict[str, Any], slot: str) -> None:
     payload = _config_payload(draft)
     if payload.get("side") != slot:
@@ -56,7 +64,7 @@ def _materialize_submission_row(draft: dict[str, Any], root: Path) -> dict[str, 
     payload = _config_payload(draft)
     return {
         "agent_id": draft["id"],
-        "label": draft["name"],
+        "label": _display_label(draft),
         "side": payload["side"],
         "access_tier": draft["tier"],
         "tier_config_path": str(config_path),
@@ -88,15 +96,21 @@ def run_drive_from_drafts(
         conn,
         offense_draft_id=offense_draft_id,
         defense_draft_id=defense_draft_id,
-        opponent_label=defense_draft["name"],
+        opponent_label=_display_label(defense_draft),
         seed=int(seed),
         status="running",
         session_id=run_id,
+        offense_label=_display_label(offense_draft),
+        defense_label=_display_label(defense_draft),
+        offense_technical_label=offense_draft["name"],
+        defense_technical_label=defense_draft["name"],
     )
     run_id = session["id"]
     try:
         offense_agent = tiered_agent_from_submission(_materialize_submission_row(offense_draft, ROOT))
         defense_agent = tiered_agent_from_submission(_materialize_submission_row(defense_draft, ROOT))
+        offense_agent.name = _display_label(offense_draft)
+        defense_agent.name = _display_label(defense_draft)
         replay = CoachBenchEngine(seed=int(seed)).run_drive(
             offense_agent,
             defense_agent,
@@ -106,14 +120,18 @@ def run_drive_from_drafts(
                     "offense": {
                         "id": offense_draft["id"],
                         "name": offense_draft["name"],
+                        "label": _display_label(offense_draft),
                         "version": offense_draft["version"],
                         "tier": offense_draft["tier"],
+                        "identity_id": offense_draft.get("identity_id"),
                     },
                     "defense": {
                         "id": defense_draft["id"],
                         "name": defense_draft["name"],
+                        "label": _display_label(defense_draft),
                         "version": defense_draft["version"],
                         "tier": defense_draft["tier"],
+                        "identity_id": defense_draft.get("identity_id"),
                     },
                 }
             },
@@ -131,6 +149,10 @@ def run_drive_from_drafts(
             "plays": len(replay["plays"]),
             "offense": replay["agents"]["offense"],
             "defense": replay["agents"]["defense"],
+            "technical_label": {
+                "offense": offense_draft["name"],
+                "defense": defense_draft["name"],
+            },
         }
         return RunResult(
             run_id=run_id,

@@ -24,6 +24,18 @@ def _draft_label(conn: sqlite3.Connection, draft_id: str) -> str:
     return row["name"] if row else draft_id
 
 
+def _identity_label(conn: sqlite3.Connection, draft_id: str) -> str:
+    from coachbench.identities import get_identity
+
+    row = drafts.get_draft(conn, draft_id)
+    if not row:
+        return draft_id
+    identity_id = row.get("identity_id")
+    if not identity_id:
+        return row["name"]
+    return get_identity(identity_id).display_name
+
+
 def _safe_run_match(
     *,
     conn: sqlite3.Connection,
@@ -53,6 +65,10 @@ def _safe_run_match(
                 seed=int(seed),
                 replay_url=f"/v1/replays/{run_id}",
                 film_room_url=f"/v1/replays/{run_id}/film_room",
+                technical_label={
+                    "offense": _draft_label(conn, offense_draft_id),
+                    "defense": _draft_label(conn, defense_draft_id),
+                },
             ),
             False,
         )
@@ -60,10 +76,14 @@ def _safe_run_match(
         return (
             failed_match(
                 match_id=match_id,
-                offense_label=_draft_label(conn, offense_draft_id),
-                defense_label=_draft_label(conn, defense_draft_id),
+                offense_label=_identity_label(conn, offense_draft_id),
+                defense_label=_identity_label(conn, defense_draft_id),
                 seed=int(seed),
                 error=str(exc),
+                technical_label={
+                    "offense": _draft_label(conn, offense_draft_id),
+                    "defense": _draft_label(conn, defense_draft_id),
+                },
             ),
             True,
         )

@@ -14,6 +14,11 @@ VALID_SESSION_STATUSES = {"completed", "running", "failed"}
 def init(conn: sqlite3.Connection) -> None:
     sql = (Path(__file__).parent / "migrations" / "0003_p0_1_backend_tables.sql").read_text(encoding="utf-8")
     conn.executescript(sql)
+    if "offense_label" not in _columns(conn, "sessions"):
+        sql = (Path(__file__).parent / "migrations" / "0005_p0_3_identity_columns.sql").read_text(encoding="utf-8")
+        for statement in sql.split(";"):
+            if "sessions" in statement:
+                conn.execute(statement)
     conn.commit()
 
 
@@ -23,6 +28,10 @@ def utc_now() -> str:
 
 def _row(row: sqlite3.Row | None) -> dict[str, Any] | None:
     return dict(row) if row else None
+
+
+def _columns(conn: sqlite3.Connection, table: str) -> set[str]:
+    return {row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()}
 
 
 def create_session(
@@ -36,6 +45,10 @@ def create_session(
     seed_pack: str | None = None,
     report_path: str | None = None,
     session_id: str | None = None,
+    offense_label: str | None = None,
+    defense_label: str | None = None,
+    offense_technical_label: str | None = None,
+    defense_technical_label: str | None = None,
 ) -> dict[str, Any]:
     init(conn)
     if status not in VALID_SESSION_STATUSES:
@@ -45,8 +58,9 @@ def create_session(
         """
         INSERT INTO sessions
         (id, created_at, offense_draft_id, defense_draft_id, opponent_label, seed,
-         seed_pack, report_path, replay_paths_json, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         seed_pack, report_path, replay_paths_json, status, offense_label, defense_label,
+         offense_technical_label, defense_technical_label)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             run_id,
@@ -59,6 +73,10 @@ def create_session(
             report_path,
             "[]",
             status,
+            offense_label,
+            defense_label,
+            offense_technical_label,
+            defense_technical_label,
         ),
     )
     conn.commit()
