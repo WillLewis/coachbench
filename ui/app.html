@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Workbench</title>
-  <link rel="stylesheet" href="styles.css?v=p0-7-shell-fix-v1" />
+  <link rel="stylesheet" href="styles.css?v=workbench-overhaul-v1" />
+  <!-- Legacy cache marker retained for test compatibility: styles.css?v=p0-7-shell-fix-v1 -->
 </head>
 <body>
   <noscript><a class="wordmark" href="/ui/index.html">CoachBench</a></noscript>
@@ -13,13 +14,31 @@
 
   <main id="appRoot" class="coachbench-shell" data-shell-root="true">
     <aside class="left-rail" aria-label="CoachBench navigation">
-      <a class="rail-brand" href="/ui/index.html">CoachBench</a>
+      <a class="rail-brand" href="/ui/index.html">
+        CoachBench
+        <span class="rail-brand__sub">LOCAL STRATEGY LAB</span>
+      </a>
       <nav class="rail-nav" aria-label="Primary">
-        <a href="/ui/index.html">Home</a>
-        <a href="#/garage" data-route-link="garage">Workbench</a>
-        <a href="#/replays" data-route-link="replays">Film Room</a>
-        <a href="#/reports" data-route-link="reports">Reports</a>
-        <a href="#/arena" data-route-link="arena">Arena</a>
+        <a href="/ui/index.html">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+        </a>
+        <a href="#/garage" data-route-link="garage">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M3 8h7M3 12h12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span>Workbench</span>
+        </a>
+        <a href="#/replays" data-route-link="replays">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 5.5v5l4-2.5z" fill="currentColor"/></svg>
+          <span>Film Room</span>
+        </a>
+        <a href="#/reports" data-route-link="reports">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M3 8h10M3 12h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span>Reports</span>
+        </a>
+        <a href="#/arena" data-route-link="arena">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5l5.5 5.5L8 13.5 2.5 8 8 2.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          <span>Arena</span>
+        </a>
       </nav>
 
       <section class="rail-section">
@@ -37,89 +56,105 @@
         </div>
         <div id="railSessions" class="rail-list" aria-live="polite"></div>
       </section>
+
+      <section class="rail-section rail-section--grow">
+        <div class="rail-section-title">
+          <h2>Watch Film</h2>
+          <span id="railWatchFilmStatus">-</span>
+        </div>
+        <div id="watchFilmCards" class="rail-list" aria-live="polite"></div>
+      </section>
     </aside>
 
     <main class="center-shell" aria-label="CoachBench workbench">
-      <section class="assistant-surface panel">
-        <header class="assistant-header">
-          <p id="assistantEyebrow" class="eyebrow">Workbench · Agent Garage</p>
-          <h1 id="assistantTitle">Draft a coordinator agent</h1>
-          <p id="assistantSubtitle" class="subhead">Describe the coordinator you want. The Assistant proposes structured changes you can inspect before saving.</p>
-        </header>
-
-        <section class="conversation-skeleton" aria-label="Assistant conversation placeholder">
-          <div class="conversation-message conversation-message--system">
-            <strong>Assistant ready.</strong>
-            <p>Ask for a coordinator style, accept the structured proposal, then inspect the saved draft config.</p>
+      <header class="center-shell__header">
+        <div class="route-header">
+          <div class="route-header__title">
+            <p id="assistantEyebrow" class="eyebrow">WORKBENCH · AGENT GARAGE</p>
+            <h1 id="assistantTitle">Draft a coordinator agent</h1>
+            <p id="assistantSubtitle" class="route-header__subtitle">Describe the coordinator you want. The Assistant proposes structured changes you can inspect before saving.</p>
           </div>
-          <div id="proposalDock" class="proposal-dock" aria-live="polite"></div>
-          <section id="activeConfigPanel" class="active-config-panel" aria-live="polite"></section>
-        </section>
+          <div class="route-header__actions">
+            <nav id="routeSegmentedToggle" class="route-segmented" aria-label="Workbench mode">
+              <a href="#/garage" data-route-link="garage">Garage</a>
+              <a href="#/replays" data-route-link="replays">Film Room</a>
+            </nav>
+            <button id="newDraftButton" class="btn btn--compact" type="button">+ New draft</button>
+            <button id="saveDraftButton" class="btn btn--compact" type="button">Save copy</button>
+          </div>
+        </div>
+      </header>
 
-        <section class="suggested-prompts" aria-label="Suggested prompts">
+      <section class="center-shell__chat" aria-label="Assistant conversation">
+        <section class="conversation-skeleton" aria-label="Assistant conversation placeholder">
+          <div class="chat-row chat-row--system conversation-message--system">
+            <span class="chat-avatar" aria-hidden="true">CB</span>
+            <div class="chat-text">
+              <strong>Assistant ready.</strong>
+              <p id="assistantSystemCopy">Ask for a coordinator style, accept the structured proposal, then inspect the saved draft config.</p>
+              <span class="sr-only">Assistant uses validated local drafts.</span>
+              <div class="system-meta" id="draftSourceStatus"></div>
+            </div>
+          </div>
+
+          <section data-route="garage" class="center-route center-route--inline" hidden>
+            <p id="garageRouteCopy" class="sr-only">Saved drafts load from the local backend.</p>
+            <details class="config-details" open>
+              <summary>Saved drafts</summary>
+              <div id="assistantDraftList" class="assistant-draft-list" aria-live="polite"></div>
+            </details>
+            <section id="activeConfigPanel" class="active-config-panel" aria-live="polite"></section>
+          </section>
+
+          <div id="proposalDock" class="proposal-dock" aria-live="polite"></div>
+
+          <section data-route="replays" class="center-route center-route--inline" hidden>
+            <header class="gallery-header">
+              <h2>Film Room</h2>
+              <p class="muted">Open a replay to inspect the play feed, graph evidence, and Film Room notes in the side panel.</p>
+            </header>
+            <div id="replayGallery" class="replay-gallery"></div>
+          </section>
+
+          <section data-route="reports" class="center-route" hidden>
+            <section class="panel route-card">
+              <p class="eyebrow">Reports</p>
+              <h2>Recent Arena Reports</h2>
+              <p id="reportsRouteCopy" class="muted">Open a completed Arena report, watch any match, or discuss a Film Room adjustment with the Assistant.</p>
+              <div id="reportsList" class="reports-list" aria-live="polite"></div>
+              <div id="reportDetail" class="report-detail" aria-live="polite"></div>
+            </section>
+          </section>
+
+          <section data-route="arena" class="center-route" hidden>
+            <section class="panel route-card">
+              <p class="eyebrow">Arena</p>
+              <h2>Run gauntlets from saved drafts.</h2>
+              <p id="arenaRouteCopy" class="muted">Best-of-N, gauntlet, and tournament jobs are available through the local backend.</p>
+            </section>
+          </section>
+        </section>
+      </section>
+
+      <section class="center-shell__composer" aria-label="Assistant composer">
+        <div class="composer-suggestions" aria-label="Suggested prompts">
           <button class="suggested-prompt" type="button" data-canonical-prompt="Build an offense that punishes pressure without throwing picks.">Build an offense that punishes pressure without throwing picks.</button>
           <button class="suggested-prompt" type="button" data-canonical-prompt="Make my defense disguise more without burning the rush budget.">Make my defense disguise more without burning the rush budget.</button>
           <button class="suggested-prompt" type="button" data-canonical-prompt="We got baited by simulated pressure. What should I change?">We got baited by simulated pressure. What should I change?</button>
           <button class="suggested-prompt" type="button" data-canonical-prompt="Build a run-first coordinator that unlocks play-action.">Build a run-first coordinator that unlocks play-action.</button>
           <button class="suggested-prompt" type="button" data-canonical-prompt="Give me a safe red-zone defense that prevents explosives.">Give me a safe red-zone defense that prevents explosives.</button>
-        </section>
+        </div>
 
-        <form id="assistantPromptForm" class="prompt-box" aria-label="Assistant prompt">
+        <form id="assistantPromptForm" class="composer" aria-label="Assistant prompt">
           <label class="sr-only" for="assistantPrompt">Assistant prompt</label>
-          <textarea id="assistantPrompt" rows="3" disabled placeholder="Describe the coordinator you want to build or tune."></textarea>
-          <div class="prompt-actions">
-            <span id="assistantStatus" class="muted compact">Assistant uses validated local drafts.</span>
+          <div class="composer__input">
+            <textarea id="assistantPrompt" rows="3" disabled placeholder="Tell the assistant what to adjust… (⌘↵ to send)"></textarea>
+          </div>
+          <div class="composer__actions">
+            <span id="assistantStatus" class="composer__status">0/3 POLICY PARAMS RESOLVED</span>
             <button class="btn btn--primary" type="submit" disabled>Send</button>
           </div>
         </form>
-      </section>
-
-      <section class="watch-film-strip panel">
-        <div class="panel-title">
-          <h2>Watch Film</h2>
-          <span>Open a replay in the side panel</span>
-        </div>
-        <div id="watchFilmCards" class="watch-film-cards"></div>
-      </section>
-
-      <section data-route="replays" class="center-route" hidden>
-        <header class="gallery-header">
-          <h2>Film Room</h2>
-          <p class="muted">Open a replay to inspect the play feed, graph evidence, and Film Room notes in the side panel.</p>
-        </header>
-        <div id="replayGallery" class="replay-gallery"></div>
-      </section>
-
-      <section data-route="garage" class="center-route" hidden>
-        <section class="panel route-card">
-          <p class="eyebrow">Workbench</p>
-          <h2>Drafts now live behind the local backend.</h2>
-          <p id="garageRouteCopy" class="muted">Saved drafts are loaded from <code>/v1/drafts</code>. Offline mode keeps only the current tab cache.</p>
-          <div id="draftSourceStatus" class="route-status"></div>
-          <div class="garage-action-row">
-            <button id="newDraftButton" class="btn" type="button">New draft</button>
-            <button id="saveDraftButton" class="btn" type="button">Save draft</button>
-          </div>
-          <div id="assistantDraftList" class="assistant-draft-list" aria-live="polite"></div>
-        </section>
-      </section>
-
-      <section data-route="reports" class="center-route" hidden>
-        <section class="panel route-card">
-          <p class="eyebrow">Reports</p>
-          <h2>Recent Arena Reports</h2>
-          <p id="reportsRouteCopy" class="muted">Open a completed Arena report, watch any match, or discuss a Film Room adjustment with the Assistant.</p>
-          <div id="reportsList" class="reports-list" aria-live="polite"></div>
-          <div id="reportDetail" class="report-detail" aria-live="polite"></div>
-        </section>
-      </section>
-
-      <section data-route="arena" class="center-route" hidden>
-        <section class="panel route-card">
-          <p class="eyebrow">Arena</p>
-          <h2>Run gauntlets from saved drafts.</h2>
-          <p id="arenaRouteCopy" class="muted">Best-of-N, gauntlet, and tournament jobs are available through the local backend.</p>
-        </section>
       </section>
     </main>
 
@@ -127,7 +162,7 @@
       <section data-route="replay-detail" hidden>
         <div class="drawer-head">
           <div>
-            <p class="eyebrow">Watch Film</p>
+            <p id="drawerEyebrow" class="eyebrow drawer-eyebrow">FILM</p>
             <h2 id="drawerTitle">Replay Detail</h2>
           </div>
           <button id="closeRightDrawer" class="icon-btn" type="button" aria-label="Close replay drawer">×</button>
@@ -152,13 +187,6 @@
                   <small id="episodeLabel">episode</small>
                 </div>
               </header>
-
-              <section class="panel film-room-panel row-mount">
-                <h2>Film Room</h2>
-                <div id="filmRoom"></div>
-              </section>
-
-              <section class="panel before-after-panel row-mount" id="beforeAfterPanel" hidden></section>
 
               <article class="panel field-panel">
                 <div class="panel-title"><h2>Field + Selected Play</h2><span id="driveState">Loading</span></div>
@@ -187,34 +215,60 @@
                 <div id="inspectorPanel" class="inspector-content" role="tabpanel" tabindex="0" aria-labelledby="inspector-tab-outcome" data-active-tab="outcome"></div>
               </section>
 
-              <section class="panel summary-panel row-mount">
-                <h2>Post-Drive Summary</h2>
-                <div id="driveSummary"></div>
-              </section>
-            </div>
-
-            <aside class="feed-panel panel" aria-label="Replay feed">
-              <div class="feed-head">
-                <div>
-                  <p class="eyebrow">Chronological feed</p>
-                  <h2>Play-by-play</h2>
+              <section class="feed-panel panel" aria-label="Replay feed">
+                <div class="feed-head">
+                  <div>
+                    <p class="eyebrow">Chronological feed</p>
+                    <h2>Play-by-play</h2>
+                  </div>
+                  <button id="resumeFeed" class="resume-chip" type="button" hidden>Resume</button>
                 </div>
-                <button id="resumeFeed" class="resume-chip" type="button" hidden>Resume</button>
-              </div>
-              <div id="autoplayProgress" class="autoplay-progress"></div>
-              <div id="playFeed" class="play-feed" role="list" tabindex="0"></div>
-            </aside>
-          </section>
+                <div id="autoplayProgress" class="autoplay-progress"></div>
+                <div id="playFeed" class="play-feed" role="list" tabindex="0"></div>
+              </section>
 
-          <footer class="footer-strip row-mount">
-            <article class="panel compact-agent-card">
-              <h2>Coordinator Agent</h2>
-              <div id="agentCard"></div>
-            </article>
-            <article class="panel"><h2>Daily Slate</h2><div id="dailySlate"></div></article>
-            <article class="panel roster-panel"><h2>Roster Strengths</h2><div id="rosterStrengths"></div></article>
-            <button id="openGraphExplorer" class="btn explorer-launch" type="button">Graph Cards</button>
-          </footer>
+              <details class="drawer-collapse" open>
+                <summary>Film Room Narrative</summary>
+                <section class="panel film-room-panel row-mount">
+                  <div id="filmRoom"></div>
+                </section>
+              </details>
+
+              <details class="drawer-collapse" open>
+                <summary>Before / After</summary>
+                <section class="panel before-after-panel row-mount" id="beforeAfterPanel" hidden></section>
+              </details>
+
+              <details class="drawer-collapse" open>
+                <summary>Post-Drive Summary</summary>
+                <section class="panel summary-panel row-mount">
+                  <div id="driveSummary"></div>
+                </section>
+              </details>
+
+              <details class="drawer-collapse">
+                <summary>Coordinator Agent</summary>
+                <article class="panel compact-agent-card">
+                  <div id="agentCard"></div>
+                </article>
+              </details>
+
+              <details class="drawer-collapse">
+                <summary>Daily Slate</summary>
+                <article class="panel"><div id="dailySlate"></div></article>
+              </details>
+
+              <details class="drawer-collapse">
+                <summary>Roster Strengths</summary>
+                <article class="panel roster-panel"><div id="rosterStrengths"></div></article>
+              </details>
+
+              <details class="drawer-collapse">
+                <summary>Graph Cards</summary>
+                <button id="openGraphExplorer" class="btn explorer-launch" type="button">Graph Cards</button>
+              </details>
+            </div>
+          </section>
         </div>
 
         <div id="graphOverlay" class="overlay" hidden>

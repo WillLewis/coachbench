@@ -65,8 +65,9 @@
     const offenseLabel = item.offense_label || compact(item.offense_handle);
     const defenseLabel = item.defense_label || compact(item.defense_handle);
     $('featuredMeta').innerHTML = `<span class="${CBChips.seedDotClass(replay.score?.result)}"></span>FEATURED REPLAY · SEED ${escapeHtml(item.seed)} · ${escapeHtml(offenseLabel)} ⇌ ${escapeHtml(defenseLabel)}`;
-    $('downsStrip').textContent = CBField.downsText(play);
-    $('downsStrip').classList.toggle('is-touchdown', play.public.terminal_reason === 'touchdown');
+    $('downsStrip').textContent = label(replay.score?.result || play.public.terminal_reason || 'Replay');
+    $('downsStrip').classList.toggle('is-touchdown', replay.score?.result === 'touchdown' || play.public.terminal_reason === 'touchdown');
+    $('downsStrip').classList.toggle('is-stopped', replay.score?.result === 'stopped' || play.public.terminal_reason === 'stopped');
     $('postDrive').innerHTML = postDriveHtml(item, replay);
     renderTimeline(replay);
   }
@@ -92,9 +93,9 @@
       };
     });
     const progress = $('homeProgress');
-    progress.classList.remove('running');
-    void progress.offsetWidth;
-    if (state.cycleState === 'playing' && !reducedQuery.matches) progress.classList.add('running');
+    progress?.classList.remove('running');
+    if (progress) void progress.offsetWidth;
+    if (progress && state.cycleState === 'playing' && !reducedQuery.matches) progress.classList.add('running');
   }
 
   function wireControls() {
