@@ -11,7 +11,7 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
-arena = ["fastapi", "uvicorn", "httpx", "pydantic"]
+arena = ["fastapi", "uvicorn", "httpx", "pydantic", "anthropic"]
 
 [tool.setuptools]
 package-dir = {"" = "engine"}

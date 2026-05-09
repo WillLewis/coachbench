@@ -9,8 +9,9 @@ from pydantic import BaseModel, Field
 
 from arena.api.deps import error, moderate
 from arena.assistant.proposal import ProposalRejected, apply_proposal, validate_proposal
-from arena.assistant.templates import propose_from_prompt
+from arena.assistant.router import select_proposer
 from arena.llm.budget import BudgetExceeded, LLMBudget
+from arena.llm.usage import LLMUsage
 from arena.storage import drafts
 
 
@@ -114,13 +115,27 @@ def propose(payload: AssistantProposeRequest, request: Request) -> dict:
     context, current_draft = _server_context(payload)
     budget = LLMBudget(_db())
     grant = None
+    usage: LLMUsage | None = None
     try:
+        if budget.is_killed():
+            proposal, usage = select_proposer(
+                payload.prompt,
+                context,
+                session_id=_session_id(request, payload.context),
+                ip=_client_ip(request),
+                budget=budget,
+                current_draft=current_draft,
+            )
+            validate_proposal(proposal, current_draft=current_draft, context=context)
+            return {"proposal": proposal}
         grant = budget.acquire(_session_id(request, payload.context), _client_ip(request))
-        proposal = propose_from_prompt(
+        proposal, usage = select_proposer(
             payload.prompt,
             context,
             session_id=grant.session_id,
             ip=grant.ip,
+            budget=budget,
+            current_draft=current_draft,
         )
         validate_proposal(proposal, current_draft=current_draft, context=context)
     except BudgetExceeded as exc:
@@ -129,7 +144,12 @@ def propose(payload: AssistantProposeRequest, request: Request) -> dict:
         error("proposal_rejected", str(exc), 422)
     finally:
         if grant is not None:
-            budget.release(grant, tokens_in=0, tokens_out=0, cost_usd_est=0.0)
+            budget.release(
+                grant,
+                tokens_in=usage.tokens_in if usage else 0,
+                tokens_out=usage.tokens_out if usage else 0,
+                cost_usd_est=usage.cost_usd_est if usage else 0.0,
+            )
     return {"proposal": proposal}
 
 

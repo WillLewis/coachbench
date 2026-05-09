@@ -88,3 +88,15 @@ def register_admin_routes(app) -> None:
             error("ineligible_league", "agent tier is not eligible for this league", 422)
         _audit("promote_to_league", x_admin_token or "", agent_id)
         return {"agent_id": agent_id, "league": league, "eligible": True}
+
+    @app.post("/v1/admin/llm/kill_switch")
+    def llm_kill_switch(body: dict, x_admin_token: str | None = Header(default=None)):
+        require_admin_token(x_admin_token)
+        from arena.llm.budget import LLMBudget, set_kill_switch_override
+
+        state = str(body.get("state", "")).lower()
+        if state not in {"on", "off"}:
+            error("invalid_kill_switch_state", "state must be on or off", 422)
+        set_kill_switch_override(state)
+        _audit("llm_kill_switch", x_admin_token or "", "llm")
+        return {"kill_switch": LLMBudget(db()).is_killed(), "override": state}

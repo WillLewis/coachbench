@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
@@ -19,6 +20,11 @@ def utc_now() -> str:
 
 def since_iso(seconds: int) -> str:
     return (datetime.now(timezone.utc) - timedelta(seconds=int(seconds))).isoformat()
+
+
+def utc_midnight_iso() -> str:
+    now = datetime.now(timezone.utc)
+    return now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
 
 
 def count_session_calls(conn: sqlite3.Connection, session_id: str) -> int:
@@ -50,6 +56,39 @@ def total_cost_usd(conn: sqlite3.Connection) -> float:
     init(conn)
     value = conn.execute("SELECT COALESCE(SUM(cost_usd_est), 0.0) FROM llm_calls").fetchone()[0]
     return float(value or 0.0)
+
+
+def cost_usd_since(conn: sqlite3.Connection, since: str) -> float:
+    init(conn)
+    value = conn.execute("SELECT COALESCE(SUM(cost_usd_est), 0.0) FROM llm_calls WHERE ts>=?", (since,)).fetchone()[0]
+    return float(value or 0.0)
+
+
+def cost_usd_today(conn: sqlite3.Connection) -> float:
+    return cost_usd_since(conn, utc_midnight_iso())
+
+
+def session_cost_p99_since(conn: sqlite3.Connection, since: str) -> float | None:
+    init(conn)
+    rows = conn.execute(
+        """
+        SELECT COALESCE(SUM(cost_usd_est), 0.0) AS cost
+        FROM llm_calls
+        WHERE ts>=?
+        GROUP BY session_id
+        ORDER BY cost ASC
+        """,
+        (since,),
+    ).fetchall()
+    values = [float(row[0] or 0.0) for row in rows]
+    if not values:
+        return None
+    index = min(len(values) - 1, max(0, math.ceil(0.99 * len(values)) - 1))
+    return values[index]
+
+
+def session_cost_p99_last_7_days(conn: sqlite3.Connection) -> float | None:
+    return session_cost_p99_since(conn, since_iso(7 * 24 * 3600))
 
 
 def begin_concurrency(conn: sqlite3.Connection, session_id: str) -> None:

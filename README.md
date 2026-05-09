@@ -38,7 +38,7 @@ python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --o
 python -m http.server 8000
 ```
 
-Local backend env defaults live in `.env.example`. Before enabling any live Assistant model calls in a later phase, set `LLM_VIRAL_SPIKE_COST_CEILING_USD` plus the session, IP-window, concurrency, and kill-switch caps there. P0-1 only ships the budget gate and stub; it does not call an external model API.
+Local backend env defaults live in `.env.example`. Live Assistant model calls require `LLM_VIRAL_SPIKE_COST_CEILING_USD` to be set to a real launch ceiling, plus session, IP-window, concurrency, kill-switch, model, timeout, and server-side API-key settings. The deterministic Assistant stub remains the fallback when the model path is killed, over budget, unavailable, or invalid.
 
 ## Screenshot Placeholder
 

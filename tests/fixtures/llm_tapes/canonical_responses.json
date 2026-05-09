@@ -1,0 +1,546 @@
+{
+  "Build a run-first coordinator that unlocks play-action.": [
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.play_action_after_run_tendency.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "run_pass_tendency",
+          "reason": "Graph card redzone.play_action_after_run_tendency.v1 supports play-action after run tendency.",
+          "to": "run_to_play_action"
+        },
+        {
+          "from": null,
+          "parameter": "adaptation_speed",
+          "reason": "Adaptation speed helps the draft move once run tendency is observed.",
+          "to": 0.78
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "The shot cap stays low so play-action is not treated as a separate phantom knob.",
+          "to": 0.22
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Build the offense around run tendency before shifting into graph-backed play-action.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.play_action_after_run_tendency.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "run_pass_tendency",
+          "reason": "Graph card redzone.play_action_after_run_tendency.v1 supports play-action after run tendency.",
+          "to": "run_to_play_action"
+        },
+        {
+          "from": null,
+          "parameter": "adaptation_speed",
+          "reason": "Adaptation speed helps the draft move once run tendency is observed.",
+          "to": 0.78
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "The shot cap stays low so play-action is not treated as a separate phantom knob.",
+          "to": 0.22
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Build the offense around run tendency before shifting into graph-backed play-action.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.play_action_after_run_tendency.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "run_pass_tendency",
+          "reason": "Graph card redzone.play_action_after_run_tendency.v1 supports play-action after run tendency.",
+          "to": "run_to_play_action"
+        },
+        {
+          "from": null,
+          "parameter": "adaptation_speed",
+          "reason": "Adaptation speed helps the draft move once run tendency is observed.",
+          "to": 0.78
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "The shot cap stays low so play-action is not treated as a separate phantom knob.",
+          "to": 0.22
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Build the offense around run tendency before shifting into graph-backed play-action.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    }
+  ],
+  "Build an offense that punishes pressure without throwing picks.": [
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_zero_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        },
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "screen_trigger_confidence",
+          "reason": "Graph card redzone.screen_vs_zero_pressure.v1 supports screen answers to pressure looks.",
+          "to": 0.68
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 supports keeping high-variance shots capped.",
+          "to": 0.25
+        },
+        {
+          "from": null,
+          "parameter": "risk_tolerance",
+          "reason": "Risk stays medium so the proposal does not chase hidden outcomes.",
+          "to": "medium"
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Shift the offense toward pressure answers while capping volatile shot calls.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_zero_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        },
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "screen_trigger_confidence",
+          "reason": "Graph card redzone.screen_vs_zero_pressure.v1 supports screen answers to pressure looks.",
+          "to": 0.68
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 supports keeping high-variance shots capped.",
+          "to": 0.25
+        },
+        {
+          "from": null,
+          "parameter": "risk_tolerance",
+          "reason": "Risk stays medium so the proposal does not chase hidden outcomes.",
+          "to": "medium"
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Shift the offense toward pressure answers while capping volatile shot calls.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_zero_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        },
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "screen_trigger_confidence",
+          "reason": "Graph card redzone.screen_vs_zero_pressure.v1 supports screen answers to pressure looks.",
+          "to": 0.68
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 supports keeping high-variance shots capped.",
+          "to": 0.25
+        },
+        {
+          "from": null,
+          "parameter": "risk_tolerance",
+          "reason": "Risk stays medium so the proposal does not chase hidden outcomes.",
+          "to": "medium"
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Shift the offense toward pressure answers while capping volatile shot calls.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    }
+  ],
+  "Give me a safe red-zone defense that prevents explosives.": [
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "risk_tolerance",
+          "reason": "Risk stays low for a safer red-zone profile.",
+          "to": "low"
+        },
+        {
+          "from": null,
+          "parameter": "disguise_sensitivity",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 is the grounded explosive-window reference.",
+          "to": 0.58
+        },
+        {
+          "from": null,
+          "parameter": "counter_repeat_tolerance",
+          "reason": "Lower repeat tolerance reduces repeated counter exposure in the saved config.",
+          "to": 0.35
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Keep the defense compact by pairing moderate disguise with less repeated counter exposure.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "defense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "risk_tolerance",
+          "reason": "Risk stays low for a safer red-zone profile.",
+          "to": "low"
+        },
+        {
+          "from": null,
+          "parameter": "disguise_sensitivity",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 is the grounded explosive-window reference.",
+          "to": 0.58
+        },
+        {
+          "from": null,
+          "parameter": "counter_repeat_tolerance",
+          "reason": "Lower repeat tolerance reduces repeated counter exposure in the saved config.",
+          "to": 0.35
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Keep the defense compact by pairing moderate disguise with less repeated counter exposure.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "defense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "risk_tolerance",
+          "reason": "Risk stays low for a safer red-zone profile.",
+          "to": "low"
+        },
+        {
+          "from": null,
+          "parameter": "disguise_sensitivity",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 is the grounded explosive-window reference.",
+          "to": 0.58
+        },
+        {
+          "from": null,
+          "parameter": "counter_repeat_tolerance",
+          "reason": "Lower repeat tolerance reduces repeated counter exposure in the saved config.",
+          "to": 0.35
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Keep the defense compact by pairing moderate disguise with less repeated counter exposure.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "defense",
+      "target_tier": "declarative"
+    }
+  ],
+  "Make my defense disguise more without burning the rush budget.": [
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_simulated_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "disguise_sensitivity",
+          "reason": "Graph card redzone.screen_vs_simulated_pressure.v1 is the grounded disguise reference.",
+          "to": 0.76
+        },
+        {
+          "from": null,
+          "parameter": "pressure_frequency",
+          "reason": "Lower pressure frequency limits rush-resource burn without inventing a new call.",
+          "to": 0.42
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Make the defense show more late movement while reducing pressure spend.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "defense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_simulated_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "disguise_sensitivity",
+          "reason": "Graph card redzone.screen_vs_simulated_pressure.v1 is the grounded disguise reference.",
+          "to": 0.76
+        },
+        {
+          "from": null,
+          "parameter": "pressure_frequency",
+          "reason": "Lower pressure frequency limits rush-resource burn without inventing a new call.",
+          "to": 0.42
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Make the defense show more late movement while reducing pressure spend.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "defense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_simulated_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "disguise_sensitivity",
+          "reason": "Graph card redzone.screen_vs_simulated_pressure.v1 is the grounded disguise reference.",
+          "to": 0.76
+        },
+        {
+          "from": null,
+          "parameter": "pressure_frequency",
+          "reason": "Lower pressure frequency limits rush-resource burn without inventing a new call.",
+          "to": 0.42
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Make the defense show more late movement while reducing pressure spend.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "defense",
+      "target_tier": "declarative"
+    }
+  ],
+  "We got baited by simulated pressure. What should I change?": [
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_simulated_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        },
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "screen_trigger_confidence",
+          "reason": "Graph card redzone.screen_vs_simulated_pressure.v1 is the grounded simulated-pressure reference.",
+          "to": 0.7
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 supports avoiding volatile answers.",
+          "to": 0.28
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Answer simulated pressure by moving screen timing earlier and keeping the shot cap conservative.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_simulated_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        },
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "screen_trigger_confidence",
+          "reason": "Graph card redzone.screen_vs_simulated_pressure.v1 is the grounded simulated-pressure reference.",
+          "to": 0.7
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 supports avoiding volatile answers.",
+          "to": 0.28
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Answer simulated pressure by moving screen timing earlier and keeping the shot cap conservative.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    },
+    {
+      "evidence_refs": [
+        {
+          "id": "redzone.screen_vs_simulated_pressure.v1",
+          "play_index": null,
+          "type": "graph_card"
+        },
+        {
+          "id": "redzone.vertical_vs_two_high.v1",
+          "play_index": null,
+          "type": "graph_card"
+        }
+      ],
+      "intent": "create",
+      "proposed_changes": [
+        {
+          "from": null,
+          "parameter": "screen_trigger_confidence",
+          "reason": "Graph card redzone.screen_vs_simulated_pressure.v1 is the grounded simulated-pressure reference.",
+          "to": 0.7
+        },
+        {
+          "from": null,
+          "parameter": "explosive_shot_tolerance",
+          "reason": "Graph card redzone.vertical_vs_two_high.v1 supports avoiding volatile answers.",
+          "to": 0.28
+        }
+      ],
+      "requires_confirmation": true,
+      "summary": "Answer simulated pressure by moving screen timing earlier and keeping the shot cap conservative.",
+      "target_draft_id": null,
+      "target_identity_id": null,
+      "target_side": "offense",
+      "target_tier": "declarative"
+    }
+  ]
+}

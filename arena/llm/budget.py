@@ -11,6 +11,9 @@ class BudgetExceeded(RuntimeError):
     pass
 
 
+_KILL_SWITCH_OVERRIDE: str | None = None
+
+
 @dataclass(frozen=True)
 class BudgetGrant:
     session_id: str
@@ -31,6 +34,21 @@ def _float_env(name: str) -> float | None:
     return float(raw)
 
 
+def set_kill_switch_override(state: str | None) -> None:
+    global _KILL_SWITCH_OVERRIDE
+    if state is None:
+        _KILL_SWITCH_OVERRIDE = None
+        return
+    normalized = state.lower()
+    if normalized not in {"on", "off"}:
+        raise ValueError("kill switch state must be on or off")
+    _KILL_SWITCH_OVERRIDE = normalized
+
+
+def kill_switch_override() -> str | None:
+    return _KILL_SWITCH_OVERRIDE
+
+
 class LLMBudget:
     def __init__(self, conn: sqlite3.Connection | None = None) -> None:
         if conn is None:
@@ -46,7 +64,7 @@ class LLMBudget:
         self.max_concurrent_sessions = _int_env("LLM_MAX_CONCURRENT_SESSIONS", 4)
 
     def is_killed(self) -> bool:
-        return os.environ.get("LLM_GLOBAL_KILL_SWITCH", "off").lower() == "on"
+        return _KILL_SWITCH_OVERRIDE == "on" or os.environ.get("LLM_GLOBAL_KILL_SWITCH", "off").lower() == "on"
 
     def acquire(self, session_id: str, ip: str) -> BudgetGrant:
         if self.is_killed():

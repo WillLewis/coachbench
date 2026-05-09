@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from arena.llm.budget import LLMBudget
+from arena.llm.client import configured_model
 from arena.storage import llm_budget
 
 
@@ -24,4 +25,7 @@ def llm_status() -> dict:
         "concurrent_sessions": llm_budget.count_concurrent_sessions(conn),
         "calls_last_hour": llm_budget.calls_since(conn, 3600),
         "ceiling_usd": budget.ceiling_usd,
+        "cost_usd_today": llm_budget.cost_usd_today(conn),
+        "cost_usd_session_p99": llm_budget.session_cost_p99_last_7_days(conn),
+        "model": configured_model(),
     }
