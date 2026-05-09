@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import sqlite3
+from pathlib import Path
 
 try:
     from fastapi import FastAPI
+    from fastapi.staticfiles import StaticFiles
 except ModuleNotFoundError:  # pragma: no cover
     FastAPI = None
+    StaticFiles = None
 
 from arena.api.deps import ROOT
 from arena.storage.registry import connect
@@ -45,3 +48,12 @@ if app:
     app.include_router(replays_router)
     app.include_router(runs_router)
     register_admin_routes(app)
+
+    for route_path, directory in (
+        ("/ui", "ui"),
+        ("/graph", "graph"),
+        ("/agent_garage", "agent_garage"),
+        ("/data", "data"),
+    ):
+        if StaticFiles and Path(directory).exists():
+            app.mount(route_path, StaticFiles(directory=directory), name=route_path.strip("/"))

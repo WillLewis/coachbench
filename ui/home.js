@@ -15,6 +15,7 @@
   const $ = id => document.getElementById(id);
   const label = raw => String(raw || '').replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
   const compact = raw => String(raw || '').replaceAll('_', ' ');
+  const escapeHtml = raw => String(raw ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
   async function fetchJson(path) {
     const response = await fetch(path);
@@ -61,7 +62,9 @@
       host.dataset.ready = 'true';
     }
     CBField.positionBall($('homeBall'), play.public.next_state.yardline, play.public.terminal_reason, reducedQuery.matches);
-    $('featuredMeta').innerHTML = `<span class="${CBChips.seedDotClass(replay.score?.result)}"></span>FEATURED REPLAY · SEED ${item.seed} · ${item.offense_handle} ⇌ ${item.defense_handle}`;
+    const offenseLabel = item.offense_label || compact(item.offense_handle);
+    const defenseLabel = item.defense_label || compact(item.defense_handle);
+    $('featuredMeta').innerHTML = `<span class="${CBChips.seedDotClass(replay.score?.result)}"></span>FEATURED REPLAY · SEED ${escapeHtml(item.seed)} · ${escapeHtml(offenseLabel)} ⇌ ${escapeHtml(defenseLabel)}`;
     $('downsStrip').textContent = CBField.downsText(play);
     $('downsStrip').classList.toggle('is-touchdown', play.public.terminal_reason === 'touchdown');
     $('postDrive').innerHTML = postDriveHtml(item, replay);

@@ -208,7 +208,7 @@
   }
 
   function init() {
-    if (!$('appRoot')?.dataset.shellRoot) return;
+    if (!$('appRoot')?.hasAttribute('data-shell-root')) return;
     bindPrompts();
     bindDrawer();
     refresh().catch(() => {

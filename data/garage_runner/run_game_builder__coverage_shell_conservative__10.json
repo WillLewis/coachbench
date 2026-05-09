@@ -1081,6 +1081,7 @@
   },
   "film_room": {
     "headline": "Turnover",
+    "narrative": null,
     "turning_point": {
       "play_index": 2,
       "expected_value_delta": 0.4,

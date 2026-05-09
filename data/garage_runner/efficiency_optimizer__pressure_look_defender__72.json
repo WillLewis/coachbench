@@ -1741,6 +1741,7 @@
   },
   "film_room": {
     "headline": "Touchdown drive",
+    "narrative": null,
     "turning_point": {
       "play_index": 2,
       "expected_value_delta": 0.34,

@@ -2729,6 +2729,7 @@
   },
   "film_room": {
     "headline": "Stopped - out of plays",
+    "narrative": null,
     "turning_point": {
       "play_index": 1,
       "expected_value_delta": 0.53,

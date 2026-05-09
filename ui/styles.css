@@ -146,12 +146,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .shell { width: min(1400px, calc(100vw - 32px)); margin: 0 auto; padding: 24px 0 56px; }
 .coachbench-shell {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(420px, 1fr) minmax(380px, 44vw);
+  grid-template-columns: minmax(220px, 280px) minmax(520px, 1fr);
   gap: 16px;
   width: min(1680px, calc(100vw - 24px));
   min-height: 100vh;
   margin: 0 auto;
   padding: 12px 0;
+}
+body.right-drawer-open .coachbench-shell {
+  grid-template-columns: minmax(220px, 280px) minmax(420px, 1fr) minmax(380px, 44vw);
 }
 .left-rail,
 .center-shell,
@@ -1720,6 +1723,9 @@ code {
   .coachbench-shell {
     grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
   }
+  body.right-drawer-open .coachbench-shell {
+    grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+  }
   .right-drawer {
     position: fixed;
     inset: 12px;
@@ -1733,6 +1739,9 @@ code {
   .coachbench-shell {
     grid-template-columns: 1fr;
     width: min(calc(100vw - 20px), 1400px);
+  }
+  body.right-drawer-open .coachbench-shell {
+    grid-template-columns: 1fr;
   }
   .left-rail {
     position: static;

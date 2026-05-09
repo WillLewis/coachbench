@@ -408,7 +408,7 @@
   }
 
   function init() {
-    if (!$('appRoot')?.dataset.shellRoot) return;
+    if (!$('appRoot')?.hasAttribute('data-shell-root')) return;
     bindPromptForm();
     bindGarageButtons();
     window.addEventListener('coachbench:assistant:request', handleRequest);

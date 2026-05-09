@@ -2385,6 +2385,7 @@
   },
   "film_room": {
     "headline": "Turnover on downs",
+    "narrative": null,
     "turning_point": {
       "play_index": 3,
       "expected_value_delta": 0.42,
