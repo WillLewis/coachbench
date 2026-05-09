@@ -23,6 +23,8 @@ def process_one(db_path: Path | str = "arena/storage/local/arena.sqlite3") -> bo
             _process_challenge(conn, payload)
         elif job["kind"] == "leaderboard_run":
             _process_leaderboard(conn, payload)
+        elif job["kind"] in {"arena_best_of_n", "arena_gauntlet", "arena_tournament"}:
+            _process_arena_job(conn, job["job_id"], job["kind"], payload)
         else:
             raise ValueError(f"unknown job kind: {job['kind']}")
         finish(conn, job["job_id"], "done")
@@ -143,6 +145,12 @@ def _process_leaderboard(conn, payload: dict) -> None:
         for seed in seeds:
             replay = _run_agent_drive(row, int(seed))
             add_run(conn, season_id, row["agent_id"], int(seed), replay["score"]["points"], replay["score"]["result"], len(replay["plays"]), row["access_tier"])
+
+
+def _process_arena_job(conn, job_id: str, kind: str, payload: dict) -> None:
+    from arena.runs.arena import run_arena_job
+
+    run_arena_job(conn, job_id, kind, payload)
 
 
 def main() -> None:

@@ -11,6 +11,8 @@ except ModuleNotFoundError:
 
 from coachbench.team_config import TeamConfig, load_team
 from coachbench.contracts import validate_tournament_report
+from arena.runs.arena import run_tournament_job
+from arena.storage.registry import connect
 
 
 DEFAULT_SEEDS = "42,99,202,311,404"
@@ -109,14 +111,44 @@ def build_report(team_paths: list[Path], seeds: list[int], max_plays: int) -> di
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run a local CoachBench round-robin tournament.")
-    parser.add_argument("--teams", required=True)
+    parser.add_argument("--teams")
+    parser.add_argument("--participant-draft-ids")
+    parser.add_argument("--side-assignments")
+    parser.add_argument("--db-path", type=Path, default=Path("arena/storage/local/arena.sqlite3"))
+    parser.add_argument("--job-id", default="cli_tournament")
     parser.add_argument("--seeds", default=DEFAULT_SEEDS)
     parser.add_argument("--max-plays", type=int, default=8)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
 
-    report = build_report([Path(item) for item in args.teams.split(",") if item], parse_seeds(args.seeds), args.max_plays)
-    validate_tournament_report(report)
+    seeds = parse_seeds(args.seeds)
+    if args.participant_draft_ids:
+        if not args.side_assignments:
+            raise SystemExit("--side-assignments is required with --participant-draft-ids")
+        assignments = {
+            key: value
+            for key, value in (
+                item.split(":", 1)
+                for item in args.side_assignments.split(",")
+                if item
+            )
+        }
+        report = run_tournament_job(
+            connect(args.db_path),
+            args.job_id,
+            {
+                "participant_draft_ids": [item for item in args.participant_draft_ids.split(",") if item],
+                "side_assignments": assignments,
+                "seed_pack": seeds,
+                "format": "round_robin",
+                "max_plays": args.max_plays,
+            },
+        )
+    else:
+        if not args.teams:
+            raise SystemExit("--teams is required unless --participant-draft-ids is provided")
+        report = build_report([Path(item) for item in args.teams.split(",") if item], seeds, args.max_plays)
+        validate_tournament_report(report)
     write_json(args.out, report)
     print(f"Wrote {args.out}")
 

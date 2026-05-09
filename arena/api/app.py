@@ -22,18 +22,22 @@ app = FastAPI(title="CoachBench Local Arena") if FastAPI else None
 if app:
     from arena.admin.routes import register_admin_routes
     from arena.api.routes_agents import router as agents_router
+    from arena.api.routes_arena import router as arena_router
     from arena.api.routes_challenges import router as challenges_router
     from arena.api.routes_drafts import router as drafts_router
     from arena.api.routes_jobs import router as jobs_router
     from arena.api.routes_leaderboard import router as leaderboard_router
     from arena.api.routes_llm_status import router as llm_status_router
+    from arena.api.routes_replays import router as replays_router
     from arena.api.routes_runs import router as runs_router
 
     app.include_router(agents_router)
+    app.include_router(arena_router)
     app.include_router(challenges_router)
     app.include_router(drafts_router)
     app.include_router(jobs_router)
     app.include_router(leaderboard_router)
     app.include_router(llm_status_router)
+    app.include_router(replays_router)
     app.include_router(runs_router)
     register_admin_routes(app)

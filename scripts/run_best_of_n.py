@@ -11,6 +11,8 @@ except ModuleNotFoundError:
 
 from coachbench.contracts import validate_best_of_n_report
 from coachbench.team_config import TeamConfig
+from arena.runs.arena import run_best_of_n_job
+from arena.storage.registry import connect
 
 
 DEFAULT_SEEDS = "42,99,202,311,404,515,628,733,841,956,1063"
@@ -69,15 +71,37 @@ def build_report(team_a_path: Path, team_b_path: Path, seeds: list[int], max_pla
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run a deterministic best-of-N red-zone evaluation.")
-    parser.add_argument("--team-a", required=True, type=Path)
-    parser.add_argument("--team-b", required=True, type=Path)
+    parser.add_argument("--team-a", type=Path)
+    parser.add_argument("--team-b", type=Path)
+    parser.add_argument("--offense-draft-id")
+    parser.add_argument("--defense-draft-id")
+    parser.add_argument("--db-path", type=Path, default=Path("arena/storage/local/arena.sqlite3"))
+    parser.add_argument("--job-id", default="cli_best_of_n")
     parser.add_argument("--seeds", default=DEFAULT_SEEDS)
     parser.add_argument("--max-plays", type=int, default=8)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
 
-    report = build_report(args.team_a, args.team_b, parse_seeds(args.seeds), args.max_plays)
-    validate_best_of_n_report(report)
+    seeds = parse_seeds(args.seeds)
+    if args.offense_draft_id or args.defense_draft_id:
+        if not args.offense_draft_id or not args.defense_draft_id:
+            raise SystemExit("--offense-draft-id and --defense-draft-id must be provided together")
+        report = run_best_of_n_job(
+            connect(args.db_path),
+            args.job_id,
+            {
+                "offense_draft_id": args.offense_draft_id,
+                "defense_draft_id": args.defense_draft_id,
+                "n": len(seeds),
+                "seed_pack": seeds,
+                "max_plays": args.max_plays,
+            },
+        )
+    else:
+        if not args.team_a or not args.team_b:
+            raise SystemExit("--team-a and --team-b are required unless draft ids are provided")
+        report = build_report(args.team_a, args.team_b, seeds, args.max_plays)
+        validate_best_of_n_report(report)
     write_json(args.out, report)
     print(f"Wrote {args.out}")
 

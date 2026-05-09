@@ -15,6 +15,8 @@ from agents.adaptive_defense import AdaptiveDefense
 from agents.adaptive_offense import AdaptiveOffense
 from agents.static_defense import StaticDefense
 from agents.static_offense import StaticOffense
+from arena.runs.arena import run_gauntlet_job
+from arena.storage.registry import connect
 
 
 DEFAULT_SEEDS = "42,99,202,311,404,515,628,733,841,956,1063"
@@ -101,17 +103,40 @@ def build_report(agent_path: str, side: str, seeds: list[int], max_plays: int) -
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run a local CoachBench agent gauntlet.")
-    parser.add_argument("--agent", required=True)
-    parser.add_argument("--side", required=True, choices=["offense", "defense"])
+    parser.add_argument("--agent")
+    parser.add_argument("--side", choices=["offense", "defense"])
+    parser.add_argument("--draft-id")
+    parser.add_argument("--draft-side", choices=["offense", "defense"])
+    parser.add_argument("--opponent-pool")
+    parser.add_argument("--db-path", type=Path, default=Path("arena/storage/local/arena.sqlite3"))
+    parser.add_argument("--job-id", default="cli_gauntlet")
     parser.add_argument("--seeds", default=DEFAULT_SEEDS)
     parser.add_argument("--max-plays", type=int, default=8)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
 
-    report = build_report(args.agent, args.side, parse_seeds(args.seeds), args.max_plays)
+    seeds = parse_seeds(args.seeds)
+    if args.draft_id:
+        if not args.draft_side or not args.opponent_pool:
+            raise SystemExit("--draft-side and --opponent-pool are required with --draft-id")
+        report = run_gauntlet_job(
+            connect(args.db_path),
+            args.job_id,
+            {
+                "draft_id": args.draft_id,
+                "draft_side": args.draft_side,
+                "opponent_pool": [item for item in args.opponent_pool.split(",") if item],
+                "seed_pack": seeds,
+                "max_plays": args.max_plays,
+            },
+        )
+    else:
+        if not args.agent or not args.side:
+            raise SystemExit("--agent and --side are required unless --draft-id is provided")
+        report = build_report(args.agent, args.side, seeds, args.max_plays)
     write_json(args.out, report)
     print(f"Wrote {args.out}")
-    if not report["passed"]:
+    if "passed" in report and not report["passed"]:
         raise SystemExit(1)
 
 

@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+import sqlite3
 from typing import Any
 
 from arena.api.deps import ROOT
+from arena.storage.registry import connect
 from arena.storage import drafts, sessions
 from arena.tiers.factory import tiered_agent_from_submission
 from coachbench.contracts import validate_replay_contract
@@ -24,6 +26,14 @@ def _load_conn():
     from arena.api.app import db
 
     return db()
+
+
+def _resolve_conn(conn: sqlite3.Connection | None = None, db_path: Path | str | None = None) -> sqlite3.Connection:
+    if conn is not None:
+        return conn
+    if db_path is not None:
+        return connect(db_path)
+    return _load_conn()
 
 
 def _config_payload(draft: dict[str, Any]) -> dict[str, Any]:
@@ -59,8 +69,12 @@ def run_drive_from_drafts(
     defense_draft_id: str,
     seed: int,
     max_plays: int = 8,
+    *,
+    conn: sqlite3.Connection | None = None,
+    db_path: Path | str | None = None,
+    run_id: str | None = None,
 ) -> RunResult:
-    conn = _load_conn()
+    conn = _resolve_conn(conn, db_path)
     offense_draft = drafts.get_draft(conn, offense_draft_id)
     defense_draft = drafts.get_draft(conn, defense_draft_id)
     if not offense_draft:
@@ -77,6 +91,7 @@ def run_drive_from_drafts(
         opponent_label=defense_draft["name"],
         seed=int(seed),
         status="running",
+        session_id=run_id,
     )
     run_id = session["id"]
     try:
