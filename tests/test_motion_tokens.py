@@ -45,11 +45,12 @@ def test_js_motion_timing_reads_css_tokens() -> None:
 
 def test_mobile_breakpoint_policy_is_declared() -> None:
     css = (ROOT / "ui/styles.css").read_text(encoding="utf-8")
-    garage_html = (ROOT / "ui/garage.html").read_text(encoding="utf-8")
+    app_html = (ROOT / "ui/app.html").read_text(encoding="utf-8")
 
     assert "@media (min-width: 640px)" in css
     assert "@media (max-width: 639px)" in css
     assert ".feed-panel { position: static; order: -1; max-height: none; }" in css
     assert ".field { min-height: 0; aspect-ratio: 16 / 9; }" in css
-    assert ".garage-workbench { display: none; }" in css
-    assert "Garage works best on desktop. Switch to a larger screen to edit, or browse your drafts in read-only mode." in garage_html
+    assert ".coachbench-shell" in css
+    assert ".right-drawer" in css
+    assert "Coming online" in app_html

@@ -1,38 +1,29 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 
-def test_garage_route_declares_tier_selector_controls_and_rule_builder() -> None:
+def test_garage_page_redirects_to_unified_shell() -> None:
     html = Path("ui/garage.html").read_text(encoding="utf-8")
-    script = Path("ui/app.js").read_text(encoding="utf-8")
+
+    assert "app.html#/garage" in html
+    assert 'src="topbar.js"' in html
+    assert 'id="garageTierSelector"' not in html
+
+
+def test_unified_shell_declares_workbench_and_backend_draft_status() -> None:
+    html = Path("ui/app.html").read_text(encoding="utf-8")
+    left_rail = Path("ui/left_rail.js").read_text(encoding="utf-8")
 
     assert 'data-route="garage"' in html
-    assert 'id="garageTierSelector"' in html
-    assert re.findall(r'name="garage_tier" value="([^"]+)"', html) == [
-        "declarative",
-        "prompt_policy",
-        "remote_endpoint",
-    ]
-    assert "Tier 0" in html
-    assert "Tier 1" in html
-    assert "Tier 2" in html
-
-    assert 'data-control-section="identity"' in html
-    assert 'data-control-section="strategy"' in html
-    assert 'data-control-section="resource"' in html
-    assert 'data-rule-builder' in html
-    assert 'id="ruleChain"' in html
-    assert "CBEmptyStates.emptyAgents()" in script
-    assert "parameter_glossary.json" in script
-    assert "garage_runner/index.json" in script
-    assert "Showing nearest pre-baked drive" in script
-    assert "function runGarageTestDrive" in script
+    assert 'id="draftSourceStatus"' in html
+    assert "/v1/drafts" in left_rail
+    assert "Backend source" in left_rail
+    assert "Offline mode" in left_rail
 
 
 def test_replay_detail_uses_compact_agent_card_not_big_garage_panel() -> None:
-    html = Path("ui/replay.html").read_text(encoding="utf-8")
+    html = Path("ui/app.html").read_text(encoding="utf-8")
     script = Path("ui/app.js").read_text(encoding="utf-8")
 
     assert 'class="panel compact-agent-card"' in html

@@ -4,149 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Replay</title>
-  <link rel="stylesheet" href="styles.css?v=tweak-loop-v1" />
+  <link rel="stylesheet" href="styles.css?v=p0-4-shell-v1" />
+  <script>
+    (() => {
+      const query = new URLSearchParams(location.search);
+      const seed = query.get('seed');
+      const hash = location.hash && location.hash !== '#'
+        ? location.hash
+        : `#/replays/${encodeURIComponent(seed ? `seed-${seed}` : 'seed-42')}`;
+      location.replace(`app.html${hash}`);
+    })();
+  </script>
 </head>
 <body>
   <div id="topbar"></div>
-  <noscript><a class="wordmark" href="/ui/index.html">CoachBench</a></noscript>
-
-  <main id="appRoot" class="shell">
-    <section data-route="replays" hidden>
-      <header class="gallery-header">
-        <h2>All replays</h2>
-        <p class="muted">Browse every seeded run. Pin two or more to compare.</p>
-      </header>
-      <div id="replayGallery" class="replay-gallery"></div>
-    </section>
-
-    <section data-route="replay-detail" hidden>
-      <div id="replayNotFound" class="empty-state" hidden></div>
-      <div id="replayDetailContent">
-        <section class="hero replay-hero row-mount">
-          <p class="eyebrow" id="replayHeroEyebrow">Replay detail</p>
-          <h1 id="replayHeroMatchup">—</h1>
-          <p class="subhead replay-meta-line" id="replayHeroMeta">—</p>
-        </section>
-
-        <section class="replay-layout row-mount">
-          <div class="replay-stage">
-            <header class="replay-meta-bar replay-topbar">
-              <p class="eyebrow">Replay detail</p>
-              <div id="modeBanner" class="mode-banner">Phase 0B static schema/UI proof - not an engine-generated benchmark result.</div>
-              <div id="scorecard" class="scorecard" aria-live="polite">
-                <span id="resultLabel">Loading</span>
-                <strong id="pointsLabel">0 pts</strong>
-                <small id="episodeLabel">episode</small>
-              </div>
-            </header>
-
-            <section class="panel film-room-panel row-mount">
-              <h2>Film Room</h2>
-              <div id="filmRoom"></div>
-            </section>
-
-            <section class="panel before-after-panel row-mount" id="beforeAfterPanel" hidden></section>
-
-            <article class="panel field-panel">
-              <div class="panel-title"><h2>Field + Selected Play</h2><span id="driveState">Loading</span></div>
-              <div class="field">
-                <div class="yard-rule y20"><span>20</span></div>
-                <div class="yard-rule y15"><span>15</span></div>
-                <div class="yard-rule y10"><span>10</span></div>
-                <div class="yard-rule y5"><span>5</span></div>
-                <div class="mid-rule"></div>
-                <div class="endzone">End Zone</div>
-                <div id="ball" class="ball"></div>
-              </div>
-            </article>
-
-            <section class="panel inspector-panel" aria-labelledby="inspectorTitle">
-              <div class="panel-title">
-                <h2 id="inspectorTitle">Play Inspector</h2>
-                <span id="inspectorPlayLabel">Play 1</span>
-              </div>
-              <div id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Play inspector tabs">
-                <button id="inspector-tab-outcome" class="inspector-tab active" type="button" role="tab" aria-selected="true" aria-controls="inspectorPanel" data-inspector-tab="outcome">Outcome</button>
-                <button id="inspector-tab-resources" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="resources" tabindex="-1">Resources</button>
-                <button id="inspector-tab-beliefs" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="beliefs" tabindex="-1">Beliefs</button>
-                <button id="inspector-tab-graph" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="graph" tabindex="-1">Graph Evidence</button>
-              </div>
-              <div id="inspectorPanel" class="inspector-content" role="tabpanel" tabindex="0" aria-labelledby="inspector-tab-outcome" data-active-tab="outcome"></div>
-            </section>
-
-            <section class="panel summary-panel row-mount">
-              <h2>Post-Drive Summary</h2>
-              <div id="driveSummary"></div>
-            </section>
-
-          </div>
-
-          <aside class="feed-panel panel" aria-label="Replay feed">
-            <div class="feed-head">
-              <div>
-                <p class="eyebrow">Chronological feed</p>
-                <h2>Play-by-play</h2>
-              </div>
-              <button id="resumeFeed" class="resume-chip" type="button" hidden>Resume</button>
-            </div>
-            <div id="autoplayProgress" class="autoplay-progress"></div>
-            <div id="playFeed" class="play-feed" role="list" tabindex="0"></div>
-          </aside>
-        </section>
-
-        <footer class="footer-strip row-mount">
-          <article class="panel compact-agent-card">
-            <h2>Coordinator Agent</h2>
-            <div id="agentCard"></div>
-          </article>
-          <article class="panel"><h2>Daily Slate</h2><div id="dailySlate"></div></article>
-          <article class="panel roster-panel"><h2>Roster Strengths</h2><div id="rosterStrengths"></div></article>
-          <button id="openGraphExplorer" class="btn explorer-launch" type="button">Graph Cards</button>
-        </footer>
-      </div>
-
-      <div id="graphOverlay" class="overlay" hidden>
-        <button id="overlayBackdrop" class="overlay-backdrop" type="button" aria-label="Close graph cards"></button>
-        <section class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="graphExplorerTitle">
-          <div class="overlay-head">
-            <div>
-              <p class="eyebrow">Graph-backed tactical truth</p>
-              <h2 id="graphExplorerTitle">Graph Cards</h2>
-            </div>
-            <button id="closeGraphExplorer" class="ghost-button" type="button">Close</button>
-          </div>
-          <input id="graphSearch" class="search" type="search" placeholder="Search card name, event, counter, or id" />
-          <div id="graphExplorerList" class="explorer-list"></div>
-        </section>
-      </div>
-    </section>
-
-    <section data-route="reports" hidden>
-      <section class="hero row-mount">
-        <p class="eyebrow">Reports</p>
-        <h1>Compare seeded runs</h1>
-        <p id="reportsRouteCopy" class="subhead"></p>
-      </section>
-    </section>
-
-    <section data-route="arena" hidden>
-      <section class="hero row-mount">
-        <p class="eyebrow">Arena</p>
-        <h1>Run local agent challenges</h1>
-        <p id="arenaRouteCopy" class="subhead"></p>
-      </section>
-    </section>
-
-    <aside id="compareTray" class="compare-tray" aria-label="Pinned replays" hidden></aside>
+  <main class="shell">
+    <p><a class="wordmark" href="/ui/index.html">CoachBench</a></p>
+    <p><a class="topbar-link" href="/ui/app.html#/replays/seed-42">Open replay detail</a></p>
   </main>
-
-  <script src="state.js"></script>
   <script src="topbar.js"></script>
-  <script src="field_render.js"></script>
-  <script src="chips.js"></script>
-  <script src="router.js"></script>
-  <script src="empty_states.js"></script>
-  <script src="adaptation.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>

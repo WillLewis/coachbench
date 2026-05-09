@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoachBench Workbench</title>
+  <link rel="stylesheet" href="styles.css?v=p0-4-shell-v1" />
+</head>
+<body>
+  <noscript><a class="wordmark" href="/ui/index.html">CoachBench</a></noscript>
+
+  <button id="rightDrawerScrim" class="right-drawer-scrim" type="button" aria-label="Close replay drawer" hidden></button>
+
+  <main id="appRoot" class="coachbench-shell" data-shell-root>
+    <aside class="left-rail" aria-label="CoachBench navigation">
+      <a class="rail-brand" href="/ui/index.html">CoachBench</a>
+      <nav class="rail-nav" aria-label="Primary">
+        <a href="/ui/index.html">Home</a>
+        <a href="#/garage" data-route-link="garage">Workbench</a>
+        <a href="#/replays" data-route-link="replays">Film Room</a>
+        <a href="#/reports" data-route-link="reports">Reports</a>
+        <a href="#/arena" data-route-link="arena">Arena</a>
+      </nav>
+
+      <section class="rail-section">
+        <div class="rail-section-title">
+          <h2>Opponents / Games</h2>
+          <span id="railIdentityStatus">-</span>
+        </div>
+        <div id="railIdentities" class="rail-list" aria-live="polite"></div>
+      </section>
+
+      <section class="rail-section rail-section--grow">
+        <div class="rail-section-title">
+          <h2>Past Matchups</h2>
+          <span id="railSessionStatus">-</span>
+        </div>
+        <div id="railSessions" class="rail-list" aria-live="polite"></div>
+      </section>
+    </aside>
+
+    <main class="center-shell" aria-label="CoachBench workbench">
+      <section class="assistant-surface panel">
+        <header class="assistant-header">
+          <p id="assistantEyebrow" class="eyebrow">Workbench · Agent Garage</p>
+          <h1 id="assistantTitle">Draft a coordinator agent</h1>
+          <p id="assistantSubtitle" class="subhead">Describe the coordinator you want. Proposal generation comes online in the next phase.</p>
+        </header>
+
+        <section class="conversation-skeleton" aria-label="Assistant conversation placeholder">
+          <div class="conversation-message conversation-message--system">
+            <strong>Assistant shell ready.</strong>
+            <p>Policy proposals will appear here after Assistant drafting lands. For now, use the cards below to seed the next request event.</p>
+          </div>
+          <div id="proposalDock" class="proposal-dock" aria-live="polite"></div>
+        </section>
+
+        <section class="suggested-prompts" aria-label="Suggested prompts">
+          <button class="suggested-prompt" type="button" data-canonical-prompt="Build an offense that punishes pressure without throwing picks.">Build an offense that punishes pressure without throwing picks.</button>
+          <button class="suggested-prompt" type="button" data-canonical-prompt="Make my defense disguise more without burning the rush budget.">Make my defense disguise more without burning the rush budget.</button>
+          <button class="suggested-prompt" type="button" data-canonical-prompt="We got baited by simulated pressure. What should I change?">We got baited by simulated pressure. What should I change?</button>
+          <button class="suggested-prompt" type="button" data-canonical-prompt="Build a run-first coordinator that unlocks play-action.">Build a run-first coordinator that unlocks play-action.</button>
+          <button class="suggested-prompt" type="button" data-canonical-prompt="Give me a safe red-zone defense that prevents explosives.">Give me a safe red-zone defense that prevents explosives.</button>
+        </section>
+
+        <form id="assistantPromptForm" class="prompt-box" aria-label="Assistant prompt">
+          <label class="sr-only" for="assistantPrompt">Assistant prompt</label>
+          <textarea id="assistantPrompt" rows="3" disabled placeholder="Coming online in P0-5."></textarea>
+          <div class="prompt-actions">
+            <span class="muted compact">Coming online — P0-5</span>
+            <button class="btn btn--primary" type="submit" disabled>Send</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="watch-film-strip panel">
+        <div class="panel-title">
+          <h2>Watch Film</h2>
+          <span>Open a replay in the side panel</span>
+        </div>
+        <div id="watchFilmCards" class="watch-film-cards"></div>
+      </section>
+
+      <section data-route="replays" class="center-route" hidden>
+        <header class="gallery-header">
+          <h2>Film Room</h2>
+          <p class="muted">Open a replay to inspect the play feed, graph evidence, and Film Room notes in the side panel.</p>
+        </header>
+        <div id="replayGallery" class="replay-gallery"></div>
+      </section>
+
+      <section data-route="garage" class="center-route" hidden>
+        <section class="panel route-card">
+          <p class="eyebrow">Workbench</p>
+          <h2>Drafts now live behind the local backend.</h2>
+          <p id="garageRouteCopy" class="muted">Saved drafts are loaded from <code>/v1/drafts</code>. Offline mode keeps only the current tab cache.</p>
+          <div id="draftSourceStatus" class="route-status"></div>
+        </section>
+      </section>
+
+      <section data-route="reports" class="center-route" hidden>
+        <section class="panel route-card">
+          <p class="eyebrow">Reports</p>
+          <h2>Compare fixed-seed outcomes.</h2>
+          <p id="reportsRouteCopy" class="muted">Open Arena reports or pin replays to compare policy changes across deterministic runs.</p>
+        </section>
+      </section>
+
+      <section data-route="arena" class="center-route" hidden>
+        <section class="panel route-card">
+          <p class="eyebrow">Arena</p>
+          <h2>Run gauntlets from saved drafts.</h2>
+          <p id="arenaRouteCopy" class="muted">Best-of-N, gauntlet, and tournament jobs are available through the local backend.</p>
+        </section>
+      </section>
+    </main>
+
+    <aside id="rightDrawer" class="right-drawer" aria-label="Replay and Film Room" hidden>
+      <section data-route="replay-detail" hidden>
+        <div class="drawer-head">
+          <div>
+            <p class="eyebrow">Watch Film</p>
+            <h2 id="drawerTitle">Replay Detail</h2>
+          </div>
+          <button id="closeRightDrawer" class="icon-btn" type="button" aria-label="Close replay drawer">×</button>
+        </div>
+
+        <div id="replayNotFound" class="empty-state" hidden></div>
+        <div id="replayDetailContent">
+          <section class="hero replay-hero row-mount">
+            <p class="eyebrow" id="replayHeroEyebrow">Replay detail</p>
+            <h1 id="replayHeroMatchup">-</h1>
+            <p class="subhead replay-meta-line" id="replayHeroMeta">-</p>
+          </section>
+
+          <section class="replay-layout row-mount">
+            <div class="replay-stage">
+              <header class="replay-meta-bar replay-topbar">
+                <p class="eyebrow">Replay detail</p>
+                <div id="modeBanner" class="mode-banner">Replay source pending</div>
+                <div id="scorecard" class="scorecard" aria-live="polite">
+                  <span id="resultLabel">Loading</span>
+                  <strong id="pointsLabel">0 pts</strong>
+                  <small id="episodeLabel">episode</small>
+                </div>
+              </header>
+
+              <section class="panel film-room-panel row-mount">
+                <h2>Film Room</h2>
+                <div id="filmRoom"></div>
+              </section>
+
+              <section class="panel before-after-panel row-mount" id="beforeAfterPanel" hidden></section>
+
+              <article class="panel field-panel">
+                <div class="panel-title"><h2>Field + Selected Play</h2><span id="driveState">Loading</span></div>
+                <div class="field">
+                  <div class="yard-rule y20"><span>20</span></div>
+                  <div class="yard-rule y15"><span>15</span></div>
+                  <div class="yard-rule y10"><span>10</span></div>
+                  <div class="yard-rule y5"><span>5</span></div>
+                  <div class="mid-rule"></div>
+                  <div class="endzone">End Zone</div>
+                  <div id="ball" class="ball"></div>
+                </div>
+              </article>
+
+              <section class="panel inspector-panel" aria-labelledby="inspectorTitle">
+                <div class="panel-title">
+                  <h2 id="inspectorTitle">Play Inspector</h2>
+                  <span id="inspectorPlayLabel">Play 1</span>
+                </div>
+                <div id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Play inspector tabs">
+                  <button id="inspector-tab-outcome" class="inspector-tab active" type="button" role="tab" aria-selected="true" aria-controls="inspectorPanel" data-inspector-tab="outcome">Outcome</button>
+                  <button id="inspector-tab-resources" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="resources" tabindex="-1">Resources</button>
+                  <button id="inspector-tab-beliefs" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="beliefs" tabindex="-1">Beliefs</button>
+                  <button id="inspector-tab-graph" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="graph" tabindex="-1">Graph Evidence</button>
+                </div>
+                <div id="inspectorPanel" class="inspector-content" role="tabpanel" tabindex="0" aria-labelledby="inspector-tab-outcome" data-active-tab="outcome"></div>
+              </section>
+
+              <section class="panel summary-panel row-mount">
+                <h2>Post-Drive Summary</h2>
+                <div id="driveSummary"></div>
+              </section>
+            </div>
+
+            <aside class="feed-panel panel" aria-label="Replay feed">
+              <div class="feed-head">
+                <div>
+                  <p class="eyebrow">Chronological feed</p>
+                  <h2>Play-by-play</h2>
+                </div>
+                <button id="resumeFeed" class="resume-chip" type="button" hidden>Resume</button>
+              </div>
+              <div id="autoplayProgress" class="autoplay-progress"></div>
+              <div id="playFeed" class="play-feed" role="list" tabindex="0"></div>
+            </aside>
+          </section>
+
+          <footer class="footer-strip row-mount">
+            <article class="panel compact-agent-card">
+              <h2>Coordinator Agent</h2>
+              <div id="agentCard"></div>
+            </article>
+            <article class="panel"><h2>Daily Slate</h2><div id="dailySlate"></div></article>
+            <article class="panel roster-panel"><h2>Roster Strengths</h2><div id="rosterStrengths"></div></article>
+            <button id="openGraphExplorer" class="btn explorer-launch" type="button">Graph Cards</button>
+          </footer>
+        </div>
+
+        <div id="graphOverlay" class="overlay" hidden>
+          <button id="overlayBackdrop" class="overlay-backdrop" type="button" aria-label="Close graph cards"></button>
+          <section class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="graphExplorerTitle">
+            <div class="overlay-head">
+              <div>
+                <p class="eyebrow">Graph-backed tactical truth</p>
+                <h2 id="graphExplorerTitle">Graph Cards</h2>
+              </div>
+              <button id="closeGraphExplorer" class="ghost-button" type="button">Close</button>
+            </div>
+            <input id="graphSearch" class="search" type="search" placeholder="Search card name, event, counter, or id" />
+            <div id="graphExplorerList" class="explorer-list"></div>
+          </section>
+        </div>
+      </section>
+    </aside>
+
+    <aside id="compareTray" class="compare-tray" aria-label="Pinned replays" hidden></aside>
+  </main>
+
+  <script src="state.js"></script>
+  <script src="topbar.js"></script>
+  <script src="field_render.js"></script>
+  <script src="chips.js"></script>
+  <script src="router.js"></script>
+  <script src="empty_states.js"></script>
+  <script src="adaptation.js"></script>
+  <script src="left_rail.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

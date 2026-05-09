@@ -1,5 +1,12 @@
 (() => {
+  const debugFromLocation = () => {
+    if (typeof location === 'undefined') return false;
+    const search = new URLSearchParams(location.search || '');
+    const hashQuery = String(location.hash || '').split('?')[1] || '';
+    return search.get('debug') === '1' || new URLSearchParams(hashQuery).get('debug') === '1';
+  };
   let state = {
+    debug: debugFromLocation(),
     replay: null,
     selectedIndex: 0,
     garageState: {},

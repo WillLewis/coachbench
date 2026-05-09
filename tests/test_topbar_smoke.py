@@ -16,5 +16,5 @@ def test_topbar_component_exposes_desktop_and_mobile_nav() -> None:
     assert "window.CBTopbar" in script
     assert "topbar-burger" in script
     assert "topbar-dropdown" in script
-    for label in ("Home", "Replays", "Garage", "Reports", "Arena"):
+    for label in ("Home", "Film Room", "Workbench", "Reports", "Arena"):
         assert label in script

@@ -17,13 +17,13 @@ def test_replay_index_seeds_gallery_with_three_cards() -> None:
         assert entry["top_graph_event"]
 
 
-def test_gallery_template_exposes_metrics_and_tier_chips() -> None:
+def test_gallery_template_exposes_metrics_and_identity_chips() -> None:
     script = Path("ui/app.js").read_text(encoding="utf-8")
-    html = Path("ui/replay.html").read_text(encoding="utf-8")
+    html = Path("ui/app.html").read_text(encoding="utf-8")
 
     for field in ("eyebrow", "matchup", "result", "sparkline", "invalid_actions", "top_graph_event"):
         assert f'data-card-field="{field}"' in script
-    assert 'data-tier-chip="offense"' in script
-    assert 'data-tier-chip="defense"' in script
+    assert "identity-chip--offense" in script
+    assert "identity-chip--defense" in script
     assert 'data-compare-id="' in script
     assert 'id="compareTray"' in html

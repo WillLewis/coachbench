@@ -4,30 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Arena</title>
-  <link rel="stylesheet" href="styles.css?v=garage-restore-v1" />
+  <link rel="stylesheet" href="styles.css?v=p0-4-shell-v1" />
+  <script>location.replace(`app.html#/arena${location.search || ''}`);</script>
 </head>
 <body>
   <div id="topbar"></div>
   <main class="shell">
-    <section class="hero row-mount">
-      <p class="eyebrow">Arena · Phase 3</p>
-      <h1>Run local agent challenges</h1>
-      <p class="subhead">A local gauntlet: pit saved Garage agents against Team A Static Baseline and Team B Adaptive Counter across a deterministic seed set, then inspect how often the edge holds.</p>
-    </section>
-
-    <section class="panel roadmap-panel row-mount">
-      <p class="eyebrow">Planned</p>
-      <ul class="roadmap-list">
-        <li>Pick a saved Garage draft as the offensive or defensive coordinator.</li>
-        <li>Best-of-N matches against Team A Static Baseline and Team B Adaptive Counter.</li>
-        <li>Local seed gauntlet with a reproducible result report.</li>
-        <li>Tournament runner across multiple Garage drafts.</li>
-        <li>Replay export and Film Room links per match.</li>
-      </ul>
-      <p class="muted compact">Tracked in <code>PLAN.md</code> Phase 3, Local Agent Ecosystem.</p>
-    </section>
+    <p><a class="wordmark" href="/ui/app.html#/arena">CoachBench Arena</a></p>
   </main>
   <script src="topbar.js"></script>
-  <script>window.CBTopbar.renderTopbar('arena');</script>
 </body>
 </html>

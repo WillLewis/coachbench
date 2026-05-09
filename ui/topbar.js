@@ -1,10 +1,10 @@
 (() => {
   const pages = [
     ['home', 'Home', '/ui/index.html'],
-    ['replays', 'Replays', '/ui/replays.html'],
-    ['garage', 'Garage', '/ui/garage.html'],
-    ['reports', 'Reports', '/ui/reports.html'],
-    ['arena', 'Arena', '/ui/arena.html'],
+    ['replays', 'Film Room', '/ui/app.html#/replays'],
+    ['garage', 'Workbench', '/ui/app.html#/garage'],
+    ['reports', 'Reports', '/ui/app.html#/reports'],
+    ['arena', 'Arena', '/ui/app.html#/arena'],
   ];
 
   function renderTopbar(activePage = 'home') {

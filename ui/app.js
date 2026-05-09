@@ -50,6 +50,12 @@ const displayHandle = raw => {
   const handle = toHandle(raw);
   return handle.replace(/^team[ab]/, '').replace(/^team/, '') || handle;
 };
+const launchName = (raw, fallback) => {
+  const text = String(raw || '').trim();
+  return /team\s+[ab]|static\s+(baseline|offense|defense)|adaptive\s+(counter|offense|defense)/i.test(text)
+    ? fallback
+    : (text || fallback);
+};
 const chipConceptFor = id => CHIP_CARD_CONCEPT[String(id || '').toLowerCase()] || String(id || '').toLowerCase();
 const chipClassFor = id => window.CBChips?.chipClassFor(chipConceptFor(id)) || 'chip';
 const formatMatchup = raw => {
@@ -71,7 +77,25 @@ async function fetchJson(url) {
 async function loadReplayIndex() {
   if (runtime.replayIndex) return runtime.replayIndex;
   const index = await fetchJson('replay_index.json').catch(() => []);
-  runtime.replayIndex = Array.isArray(index) ? index : [];
+  const manifest = await loadManifest().catch(() => ({ replays: [] }));
+  const manifestBySeed = new Map((manifest.replays || []).map(item => [String(item.seed), item]));
+  runtime.replayIndex = Array.isArray(index) ? index.map(item => {
+    const launch = manifestBySeed.get(String(item.seed));
+    return launch ? {
+      ...item,
+      offense_label: launch.offense_label,
+      defense_label: launch.defense_label,
+      offense_identity_id: launch.offense_identity_id,
+      defense_identity_id: launch.defense_identity_id,
+      technical_label: launch.technical_label,
+      path: launch.replay_path || item.path,
+      plays: launch.summary?.plays ?? item.plays,
+      top_concept: launch.summary?.top_concept || item.top_concept,
+      terminal_result: launch.summary?.result || item.terminal_result,
+      points: launch.summary?.points ?? item.points,
+      invalid_actions: launch.summary?.invalid_action_count ?? item.invalid_actions,
+    } : item;
+  }) : [];
   runtime.replaySources = {
     ...fallbackReplaySources,
     ...Object.fromEntries(runtime.replayIndex.map(item => [item.id, item.path])),
@@ -135,7 +159,11 @@ async function fetchReplayById(id) {
   await loadReplayIndex();
   await loadManifest();
   const source = replaySourceForId(id);
-  if (!source) throw new Error(`Replay not found: ${id}`);
+  if (!source) {
+    const apiReplay = await fetchJson(`/v1/replays/${encodeURIComponent(id)}`).catch(() => null);
+    if (apiReplay) return annotateReplay(apiReplay);
+    throw new Error(`Replay not found: ${id}`);
+  }
   const rawReplay = await fetchJson(source).catch(error => {
     if (id === 'seed-42') return fetchJson(fallbackReplaySources['static-proof']);
     throw error;
@@ -147,12 +175,8 @@ async function loadReplay(id, playParam) {
   await loadSharedData();
   await loadReplayIndex();
   await loadManifest();
-  const source = replaySourceForId(id);
-  if (!source) {
-    renderReplayNotFound(id);
-    return;
-  }
-  const replay = await fetchReplayById(id);
+  const replay = await fetchReplayById(id).catch(() => null);
+  if (!replay) return renderReplayNotFound(id);
   runtime.replayId = id;
   CBState.set({
     replay,
@@ -217,6 +241,12 @@ function setActiveRoute(route) {
   document.querySelectorAll('[data-route]').forEach(section => {
     section.hidden = section.dataset.route !== route.name;
   });
+  const drawer = $('rightDrawer');
+  const scrim = $('rightDrawerScrim');
+  const drawerOpen = route.name === 'replay-detail';
+  if (drawer) drawer.hidden = !drawerOpen;
+  if (scrim) scrim.hidden = !drawerOpen;
+  document.body.classList.toggle('right-drawer-open', drawerOpen);
   document.querySelectorAll('[data-route-link]').forEach(link => {
     const active = link.dataset.routeLink === route.name || (link.dataset.routeLink === 'replays' && route.name === 'replay-detail');
     link.classList.toggle('active', active);
@@ -240,15 +270,13 @@ async function handleRoute(route) {
       await loadReplay(route.params.id, route.params.play);
     }
   } else if (route.name === 'garage') {
-    await loadSharedData();
-    ensureGarageDefaults();
-    await prepareGarageFromQuery(route.params);
-    renderGaragePage(route.params);
+    renderRouteStub('garageRouteCopy', 'Saved drafts load from the local backend. Assistant editing lands next.');
   } else if (route.name === 'reports') {
     renderReports(route.params.compare);
   } else if (route.name === 'arena') {
-    renderRouteStub('arenaRouteCopy', 'Coming in Pass 8.');
+    renderRouteStub('arenaRouteCopy', 'Run Best-of-N, gauntlets, and tournaments from saved drafts through the local backend.');
   }
+  window.CBLeftRail?.updateRouteCopy?.(route);
   renderCompareTray();
 }
 
@@ -270,6 +298,7 @@ async function renderGallery() {
       toggleCompare(button.dataset.compareId);
     };
   });
+  window.CBLeftRail?.bindReplayButtons?.(target);
   mountRows(target);
 }
 
@@ -279,24 +308,26 @@ function renderRouteStub(id, copy) {
 
 function renderReports(compare) {
   const ids = String(compare || '').split(',').filter(Boolean);
-  renderRouteStub('reportsRouteCopy', ids.length ? `Coming in Pass 7. Reserved comparison: ${ids.join(', ')}.` : 'Coming in Pass 7.');
+  renderRouteStub('reportsRouteCopy', ids.length ? `Reserved comparison: ${ids.join(', ')}.` : 'Open an Arena report or pin replays to compare fixed-seed outcomes.');
 }
 
 function renderReplayCard(item) {
   const pinned = CBState.get().pinnedForCompare.includes(item.id);
   const seed = item.id === 'static-proof' ? 'STATIC PROOF' : `SEED ${item.seed}`;
   const terminal = terminalClass(item.terminal_result);
-  const offenseLabel = displayHandle(item.offense_label || 'Team A coordinator agent') || 'coordinatoragent';
-  const defenseLabel = displayHandle(item.defense_label || 'Team B coordinator agent') || 'coordinatoragent';
-  const tierColorCount = [item.tier_offense, item.tier_defense].filter(tier => Number(tier) > 0).length;
-  const conceptChips = galleryConceptChips(item, Math.max(0, 3 - tierColorCount));
+  const offenseLabel = launchName(item.offense_label, item.technical_label?.offense || 'Offense');
+  const defenseLabel = launchName(item.defense_label, item.technical_label?.defense || 'Defense');
+  const matchup = `${offenseLabel} ⇌ ${defenseLabel}`;
+  const points = item.points ?? item.summary?.points;
+  const resultText = [label(item.terminal_result || 'result'), points === undefined ? null : `${points} pts`].filter(Boolean).join(' · ');
+  const conceptChips = galleryConceptChips(item, 3);
   return `<article class="replay-card panel" data-gallery-card="${escapeHtml(item.id)}">
     <button class="compare-toggle" type="button" data-compare-id="${escapeHtml(item.id)}" aria-pressed="${pinned}">${pinned ? 'Pinned' : '+ Compare'}</button>
     <a class="replay-card-main" href="#/replays/${encodeURIComponent(item.id)}">
       <span class="eyebrow" data-card-field="eyebrow"><span class="seed-dot ${terminal ? `seed-dot--${terminal}` : ''}"></span>${seed} · RED ZONE · ${item.plays} PLAYS</span>
-      <strong data-card-field="matchup">${escapeHtml(formatMatchup(item.matchup))}</strong>
-      <span class="result-row" data-card-field="result"><span>${escapeHtml(item.result)}</span><em>${escapeHtml(item.outcome_chip || label(item.terminal_result))}</em></span>
-      <span class="tier-row"><span class="tier-chip" data-tier-chip="offense" data-tier-num="${escapeHtml(item.tier_offense ?? '')}">${escapeHtml(offenseLabel)} · Tier ${item.tier_offense}</span><span class="tier-chip" data-tier-chip="defense" data-tier-num="${escapeHtml(item.tier_defense ?? '')}">${escapeHtml(defenseLabel)} · Tier ${item.tier_defense}</span></span>
+      <strong data-card-field="matchup">${escapeHtml(matchup)}</strong>
+      <span class="result-row" data-card-field="result"><span>${escapeHtml(resultText)}</span><em>${escapeHtml(label(item.terminal_result))}</em></span>
+      <span class="identity-row"><span class="identity-chip identity-chip--offense">${escapeHtml(offenseLabel)}</span><span class="identity-chip identity-chip--defense">${escapeHtml(defenseLabel)}</span></span>
       ${conceptChips ? `<span class="gallery-concepts">${conceptChips}</span>` : ''}
       ${gallerySparkline(item.sparkline || [], item.terminal_result)}
       <span class="metric-row"><span data-card-field="invalid_actions">${item.invalid_actions} invalid actions</span><span data-card-field="top_graph_event">${escapeHtml(truncate(item.top_graph_event))}</span></span>
@@ -437,7 +468,7 @@ function renderHeader() {
   const staticMode = replay.metadata.mode === 'static_proof';
   renderReplayHero(replay);
   $('modeBanner').textContent = staticMode
-    ? 'Phase 0B static schema/UI proof - not an engine-generated benchmark result.'
+    ? 'Static schema proof replay'
     : 'Engine-generated replay';
   $('modeBanner').classList.toggle('static-proof', staticMode);
   morphText($('resultLabel'), label(replay.score.result));
@@ -452,11 +483,13 @@ function renderReplayHero(replay) {
     || String(runtime.replayId || '').match(/^seed-(\d+)$/)?.[1]
     || replay.agent_garage_config?.runner_seed;
   const meta = (runtime.manifest?.replays || []).find(item => String(item.seed) === String(seed));
-  const offenseHandle = displayHandle(meta?.offense_handle || replay.agents?.offense || 'team a');
-  const defenseHandle = displayHandle(meta?.defense_handle || replay.agents?.defense || 'team b');
+  const offenseHandle = meta?.offense_label || launchName(replay.agents?.offense, 'Offense');
+  const defenseHandle = meta?.defense_label || launchName(replay.agents?.defense, 'Defense');
   const matchup = $('replayHeroMatchup');
   const metaLine = $('replayHeroMeta');
-  if (matchup) matchup.textContent = `${offenseHandle || 'offense'} ⇌ ${defenseHandle || 'defense'}`;
+  if (matchup) matchup.textContent = `${offenseHandle || 'Offense'} ⇌ ${defenseHandle || 'Defense'}`;
+  const drawerTitle = $('drawerTitle');
+  if (drawerTitle) drawerTitle.textContent = `${offenseHandle || 'Offense'} ⇌ ${defenseHandle || 'Defense'}`;
   if (metaLine) {
     metaLine.innerHTML = `SEED ${seed ?? '—'}<span class="dot"></span>${replay.plays.length} plays<span class="dot"></span>${label(replay.score.result)}<span class="dot"></span>${replay.score.points} pts`;
   }
@@ -476,10 +509,19 @@ function renderPlayFeed() {
   const replay = currentReplay();
   const feed = $('playFeed');
   feed.innerHTML = replay.plays.map((play, index) => feedCard(play, index)).join('');
-  feed.querySelectorAll('[data-feed-index]').forEach(card => {
+  feed.querySelectorAll('.feed-card[data-feed-index]').forEach(card => {
     card.onclick = () => {
       pauseForUser();
       selectPlay(Number(card.dataset.feedIndex), { syncHash: true, scroll: false, source: 'click' });
+    };
+  });
+  feed.querySelectorAll('[data-assistant-play]').forEach(button => {
+    button.onclick = event => {
+      event.stopPropagation();
+      const playIndex = Number(button.dataset.assistantPlay);
+      window.dispatchEvent(new CustomEvent('coachbench:assistant:request', {
+        detail: { type: 'film_room_tweak', run_id: runtime.replayId || 'seed-42', play_index: playIndex },
+      }));
     };
   });
   feed.onscroll = () => {
@@ -498,12 +540,15 @@ function feedCard(play, index) {
   const turningPoint = currentReplay().film_room?.turning_point?.play_index === pub.play_index;
   const adaptation = play.is_adaptation;
   const cards = (pub.graph_card_ids || []).map(id => `<span class="${graphChipClass(id, adaptation)}" title="${escapeHtml(id)}">${escapeHtml(cardLabel(id))}</span>`).join('');
-  return `<button class="feed-card ${adaptation ? 'is-adaptation' : ''}" type="button" role="listitem" data-feed-index="${index}" aria-current="false">
-    <span class="feed-eyebrow">${adaptation ? `ADAPTATION · PLAY ${pub.play_index}` : `PLAY ${pub.play_index} · ${offense} vs ${defense}`}${turningPoint ? ' · ★ TURNING POINT' : ''}</span>
-    <span class="feed-body">${outcome}</span>
-    ${adaptation ? `<span class="feed-causal">${causalLine(play)}</span>` : ''}
-    <span class="feed-tags">${cards || '<span class="muted">No graph card</span>'}</span>
-  </button>`;
+  return `<article class="feed-card-shell" role="listitem">
+    <button class="feed-card ${adaptation ? 'is-adaptation' : ''}" type="button" data-feed-index="${index}" aria-current="false">
+      <span class="feed-eyebrow">${adaptation ? `ADAPTATION · PLAY ${pub.play_index}` : `PLAY ${pub.play_index} · ${offense} vs ${defense}`}${turningPoint ? ' · ★ TURNING POINT' : ''}</span>
+      <span class="feed-body">${outcome}</span>
+      ${adaptation ? `<span class="feed-causal">${causalLine(play)}</span>` : ''}
+      <span class="feed-tags">${cards || '<span class="muted">No graph card</span>'}</span>
+    </button>
+    <button class="feed-tweak-action ghost-button" type="button" data-assistant-play="${pub.play_index}">Apply suggested tweak</button>
+  </article>`;
 }
 
 function graphChipClass(cardId, isAdaptation) {
@@ -757,10 +802,15 @@ function renderFilmRoom() {
   const target = $('filmRoom');
   target.innerHTML = renderFilmRoomHtml(replay);
   target.querySelectorAll('[data-apply-tweak]').forEach(button => {
-    button.onclick = () => navigateToGarage({ from: runtime.replayId || 'seed-42', apply: button.dataset.applyTweak });
+    button.onclick = () => dispatchAssistantRequest({
+      type: 'film_room_tweak',
+      run_id: runtime.replayId || 'seed-42',
+      tweak_id: button.dataset.applyTweak,
+      play_index: replay.film_room?.turning_point?.play_index || CBState.get().selectedIndex + 1,
+    });
   });
   target.querySelectorAll('[data-tune-agent]').forEach(button => {
-    button.onclick = () => navigateToGarage({ from: runtime.replayId || 'seed-42' });
+    button.onclick = () => dispatchAssistantRequest({ type: 'film_room_tweak', run_id: runtime.replayId || 'seed-42', play_index: CBState.get().selectedIndex + 1 });
   });
 }
 
@@ -831,6 +881,10 @@ function garageUrl(params = {}) {
 
 function navigateToGarage(params = {}) {
   window.location.href = garageUrl(params);
+}
+
+function dispatchAssistantRequest(detail) {
+  window.dispatchEvent(new CustomEvent('coachbench:assistant:request', { detail }));
 }
 
 async function renderBeforeAfter() {
@@ -1192,13 +1246,12 @@ function renderCompactAgentCard() {
   target.innerHTML = `<div class="agent-card-compact">
     <div>
       <p class="eyebrow">Read-only replay config</p>
-      <h3>${escapeHtml(displayHandle(offense.label || 'Static Baseline'))} / ${escapeHtml(displayHandle(defense.label || 'Adaptive Counter'))}</h3>
+      <h3>${escapeHtml(launchName(offense.label, 'Offense policy'))} / ${escapeHtml(launchName(defense.label, 'Defense policy'))}</h3>
     </div>
-    <span class="tier-chip">Tier 0</span>
     <p class="compact">${differences.length ? differences.map(item => `${label(item.key)} ${item.delta}`).join(' · ') : 'No local tuning over profile defaults.'}</p>
-    <button id="tuneAgent" class="ghost-button" type="button">Tune Agent →</button>
+    <button id="tuneAgent" class="ghost-button" type="button">Ask Assistant</button>
   </div>`;
-  $('tuneAgent').onclick = () => navigateToGarage({ from: runtime.replayId || 'seed-42' });
+  $('tuneAgent').onclick = () => dispatchAssistantRequest({ type: 'film_room_tweak', run_id: runtime.replayId || 'seed-42', play_index: CBState.get().selectedIndex + 1 });
 }
 
 function compactProfileDiffs(garageState) {
@@ -1406,10 +1459,10 @@ function renderGarageControls() {
       target.innerHTML = renderGarageResourceValidation();
       return;
     }
-    const keys = tier === 'remote_endpoint' && section !== 'identity' ? [] : garageControlKeys(section);
+    const keys = tier === 'remote_endpoint' && !CBState.get().debug && section !== 'identity' ? [] : garageControlKeys(section);
     target.innerHTML = keys.length
       ? keys.map(key => garageControlRow(key)).join('')
-      : '<p class="muted compact">This tier uses endpoint-owned strategy; local controls are hidden.</p>';
+      : '<p class="muted compact">Endpoint-owned strategy is hidden outside debug mode.</p>';
   });
   document.querySelectorAll('[data-garage-control]').forEach(input => {
     input.oninput = updateGarageControl;
@@ -1419,13 +1472,13 @@ function renderGarageControls() {
 
 function tierExplainerHtml(tier) {
   const rows = [
-    ['Tier 0', 'Declarative presets and legal knobs. Runs locally today through the pre-baked replay matrix.'],
-    ['Tier 1', 'Prompt-policy editing is documentation-only in this static UI until the local policy runner lands.'],
-    ['Tier 2', 'Remote endpoint testing needs sandbox and network review, so it is not runnable from this page.'],
+    ['Local presets', 'Declarative policies and legal knobs run through the local replay matrix.'],
+    ['Prompt policies', 'Prompt-policy configs are validated before they run.'],
+    ['Endpoint policies', 'Endpoint testing stays debug-only.'],
   ];
   const suffix = tier === 'declarative'
-    ? 'Current mode: Tier 0 can launch a static pre-baked test drive.'
-    : 'Current mode: only Tier 0 can run locally today.';
+    ? 'Current mode: local presets can launch a pre-baked test drive.'
+    : 'Current mode: only validated local presets run from this debug panel.';
   return `<p class="muted compact">${rows.map(([name, copy]) => `<strong>${name}</strong>: ${copy}`).join('<br>')}<br>${suffix}</p>`;
 }
 
@@ -1496,8 +1549,8 @@ function garageTooltipHtml(key) {
 function garageValidationMessage(key) {
   if (key === 'runner_seed') return garageRunnerEntries().length ? 'Seed is available in the pre-baked matrix.' : 'Build the garage runner matrix before running.';
   if (key.includes('archetype')) return 'Preset is available in the pre-baked matrix.';
-  if (CBState.get().garageTier !== 'declarative') return 'Only Tier 0 runs locally today.';
-  return 'Legal for the selected pre-baked Tier 0 matrix.';
+  if (CBState.get().garageTier !== 'declarative') return 'Only validated local presets run here.';
+  return 'Legal for the selected local matrix.';
 }
 
 function garageControlValue(key) {
@@ -1611,7 +1664,7 @@ function renderGarageResourceValidation() {
   const list = [...errors, ...warnings, ...(errors.length || warnings.length ? [] : ['Legal-action validation and resource budgets are clean for this pre-baked drive.'])];
   return `<div class="garage-validation ${status}">
     <div class="validation-badge ${errors.length ? 'is-warn' : 'is-ok'}">${errors.length ? 'Blocked' : 'Runnable'}</div>
-    ${!resolved.exact && entry ? '<p class="mode-banner garage-nearest-banner">Showing nearest pre-baked drive — exact custom configs run in Phase 2.75.</p>' : ''}
+    ${!resolved.exact && entry ? '<p class="mode-banner garage-nearest-banner">Showing nearest pre-baked drive.</p>' : ''}
     <div class="garage-validation-grid">${rows.map(([name, raw]) => `<div class="kv"><span>${escapeHtml(name)}</span><span>${escapeHtml(raw)}</span></div>`).join('')}</div>
     <ul class="validation-list">${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
   </div>`;
@@ -1622,7 +1675,7 @@ function garageValidationErrors(resolved = garageResolvedRunner()) {
   const controlKeys = [...garageControlKeys('identity'), ...garageControlKeys('strategy')];
   const controlErrors = controlKeys.map(key => validateGarageControl(key, garageControlValue(key))).filter(Boolean);
   const errors = [...controlErrors];
-  if (tier !== 'declarative') errors.push('Only Tier 0 declarative presets run locally today.');
+  if (tier !== 'declarative') errors.push('Only validated local presets run locally today.');
   if (!garageRunnerEntries().length) errors.push('No pre-baked garage runner matrix found. Run python scripts/build_garage_runner_matrix.py.');
   if (!resolved.entry) errors.push('No pre-baked replay exists for the resolved preset matchup and seed.');
   if (resolved.entry?.invalid_actions) errors.push('The selected pre-baked drive contains a legal-action validation fallback.');
@@ -1632,7 +1685,7 @@ function garageValidationErrors(resolved = garageResolvedRunner()) {
 
 function garageValidationWarnings(resolved = garageResolvedRunner()) {
   const warnings = [];
-  if (!resolved.exact && resolved.entry) warnings.push('Showing nearest pre-baked drive — exact custom configs run in Phase 2.75.');
+  if (!resolved.exact && resolved.entry) warnings.push('Showing nearest pre-baked drive.');
   return warnings;
 }
 
@@ -1717,7 +1770,7 @@ function renderGarageActions() {
   const errors = garageValidationErrors(resolved);
   const valid = errors.length === 0;
   button.disabled = !valid;
-  button.title = valid ? 'Run the nearest pre-baked Tier 0 drive.' : errors[0] || 'Fix validation errors first.';
+  button.title = valid ? 'Run the nearest pre-baked drive.' : errors[0] || 'Fix validation errors first.';
   button.classList.toggle('ready', valid);
   button.onclick = runGarageTestDrive;
   const link = $('garageReplayLink');
@@ -1737,7 +1790,7 @@ function replayUrlForRunnerEntry(entry, params = {}) {
     if (raw !== undefined && raw !== null && raw !== '') query.set(key, raw);
   });
   const suffix = query.toString() ? `?${query.toString()}` : '';
-  return `replay.html#/replays/${encodeURIComponent(entry.id)}${suffix}`;
+  return `app.html#/replays/${encodeURIComponent(entry.id)}${suffix}`;
 }
 
 function runGarageTestDrive() {
@@ -1764,7 +1817,7 @@ function runGarageTestDrive() {
   };
   if (applied?.parent_run_id) {
     run.parent_run_id = applied.parent_run_id;
-    run.parent_href = `replay.html#/replays/${encodeURIComponent(applied.parent_run_id)}`;
+    run.parent_href = `app.html#/replays/${encodeURIComponent(applied.parent_run_id)}`;
     run.applied_tweak = applied;
   }
   saveGarageRecentRun(run);
@@ -1790,7 +1843,7 @@ function renderGarageDrafts() {
       : '<p class="muted compact">No saved drafts in this browser.</p>'
   }</div><div class="recent-panel"><h3>Recent Runs</h3>${
     runs.length
-      ? runs.map(run => `<div class="run-row"><a href="${escapeHtml(run.href)}"><span>${escapeHtml(run.offense)} vs ${escapeHtml(run.defense)}</span><small>Seed ${escapeHtml(run.seed)} · ${escapeHtml(label(run.result))} · ${escapeHtml(run.points)} pts${run.exact ? '' : ' · nearest'}</small></a>${run.parent_run_id ? `<a class="parent-run-link" href="${escapeHtml(run.parent_href || `replay.html#/replays/${encodeURIComponent(run.parent_run_id)}`)}">Parent run</a>` : ''}</div>`).join('')
+      ? runs.map(run => `<div class="run-row"><a href="${escapeHtml(run.href)}"><span>${escapeHtml(run.offense)} vs ${escapeHtml(run.defense)}</span><small>Seed ${escapeHtml(run.seed)} · ${escapeHtml(label(run.result))} · ${escapeHtml(run.points)} pts${run.exact ? '' : ' · nearest'}</small></a>${run.parent_run_id ? `<a class="parent-run-link" href="${escapeHtml(run.parent_href || `app.html#/replays/${encodeURIComponent(run.parent_run_id)}`)}">Parent run</a>` : ''}</div>`).join('')
       : '<p class="muted compact">No test drives launched in this browser.</p>'
   }</div>`;
   $('garageDrafts').querySelectorAll('[data-draft-load]').forEach(button => button.onclick = loadGarageDraft);
@@ -1896,7 +1949,7 @@ function slateCard(entry, index, results) {
   const result = results[index];
   return `<div class="slate-card">
     <strong class="slate-seed">${entry.seed || `Entry ${index + 1}`}</strong>
-    <span class="slate-matchup">${escapeHtml(displayHandle(match.offense) || 'offense')} vs ${escapeHtml(displayHandle(match.defense) || 'defense')}</span>
+    <span class="slate-matchup">${escapeHtml(launchName(match.offense, 'Offense'))} vs ${escapeHtml(launchName(match.defense, 'Defense'))}</span>
     <div class="slate-result"><span class="slate-label">Result</span><span class="slate-value">${result ? label(result.result) : 'Preview Pending'}</span></div>
     <div class="slate-points"><span class="slate-label">Points</span><span class="slate-value">${result ? result.points : '-'}</span></div>
     <p class="slate-note">preview not available in static proof</p>

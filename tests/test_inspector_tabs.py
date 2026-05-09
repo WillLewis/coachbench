@@ -36,7 +36,7 @@ class TabParser(HTMLParser):
 
 def test_play_inspector_has_four_accessible_tabs():
     parser = TabParser()
-    parser.feed(Path("ui/replay.html").read_text())
+    parser.feed(Path("ui/app.html").read_text())
 
     assert parser.tablist_count == 1
     assert parser.tabpanel_count == 1
