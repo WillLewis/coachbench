@@ -1,0 +1,25 @@
+# P0-5 Assistant Policy Loop Audit
+
+Proposal schema shipped as strict JSON with exactly these fields: `summary` string, `intent` enum `create|tweak|save_as_new|clarify`, nullable `target_draft_id`, `target_tier` enum `declarative|prompt_policy`, `target_side` enum `offense|defense`, nullable `target_identity_id`, `proposed_changes[]`, `evidence_refs[]`, and `requires_confirmation` boolean. Each change is `{parameter, from, to, reason}`. Each evidence ref is `{type: film_room_event|graph_card|identity_fact, id, play_index}`. `clarify` is inert and must have no changes.
+
+Legal Assistant parameters are extracted from `agent_garage/parameter_glossary.json`: `risk_tolerance`, `adaptation_speed`, `screen_trigger_confidence`, `explosive_shot_tolerance`, `run_pass_tendency`, `disguise_sensitivity`, `pressure_frequency`, `counter_repeat_tolerance`. Numeric parameters are constrained to `0..1`. `risk_tolerance` accepts `low|medium_low|medium|medium_high|high`, then compiles to the current declarative validator's `low|medium|high` surface. `run_pass_tendency` accepts `balanced_pass|pass_heavy|constraint_heavy|run_to_play_action`. P0-5 stores the user-facing knobs in `constraints.assistant_parameters` and compiles them into existing validated fields: risk, adaptation speed, preferred concepts, avoided concepts, red-zone/third-down defaults, and `max_*_rate` constraints. This avoids inventing new tactical truth while preserving the knobs for inspection and future tuning.
+
+Canonical template behavior:
+
+| Prompt | Behavior |
+| --- | --- |
+| `Build an offense that punishes pressure without throwing picks.` | offense/create; `screen_trigger_confidence=0.68`, `explosive_shot_tolerance=0.25`, `risk_tolerance=medium`; evidence `redzone.screen_vs_zero_pressure.v1`, `redzone.vertical_vs_two_high.v1`. |
+| `Make my defense disguise more without burning the rush budget.` | defense/create; `disguise_sensitivity=0.76`, `pressure_frequency=0.42`; evidence `redzone.screen_vs_simulated_pressure.v1`. |
+| `We got baited by simulated pressure. What should I change?` | offense/tweak when an active offense draft exists, otherwise create; `screen_trigger_confidence=0.70`, `explosive_shot_tolerance=0.28`; evidence `redzone.screen_vs_simulated_pressure.v1`, `redzone.vertical_vs_two_high.v1`. |
+| `Build a run-first coordinator that unlocks play-action.` | offense/create; `run_pass_tendency=run_to_play_action`, `adaptation_speed=0.78`, `explosive_shot_tolerance=0.22`; evidence `redzone.play_action_after_run_tendency.v1`. |
+| `Give me a safe red-zone defense that prevents explosives.` | defense/create; `risk_tolerance=low`, `disguise_sensitivity=0.58`, `counter_repeat_tolerance=0.35`; evidence `redzone.vertical_vs_two_high.v1`. |
+
+Validator rejection cases: unknown intent, invalid target side/tier, unsupported identity, unknown parameter, side-incompatible parameter, out-of-range value, malformed evidence, graph/identity evidence that does not resolve, Film Room event without replay context, missing or unknown draft for tweak, stale `from` value, non-empty `clarify` changes, prompt-policy authoring with changes, and merged config failure from the existing tier validators. Tests cover these as proposal-level and tier-level failures.
+
+P0-6 seam: `POST /v1/assistant/propose` already builds server-side context and exercises `LLMBudget.acquire/release`. The replacement point is the deterministic `arena.assistant.templates.propose_from_prompt(prompt, context, session_id, ip)` call. P0-6 should swap that step for a hosted LLM client that returns the same Proposal shape; it must not bypass `validate_proposal`, `apply_proposal`, draft validation, or the budget gate. `arena/llm/stub.py` remains unchanged and is not imported by P0-5.
+
+Legacy path retirement: `navigateToGarage`, `garageUrl`, and `garage.html?from=...&apply=...` are gone from the default UI path. Film Room buttons dispatch `coachbench:assistant:request`. The old localStorage Garage helpers remain only as marked offline fallback; backend `/v1/drafts` and `/v1/assistant/accept` own saved launch drafts.
+
+UI seam decisions: `ui/assistant.js` listens for `coachbench:assistant:request`; canonical prompt, free-text, and Film Room tweak events call `/v1/assistant/propose`. `identity_selected` does not call the API in P0-5; it updates state and renders an inert clarify card so selection stays cheap and deterministic. The prompt form now dispatches `{type: "free_text", text}`. Proposal cards support create, tweak, save-as-new, and clarify modes; edit is local and server validation still runs on accept.
+
+Manual smoke run during implementation: `python -m pytest`; `python scripts/run_showcase.py --seed 42 --out data/demo_replay.json --copy-ui`; `python scripts/run_match_matrix.py --out data/match_matrix_report.json`; `python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --out data/daily_slate/results.json`; and a local HTTP smoke fetching `ui/app.html` plus `ui/assistant.js`. The demo replay hash before and after P0-5 stayed `93c05c662de4cc17cd1be5885f4d30465249649c2198d32cab00a8e7d160a745`.

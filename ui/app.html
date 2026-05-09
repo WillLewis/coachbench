@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Workbench</title>
-  <link rel="stylesheet" href="styles.css?v=p0-4-shell-v1" />
+  <link rel="stylesheet" href="styles.css?v=p0-5-assistant-v1" />
 </head>
 <body>
   <noscript><a class="wordmark" href="/ui/index.html">CoachBench</a></noscript>
@@ -44,15 +44,16 @@
         <header class="assistant-header">
           <p id="assistantEyebrow" class="eyebrow">Workbench · Agent Garage</p>
           <h1 id="assistantTitle">Draft a coordinator agent</h1>
-          <p id="assistantSubtitle" class="subhead">Describe the coordinator you want. Proposal generation comes online in the next phase.</p>
+          <p id="assistantSubtitle" class="subhead">Describe the coordinator you want. The Assistant proposes structured changes you can inspect before saving.</p>
         </header>
 
         <section class="conversation-skeleton" aria-label="Assistant conversation placeholder">
           <div class="conversation-message conversation-message--system">
-            <strong>Assistant shell ready.</strong>
-            <p>Policy proposals will appear here after Assistant drafting lands. For now, use the cards below to seed the next request event.</p>
+            <strong>Assistant ready.</strong>
+            <p>Ask for a coordinator style, accept the structured proposal, then inspect the saved draft config.</p>
           </div>
           <div id="proposalDock" class="proposal-dock" aria-live="polite"></div>
+          <section id="activeConfigPanel" class="active-config-panel" aria-live="polite"></section>
         </section>
 
         <section class="suggested-prompts" aria-label="Suggested prompts">
@@ -65,9 +66,9 @@
 
         <form id="assistantPromptForm" class="prompt-box" aria-label="Assistant prompt">
           <label class="sr-only" for="assistantPrompt">Assistant prompt</label>
-          <textarea id="assistantPrompt" rows="3" disabled placeholder="Coming online in P0-5."></textarea>
+          <textarea id="assistantPrompt" rows="3" disabled placeholder="Describe the coordinator you want to build or tune."></textarea>
           <div class="prompt-actions">
-            <span class="muted compact">Coming online — P0-5</span>
+            <span id="assistantStatus" class="muted compact">Assistant uses validated local drafts.</span>
             <button class="btn btn--primary" type="submit" disabled>Send</button>
           </div>
         </form>
@@ -95,6 +96,11 @@
           <h2>Drafts now live behind the local backend.</h2>
           <p id="garageRouteCopy" class="muted">Saved drafts are loaded from <code>/v1/drafts</code>. Offline mode keeps only the current tab cache.</p>
           <div id="draftSourceStatus" class="route-status"></div>
+          <div class="garage-action-row">
+            <button id="newDraftButton" class="btn" type="button">New draft</button>
+            <button id="saveDraftButton" class="btn" type="button">Save draft</button>
+          </div>
+          <div id="assistantDraftList" class="assistant-draft-list" aria-live="polite"></div>
         </section>
       </section>
 
@@ -238,5 +244,6 @@
   <script src="adaptation.js"></script>
   <script src="left_rail.js"></script>
   <script src="app.js"></script>
+  <script src="assistant.js"></script>
 </body>
 </html>

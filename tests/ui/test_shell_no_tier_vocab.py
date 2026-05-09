@@ -7,6 +7,7 @@ from pathlib import Path
 SHELL_FILES = [
     Path("ui/app.html"),
     Path("ui/app.js"),
+    Path("ui/assistant.js"),
     Path("ui/topbar.js"),
     Path("ui/left_rail.js"),
 ]

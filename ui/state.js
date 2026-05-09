@@ -17,6 +17,9 @@
     garageRules: [],
     garageDraftName: 'coachdraft',
     garageDrafts: [],
+    garageDraftSource: 'offline',
+    selectedIdentityId: null,
+    activeDraftId: null,
   };
   const subscribers = new Set();
 

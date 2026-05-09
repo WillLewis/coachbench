@@ -22,6 +22,7 @@ app = FastAPI(title="CoachBench Local Arena") if FastAPI else None
 if app:
     from arena.admin.routes import register_admin_routes
     from arena.api.routes_agents import router as agents_router
+    from arena.api.routes_assistant import router as assistant_router
     from arena.api.routes_arena import router as arena_router
     from arena.api.routes_challenges import router as challenges_router
     from arena.api.routes_drafts import router as drafts_router
@@ -33,6 +34,7 @@ if app:
     from arena.api.routes_runs import router as runs_router
 
     app.include_router(agents_router)
+    app.include_router(assistant_router)
     app.include_router(arena_router)
     app.include_router(challenges_router)
     app.include_router(drafts_router)

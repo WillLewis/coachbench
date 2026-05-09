@@ -1706,6 +1706,142 @@ code {
   .scorecard { max-width: none; flex-basis: auto; }
 }
 
+.proposal-dock {
+  display: grid;
+  gap: 12px;
+}
+
+.proposal-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.035);
+  display: grid;
+  gap: 14px;
+}
+
+.proposal-card--offline,
+.proposal-card--clarify,
+.proposal-card--saved {
+  gap: 8px;
+}
+
+.proposal-head,
+.proposal-actions,
+.proposal-row-actions,
+.proposal-edit-row,
+.garage-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.proposal-head {
+  justify-content: space-between;
+}
+
+.proposal-head h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.proposal-change-list {
+  display: grid;
+  gap: 10px;
+}
+
+.proposal-change {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.proposal-change > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.proposal-change p,
+.proposal-change small,
+.proposal-card p {
+  margin: 0;
+}
+
+.proposal-edit-row input,
+.proposal-edit-row select,
+.draft-name-field input {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--text);
+  padding: 8px 10px;
+}
+
+.draft-name-field {
+  display: grid;
+  gap: 6px;
+  max-width: 320px;
+}
+
+.active-config-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.config-details {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.config-details summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.config-grid {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.assistant-draft-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.draft-select-row {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.draft-select-row.active {
+  border-color: var(--accent);
+  background: rgba(255, 205, 74, 0.08);
+}
+
+.draft-select-row span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 @media (max-width: 859px) {
   .topbar-nav { display: none; }
   .topbar-burger { display: inline-flex; }

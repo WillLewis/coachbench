@@ -53,4 +53,4 @@ def test_mobile_breakpoint_policy_is_declared() -> None:
     assert ".field { min-height: 0; aspect-ratio: 16 / 9; }" in css
     assert ".coachbench-shell" in css
     assert ".right-drawer" in css
-    assert "Coming online" in app_html
+    assert "Assistant uses validated local drafts." in app_html

@@ -270,7 +270,7 @@ async function handleRoute(route) {
       await loadReplay(route.params.id, route.params.play);
     }
   } else if (route.name === 'garage') {
-    renderRouteStub('garageRouteCopy', 'Saved drafts load from the local backend. Assistant editing lands next.');
+    renderRouteStub('garageRouteCopy', 'Saved drafts load from the local backend. Assistant proposals save through validated draft routes.');
   } else if (route.name === 'reports') {
     renderReports(route.params.compare);
   } else if (route.name === 'arena') {
@@ -871,18 +871,6 @@ function renderFilmRoomTweakChips(replay) {
   </div>`;
 }
 
-function garageUrl(params = {}) {
-  const query = new URLSearchParams();
-  if (params.from) query.set('from', params.from);
-  if (params.apply) query.set('apply', params.apply);
-  const text = query.toString();
-  return `garage.html${text ? `?${text}` : ''}`;
-}
-
-function navigateToGarage(params = {}) {
-  window.location.href = garageUrl(params);
-}
-
 function dispatchAssistantRequest(detail) {
   window.dispatchEvent(new CustomEvent('coachbench:assistant:request', { detail }));
 }
@@ -1284,6 +1272,7 @@ function findProfileKey(side, profile) {
     || '';
 }
 
+// Offline fallback only: backend drafts own persisted launch state.
 function garageStateFromReplay(replay, from) {
   const config = structuredClone(replay.agent_garage_config || {});
   const offenseKey = findProfileKey('offense', config.offense_profile);
@@ -1323,6 +1312,7 @@ function transformedTweakValue(parameter, current, tweak) {
   return tweak.target_value !== undefined ? tweak.target_value : current;
 }
 
+// Offline fallback only: launch tweaks flow through coachbench:assistant:request and /v1/assistant/accept.
 function applyTweakToGarageState(garageState, tweak, from) {
   const parameter = tweak.parameter;
   const before = garageControlValueFromState(garageState, parameter);
@@ -1376,6 +1366,7 @@ async function prepareGarageFromQuery(params = {}) {
   persistGarageActiveDraft();
 }
 
+// Offline fallback only: backend drafts are loaded into CBState by left_rail.js and assistant.js.
 function ensureGarageDefaults() {
   const state = CBState.get();
   const existing = state.garageState || {};
@@ -1850,6 +1841,7 @@ function renderGarageDrafts() {
   $('garageDrafts').querySelectorAll('[data-draft-delete]').forEach(button => button.onclick = deleteGarageDraft);
 }
 
+// Offline fallback only: committed launch drafts are saved through /v1/assistant/accept.
 function saveGarageDraft() {
   const name = toHandle(CBState.get().garageDraftName) || 'coachdraft';
   const payload = { name, garageState: CBState.get().garageState, garageTier: CBState.get().garageTier, garageRules: CBState.get().garageRules || [], saved_at: new Date().toISOString() };
@@ -1860,6 +1852,7 @@ function saveGarageDraft() {
   renderGaragePage(CBRouter.current().params);
 }
 
+// Offline fallback only: saved launch drafts come from /v1/drafts.
 function loadGarageDrafts() {
   try {
     return Object.keys(localStorage)
@@ -1882,6 +1875,7 @@ function enforceGarageDraftCap() {
   } catch {}
 }
 
+// Offline fallback only: active launch draft id lives in CBState.activeDraftId.
 function loadGarageActiveDraft() {
   try {
     return JSON.parse(localStorage.getItem(garageActiveDraftKey));
@@ -1890,6 +1884,7 @@ function loadGarageActiveDraft() {
   }
 }
 
+// Offline fallback only: backend persistence owns committed drafts.
 function persistGarageActiveDraft() {
   try {
     localStorage.setItem(garageActiveDraftKey, JSON.stringify({
@@ -1917,6 +1912,7 @@ function deleteGarageDraft(event) {
   renderGaragePage(CBRouter.current().params);
 }
 
+// Offline fallback only: backend sessions populate launch past matchups.
 function loadGarageRecentRuns() {
   try {
     const runs = JSON.parse(localStorage.getItem(garageRecentRunsKey) || '[]');
@@ -1926,6 +1922,7 @@ function loadGarageRecentRuns() {
   }
 }
 
+// Offline fallback only: backend sessions populate launch past matchups.
 function saveGarageRecentRun(run) {
   try {
     const runs = [run, ...loadGarageRecentRuns().filter(item => item.run_record_id !== run.run_record_id)].slice(0, garageRecentLimit);

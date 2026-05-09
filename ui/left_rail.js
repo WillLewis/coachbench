@@ -3,12 +3,12 @@
     garage: {
       eyebrow: 'Workbench · Agent Garage',
       title: 'Draft a coordinator agent',
-      subtitle: 'Saved drafts come from the local backend. Assistant proposal generation lands next.',
+      subtitle: 'Describe the coordinator you want. The Assistant proposes structured changes you can accept, reject, or edit.',
     },
     replays: {
       eyebrow: 'Workbench · Film Room',
       title: 'Watch film with the assistant',
-      subtitle: 'Open a replay, inspect evidence, then send a structured request event for the next phase.',
+      subtitle: 'Open a replay, inspect graph evidence, then ask for a grounded adjustment.',
     },
     reports: {
       eyebrow: 'Workbench · Reports',
@@ -144,7 +144,9 @@
     try {
       const payload = await fetchApi('/v1/drafts');
       const drafts = payload.drafts || [];
-      window.CBState?.set({ garageDrafts: drafts, garageDraftSource: 'backend' });
+      const state = window.CBState?.get?.() || {};
+      const activeDraftId = drafts.some(draft => draft.id === state.activeDraftId) ? state.activeDraftId : null;
+      window.CBState?.set({ garageDrafts: drafts, garageDraftSource: 'backend', activeDraftId });
       status.innerHTML = `<span class="validation-badge is-ok">Backend source</span><span>${escapeHtml(drafts.length)} saved drafts available.</span>`;
     } catch {
       window.CBState?.set({ garageDrafts: [], garageDraftSource: 'offline' });
