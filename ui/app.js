@@ -213,6 +213,7 @@ function renderAll() {
   renderFilmRoom();
   renderBeforeAfter();
   renderInspectorTabs();
+  bindFieldCollapse();
   setupOverlay();
   setupFeedAutoplay();
   selectPlay(CBState.get().selectedIndex, { syncHash: false, scroll: false, source: 'route' });
@@ -613,10 +614,31 @@ function renderPlayFeed() {
       }));
     };
   });
-  feed.onscroll = () => {
+  const scrollRegion = document.querySelector('.drawer-feed-scroll') || feed;
+  scrollRegion.onscroll = () => {
     if (!runtime.autoScrolling && runtime.auto?.isRunning()) pauseForUser();
   };
   $('resumeFeed').onclick = () => runtime.auto?.start();
+}
+
+function bindFieldCollapse() {
+  const button = $('toggleFieldCollapse');
+  const panel = document.querySelector('.field-panel--strip');
+  if (!button || !panel) return;
+  const apply = collapsed => {
+    panel.dataset.fieldCollapsed = collapsed ? 'true' : 'false';
+    button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    button.setAttribute('aria-label', collapsed ? 'Expand field' : 'Collapse field');
+    button.textContent = collapsed ? '◣' : '◢';
+  };
+  apply(window.CBState?.get?.().fieldCollapsed === true);
+  if (button.dataset.fieldCollapseBound === 'true') return;
+  button.dataset.fieldCollapseBound = 'true';
+  button.addEventListener('click', () => {
+    const next = panel.dataset.fieldCollapsed !== 'true';
+    apply(next);
+    window.CBState?.set?.({ fieldCollapsed: next });
+  });
 }
 
 function feedCard(play, index) {

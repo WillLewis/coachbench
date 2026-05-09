@@ -13,6 +13,7 @@
     pinnedForCompare: [],
     autoplay: true,
     activeInspectorTab: 'outcome',
+    fieldCollapsed: false,
     garageTier: 'declarative',
     garageRules: [],
     garageDraftName: 'coachdraft',

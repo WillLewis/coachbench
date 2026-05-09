@@ -9,6 +9,21 @@
     risk_tolerance: riskValues,
     run_pass_tendency: runPassValues,
   };
+  const IDEAS = {
+    garage: [
+      'Build an offense that punishes pressure without throwing picks.',
+      'Make my defense disguise more without burning the rush budget.',
+      'We got baited by simulated pressure. What should I change?',
+      'Build a run-first coordinator that unlocks play-action.',
+      'Give me a safe red-zone defense that prevents explosives.',
+    ],
+    replays: [
+      'Show me where my belief flipped before the touchdown.',
+      'Why did the agent abandon the run on 2nd & 6?',
+      'Compare this drive to seed 311 — what changed?',
+      'Highlight every adaptation event with a belief delta over 0.15.',
+    ],
+  };
   let parameterGlossary = {};
   let identities = [];
   let currentProposal = null;
@@ -75,6 +90,88 @@
       <span class="chat-avatar" aria-hidden="true">CB</span>
       ${inner}
     </div>`;
+  }
+
+  function ideaKey(routeName) {
+    return routeName === 'replay-detail' ? 'replays' : routeName;
+  }
+
+  function sparkleIcon(klass) {
+    return `<svg class="${klass}" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.6 4.4 4.4 1.6-4.4 1.6L8 13.5l-1.6-4.4-4.4-1.6 4.4-1.6L8 1.5z" fill="currentColor"/></svg>`;
+  }
+
+  function promptButton(text, klass = 'suggested-prompt') {
+    return `<button class="${klass}" type="button" data-canonical-prompt="${escapeHtml(text)}">${escapeHtml(text)}</button>`;
+  }
+
+  function setIdeasOpen(open, returnFocus = false) {
+    const panel = $('suggestedPromptsPanel');
+    const toggle = $('ideasToggle');
+    const labelNode = toggle?.querySelector('.ideas-toggle__label');
+    if (!panel || !toggle) return;
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (labelNode) labelNode.textContent = open ? 'Hide ideas' : 'More ideas';
+    if (open) {
+      panel.querySelector('.ideas-card')?.focus();
+    } else if (returnFocus) {
+      toggle.focus();
+    }
+  }
+
+  function dispatchIdea(text) {
+    window.dispatchEvent(new CustomEvent('coachbench:assistant:request', { detail: { type: 'canonical_prompt', text } }));
+    setIdeasOpen(false, false);
+    $('assistantPrompt')?.focus();
+  }
+
+  function bindIdeaButtons(root = document) {
+    root.querySelectorAll('[data-canonical-prompt]').forEach(button => {
+      button.onclick = () => dispatchIdea(button.dataset.canonicalPrompt);
+    });
+  }
+
+  function renderIdeas(routeName) {
+    const container = document.querySelector('.composer-ideas');
+    const inline = $('ideasInline');
+    const grid = $('ideasGrid');
+    if (!container || !inline || !grid) return;
+    const ideas = IDEAS[ideaKey(routeName)] || [];
+    container.hidden = ideas.length === 0;
+    setIdeasOpen(false, false);
+    if (!ideas.length) {
+      inline.innerHTML = '';
+      grid.innerHTML = '';
+      return;
+    }
+    inline.innerHTML = ideas.slice(0, 2).map(text => promptButton(text)).join('');
+    grid.innerHTML = ideas.map(text => `<button class="ideas-card" type="button" data-canonical-prompt="${escapeHtml(text)}">
+      ${sparkleIcon('ideas-card__sparkle')}
+      <span>${escapeHtml(text)}</span>
+    </button>`).join('');
+    bindIdeaButtons(container);
+  }
+
+  function bindIdeasPanel() {
+    const container = document.querySelector('.composer-ideas');
+    const toggle = $('ideasToggle');
+    const close = $('closeIdeasPanel');
+    if (!container || !toggle || !close) return;
+    toggle.addEventListener('click', event => {
+      event.stopPropagation();
+      setIdeasOpen(toggle.getAttribute('aria-expanded') !== 'true', false);
+    });
+    close.addEventListener('click', () => setIdeasOpen(false, true));
+    container.addEventListener('click', event => event.stopPropagation());
+    document.addEventListener('click', event => {
+      const panel = $('suggestedPromptsPanel');
+      if (!panel || panel.hidden || container.contains(event.target)) return;
+      setIdeasOpen(false, true);
+    });
+    document.addEventListener('keydown', event => {
+      const panel = $('suggestedPromptsPanel');
+      if (event.key === 'Escape' && panel && !panel.hidden) setIdeasOpen(false, true);
+    });
   }
 
   function renderOffline(message) {
@@ -460,6 +557,7 @@
     const textarea = $('assistantPrompt');
     const send = form?.querySelector('button[type="submit"]');
     if (!form || !textarea || !send || !route) return;
+    renderIdeas(route.name);
     const replayLoaded = route.name === 'replay-detail';
     const filmEmpty = route.name === 'replays';
     textarea.disabled = false;
@@ -469,6 +567,8 @@
     } else if (replayLoaded) {
       const matchup = $('replayHeroMatchup')?.textContent;
       setStatus(matchup && matchup !== '-' ? `LOADED · ${matchup.toUpperCase()}` : 'LOADED FILM');
+    } else if (route.name === 'garage' && currentProposal) {
+      updateProposalStatus();
     } else if (!currentProposal) {
       setStatus('0/3 POLICY PARAMS RESOLVED');
     }
@@ -507,6 +607,7 @@
 
   function init() {
     if (!$('appRoot')?.hasAttribute('data-shell-root')) return;
+    bindIdeasPanel();
     bindPromptForm();
     bindGarageButtons();
     window.CBRouter?.subscribe?.(updateComposerForRoute);

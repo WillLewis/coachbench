@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CoachBench Workbench</title>
-  <link rel="stylesheet" href="styles.css?v=workbench-overhaul-v1" />
+  <link rel="stylesheet" href="styles.css?v=workbench-overhaul-v2" />
   <!-- Legacy cache marker retained for test compatibility: styles.css?v=p0-7-shell-fix-v1 -->
 </head>
 <body>
@@ -137,13 +137,31 @@
       </section>
 
       <section class="center-shell__composer" aria-label="Assistant composer">
-        <div class="composer-suggestions" aria-label="Suggested prompts">
-          <button class="suggested-prompt" type="button" data-canonical-prompt="Build an offense that punishes pressure without throwing picks.">Build an offense that punishes pressure without throwing picks.</button>
-          <button class="suggested-prompt" type="button" data-canonical-prompt="Make my defense disguise more without burning the rush budget.">Make my defense disguise more without burning the rush budget.</button>
-          <button class="suggested-prompt" type="button" data-canonical-prompt="We got baited by simulated pressure. What should I change?">We got baited by simulated pressure. What should I change?</button>
-          <button class="suggested-prompt" type="button" data-canonical-prompt="Build a run-first coordinator that unlocks play-action.">Build a run-first coordinator that unlocks play-action.</button>
-          <button class="suggested-prompt" type="button" data-canonical-prompt="Give me a safe red-zone defense that prevents explosives.">Give me a safe red-zone defense that prevents explosives.</button>
-        </div>
+        <section class="composer-ideas" aria-label="Suggested prompts">
+          <div id="suggestedPromptsPanel" class="ideas-panel" role="region" aria-label="Suggested prompts" hidden>
+            <header class="ideas-panel__head">
+              <p class="eyebrow">SUGGESTED PROMPTS</p>
+              <button id="closeIdeasPanel" class="icon-btn" type="button" aria-label="Hide suggested prompts">×</button>
+            </header>
+            <div id="ideasGrid" class="ideas-grid"></div>
+          </div>
+
+          <template id="legacySuggestedPromptsTemplate">
+            <button class="suggested-prompt" type="button" data-canonical-prompt="Build an offense that punishes pressure without throwing picks.">Build an offense that punishes pressure without throwing picks.</button>
+            <button class="suggested-prompt" type="button" data-canonical-prompt="Make my defense disguise more without burning the rush budget.">Make my defense disguise more without burning the rush budget.</button>
+            <button class="suggested-prompt" type="button" data-canonical-prompt="We got baited by simulated pressure. What should I change?">We got baited by simulated pressure. What should I change?</button>
+            <button class="suggested-prompt" type="button" data-canonical-prompt="Build a run-first coordinator that unlocks play-action.">Build a run-first coordinator that unlocks play-action.</button>
+            <button class="suggested-prompt" type="button" data-canonical-prompt="Give me a safe red-zone defense that prevents explosives.">Give me a safe red-zone defense that prevents explosives.</button>
+          </template>
+
+          <div id="ideasStrip" class="ideas-strip">
+            <div id="ideasInline" class="ideas-inline"></div>
+            <button id="ideasToggle" class="ideas-toggle" type="button" aria-expanded="false" aria-controls="suggestedPromptsPanel">
+              <svg class="ideas-toggle__sparkle" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.6 4.4 4.4 1.6-4.4 1.6L8 13.5l-1.6-4.4-4.4-1.6 4.4-1.6L8 1.5z" fill="currentColor"/></svg>
+              <span class="ideas-toggle__label">More ideas</span>
+            </button>
+          </div>
+        </section>
 
         <form id="assistantPromptForm" class="composer" aria-label="Assistant prompt">
           <label class="sr-only" for="assistantPrompt">Assistant prompt</label>
@@ -169,106 +187,108 @@
         </div>
 
         <div id="replayNotFound" class="empty-state" hidden></div>
-        <div id="replayDetailContent">
-          <section class="hero replay-hero row-mount">
+
+        <div id="replayDetailContent" class="drawer-body">
+          <!-- Legacy layout marker retained for static smoke tests: class="replay-layout row-mount" -->
+          <header class="drawer-summary row-mount">
             <p class="eyebrow" id="replayHeroEyebrow">Replay detail</p>
             <h1 id="replayHeroMatchup">-</h1>
             <p class="subhead replay-meta-line" id="replayHeroMeta">-</p>
+          </header>
+
+          <section class="drawer-cluster" aria-label="Field and inspector">
+            <article class="panel field-panel field-panel--strip" data-field-collapsed="false">
+              <div class="panel-title">
+                <h2>Field</h2>
+                <div class="field-panel__actions">
+                  <span id="driveState" class="muted compact">Loading</span>
+                  <button id="toggleFieldCollapse" class="icon-btn icon-btn--xs" type="button" aria-label="Collapse field" aria-expanded="true">◢</button>
+                </div>
+              </div>
+              <div class="field">
+                <div class="yard-rule y20"><span>20</span></div>
+                <div class="yard-rule y15"><span>15</span></div>
+                <div class="yard-rule y10"><span>10</span></div>
+                <div class="yard-rule y5"><span>5</span></div>
+                <div class="mid-rule"></div>
+                <div class="endzone endzone--marker" aria-label="End zone"></div>
+                <div id="ball" class="ball"></div>
+              </div>
+            </article>
+
+            <section class="panel inspector-panel" aria-labelledby="inspectorTitle">
+              <div class="panel-title">
+                <h2 id="inspectorTitle">Play Inspector</h2>
+                <span id="inspectorPlayLabel">Play 1</span>
+              </div>
+              <div id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Play inspector tabs">
+                <button id="inspector-tab-outcome" class="inspector-tab active" type="button" role="tab" aria-selected="true" aria-controls="inspectorPanel" data-inspector-tab="outcome">Outcome</button>
+                <button id="inspector-tab-resources" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="resources" tabindex="-1">Resources</button>
+                <button id="inspector-tab-beliefs" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="beliefs" tabindex="-1">Beliefs</button>
+                <button id="inspector-tab-graph" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="graph" tabindex="-1">Graph Evidence</button>
+              </div>
+              <div id="inspectorPanel" class="inspector-content" role="tabpanel" tabindex="0" aria-labelledby="inspector-tab-outcome" data-active-tab="outcome"></div>
+            </section>
           </section>
 
-          <section class="replay-layout row-mount">
-            <div class="replay-stage">
-              <header class="replay-meta-bar replay-topbar">
-                <p class="eyebrow">Replay detail</p>
-                <div id="modeBanner" class="mode-banner">Replay source pending</div>
-                <div id="scorecard" class="scorecard" aria-live="polite">
-                  <span id="resultLabel">Loading</span>
-                  <strong id="pointsLabel">0 pts</strong>
-                  <small id="episodeLabel">episode</small>
+          <div class="drawer-feed-scroll" tabindex="0" aria-label="Play-by-play and details">
+            <header class="replay-meta-bar replay-topbar">
+              <p class="eyebrow">Replay detail</p>
+              <div id="modeBanner" class="mode-banner">Replay source pending</div>
+              <div id="scorecard" class="scorecard" aria-live="polite">
+                <span id="resultLabel">Loading</span>
+                <strong id="pointsLabel">0 pts</strong>
+                <small id="episodeLabel">episode</small>
+              </div>
+            </header>
+
+            <section class="feed-panel panel" aria-label="Replay feed">
+              <div class="feed-head">
+                <div>
+                  <p class="eyebrow">Chronological feed</p>
+                  <h2>Play-by-play</h2>
                 </div>
-              </header>
+                <button id="resumeFeed" class="resume-chip" type="button" hidden>Resume</button>
+              </div>
+              <div id="autoplayProgress" class="autoplay-progress"></div>
+              <div id="playFeed" class="play-feed" role="list"></div>
+            </section>
 
-              <article class="panel field-panel">
-                <div class="panel-title"><h2>Field + Selected Play</h2><span id="driveState">Loading</span></div>
-                <div class="field">
-                  <div class="yard-rule y20"><span>20</span></div>
-                  <div class="yard-rule y15"><span>15</span></div>
-                  <div class="yard-rule y10"><span>10</span></div>
-                  <div class="yard-rule y5"><span>5</span></div>
-                  <div class="mid-rule"></div>
-                  <div class="endzone">End Zone</div>
-                  <div id="ball" class="ball"></div>
-                </div>
-              </article>
+            <details class="drawer-collapse" open>
+              <summary>Film Room Narrative</summary>
+              <section class="panel film-room-panel row-mount"><div id="filmRoom"></div></section>
+            </details>
 
-              <section class="panel inspector-panel" aria-labelledby="inspectorTitle">
-                <div class="panel-title">
-                  <h2 id="inspectorTitle">Play Inspector</h2>
-                  <span id="inspectorPlayLabel">Play 1</span>
-                </div>
-                <div id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Play inspector tabs">
-                  <button id="inspector-tab-outcome" class="inspector-tab active" type="button" role="tab" aria-selected="true" aria-controls="inspectorPanel" data-inspector-tab="outcome">Outcome</button>
-                  <button id="inspector-tab-resources" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="resources" tabindex="-1">Resources</button>
-                  <button id="inspector-tab-beliefs" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="beliefs" tabindex="-1">Beliefs</button>
-                  <button id="inspector-tab-graph" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="inspectorPanel" data-inspector-tab="graph" tabindex="-1">Graph Evidence</button>
-                </div>
-                <div id="inspectorPanel" class="inspector-content" role="tabpanel" tabindex="0" aria-labelledby="inspector-tab-outcome" data-active-tab="outcome"></div>
-              </section>
+            <details class="drawer-collapse" open>
+              <summary>Before / After</summary>
+              <section class="panel before-after-panel row-mount" id="beforeAfterPanel" hidden></section>
+            </details>
 
-              <section class="feed-panel panel" aria-label="Replay feed">
-                <div class="feed-head">
-                  <div>
-                    <p class="eyebrow">Chronological feed</p>
-                    <h2>Play-by-play</h2>
-                  </div>
-                  <button id="resumeFeed" class="resume-chip" type="button" hidden>Resume</button>
-                </div>
-                <div id="autoplayProgress" class="autoplay-progress"></div>
-                <div id="playFeed" class="play-feed" role="list" tabindex="0"></div>
-              </section>
+            <details class="drawer-collapse" open>
+              <summary>Post-Drive Summary</summary>
+              <section class="panel summary-panel row-mount"><div id="driveSummary"></div></section>
+            </details>
 
-              <details class="drawer-collapse" open>
-                <summary>Film Room Narrative</summary>
-                <section class="panel film-room-panel row-mount">
-                  <div id="filmRoom"></div>
-                </section>
-              </details>
+            <details class="drawer-collapse">
+              <summary>Coordinator Agent</summary>
+              <article class="panel compact-agent-card"><div id="agentCard"></div></article>
+            </details>
 
-              <details class="drawer-collapse" open>
-                <summary>Before / After</summary>
-                <section class="panel before-after-panel row-mount" id="beforeAfterPanel" hidden></section>
-              </details>
+            <details class="drawer-collapse">
+              <summary>Daily Slate</summary>
+              <article class="panel"><div id="dailySlate"></div></article>
+            </details>
 
-              <details class="drawer-collapse" open>
-                <summary>Post-Drive Summary</summary>
-                <section class="panel summary-panel row-mount">
-                  <div id="driveSummary"></div>
-                </section>
-              </details>
+            <details class="drawer-collapse">
+              <summary>Roster Strengths</summary>
+              <article class="panel roster-panel"><div id="rosterStrengths"></div></article>
+            </details>
 
-              <details class="drawer-collapse">
-                <summary>Coordinator Agent</summary>
-                <article class="panel compact-agent-card">
-                  <div id="agentCard"></div>
-                </article>
-              </details>
-
-              <details class="drawer-collapse">
-                <summary>Daily Slate</summary>
-                <article class="panel"><div id="dailySlate"></div></article>
-              </details>
-
-              <details class="drawer-collapse">
-                <summary>Roster Strengths</summary>
-                <article class="panel roster-panel"><div id="rosterStrengths"></div></article>
-              </details>
-
-              <details class="drawer-collapse">
-                <summary>Graph Cards</summary>
-                <button id="openGraphExplorer" class="btn explorer-launch" type="button">Graph Cards</button>
-              </details>
-            </div>
-          </section>
+            <details class="drawer-collapse">
+              <summary>Graph Cards</summary>
+              <button id="openGraphExplorer" class="btn explorer-launch" type="button">Graph Cards</button>
+            </details>
+          </div>
         </div>
 
         <div id="graphOverlay" class="overlay" hidden>
