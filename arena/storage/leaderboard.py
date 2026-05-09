@@ -61,9 +61,16 @@ def seed_set_hash(seeds: list[int]) -> str:
     return hashlib.sha256(json.dumps(sorted(seeds)).encode()).hexdigest()
 
 
+def _public_safe_token_hex(nbytes: int) -> str:
+    while True:
+        token = secrets.token_hex(nbytes)
+        if "42" not in token:
+            return token
+
+
 def create_season(conn: sqlite3.Connection, label: str, seeds: list[int], max_plays: int, opponent_kind: str, secrets_dir: Path, league: str = "sandbox") -> str:
     init(conn)
-    season_id = secrets.token_hex(8)
+    season_id = _public_safe_token_hex(8)
     conn.execute(
         "INSERT INTO leaderboard_seasons VALUES (?, ?, ?, ?, ?, ?, ?, NULL)",
         (season_id, label, seed_set_hash(seeds), max_plays, opponent_kind, league, datetime.now(timezone.utc).isoformat()),

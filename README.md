@@ -38,6 +38,8 @@ python scripts/run_daily_slate.py --slate data/daily_slate/sample_slate.json --o
 python -m http.server 8000
 ```
 
+Local backend env defaults live in `.env.example`. Before enabling any live Assistant model calls in a later phase, set `LLM_VIRAL_SPIKE_COST_CEILING_USD` plus the session, IP-window, concurrency, and kill-switch caps there. P0-1 only ships the budget gate and stub; it does not call an external model API.
+
 ## Screenshot Placeholder
 
 Add a screenshot or short local capture of `http://localhost:8000/ui/` here after the UI is opened in a browser.
