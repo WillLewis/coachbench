@@ -39,10 +39,11 @@ def _hex() -> str:
 
 def _well_formed_report() -> dict:
     return {
-        "schema_version": "eval_suite_report.v2",
+        "schema_version": "eval_suite_report.v3",
         "suite_id": "smoke",
         "suite_config_hash": _hex(),
         "report_hash": _hex(),
+        "locked": False,
         "candidates": [{"name": "Candidate", "agent_path": "agents.adaptive_offense.AdaptiveOffense", "side": "offense", "locked": False}],
         "baseline": {"name": "Baseline", "agent_path": "agents.static_offense.StaticOffense", "side": "offense", "locked": True},
         "opponents": [{"name": "Opponent", "agent_path": "agents.static_defense.StaticDefense", "side": "defense", "profile_id": None}],
@@ -143,7 +144,7 @@ def test_suite_config_files_exist_and_are_valid() -> None:
 
 def test_smoke_suite_runs_via_new_path(tmp_path: Path) -> None:
     report = _run_ok("--suite", "smoke", out=tmp_path / "smoke.json")
-    assert report["schema_version"] == "eval_suite_report.v2"
+    assert report["schema_version"] == "eval_suite_report.v3"
     assert "gates" in report
     validate_eval_suite_report(report)
 
@@ -185,8 +186,8 @@ def test_defense_side_evaluation_runs(tmp_path: Path) -> None:
 
 def test_v2_validator_rejects_v1_schema_version() -> None:
     report = _well_formed_report()
-    report["schema_version"] = "eval_suite_report.v1"
-    with pytest.raises(ContractValidationError, match="Phase 1 reports are no longer accepted"):
+    report["schema_version"] = "eval_suite_report.v2"
+    with pytest.raises(ContractValidationError, match="Phase 2 reports are no longer accepted"):
         validate_eval_suite_report(report)
 
 

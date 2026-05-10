@@ -753,6 +753,7 @@ def validate_eval_suite_report(report: Dict[str, Any]) -> None:
             "suite_id",
             "suite_config_hash",
             "report_hash",
+            "locked",
             "candidates",
             "baseline",
             "opponents",
@@ -766,15 +767,17 @@ def validate_eval_suite_report(report: Dict[str, Any]) -> None:
         },
         "eval suite report",
     )
-    if report["schema_version"] != "eval_suite_report.v2":
+    if report["schema_version"] != "eval_suite_report.v3":
         raise ContractValidationError(
-            f"eval suite report schema_version must be eval_suite_report.v2; got {report['schema_version']}. "
-            "Phase 1 reports are no longer accepted; regenerate with run_eval_suite.py."
+            f"eval suite report schema_version must be eval_suite_report.v3; got {report['schema_version']}. "
+            "Phase 2 reports are no longer accepted; regenerate with run_eval_suite.py."
         )
-    if report["suite_id"] not in {"smoke", "standard", "extended"}:
+    if report["suite_id"] not in {"smoke", "standard", "extended", "exploit"}:
         raise ContractValidationError(
-            f"eval suite report suite_id must be one of smoke|standard|extended, got {report['suite_id']}"
+            f"eval suite report suite_id must be one of smoke|standard|extended|exploit, got {report['suite_id']}"
         )
+    if not isinstance(report["locked"], bool):
+        raise ContractValidationError("eval suite report locked must be boolean")
     for hash_field in ("suite_config_hash", "report_hash"):
         value = report[hash_field]
         if not isinstance(value, str) or len(value) != 64 or not all(c in "0123456789abcdef" for c in value):

@@ -1,0 +1,12 @@
+{
+  "name": "single_legal_concept_offense",
+  "description": "Only one offense concept is legal.",
+  "side": "offense",
+  "observation": {
+    "side": "offense",
+    "game_state": {"down": 1, "distance": 10, "yardline": 22, "play_index": 0, "max_plays": 8, "points": 0, "terminal": false, "terminal_reason": null},
+    "legal_concepts": ["inside_zone"],
+    "own_resource_remaining": {"protection": 14, "spacing": 18, "deception": 14, "volatility": 14}
+  },
+  "expected_behavior": "legal"
+}

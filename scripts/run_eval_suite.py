@@ -33,6 +33,7 @@ from coachbench.eval_metrics import (
     touchdown_rate,
 )
 from coachbench.graph_loader import StrategyGraph
+from coachbench.locked_eval import enforce_locked_or_raise, scrub_llm_env_vars, set_locked_env
 
 
 DEFAULT_CANDIDATE_OFFENSE = "agents.adaptive_offense.AdaptiveOffense"
@@ -83,11 +84,14 @@ def _profile_config(side: str, profile_id: str) -> dict[str, Any]:
     return profile
 
 
-def _instantiate_agent(spec: dict[str, Any]) -> Any:
+def _instantiate_agent(spec: dict[str, Any], label: str) -> Any:
     profile_id = spec.get("profile_id")
     if profile_id:
-        return _agent_class(spec["agent_path"])(_profile_config(spec["side"], profile_id))
-    return load_agent(spec["agent_path"])
+        agent = _agent_class(spec["agent_path"])(_profile_config(spec["side"], profile_id))
+    else:
+        agent = load_agent(spec["agent_path"])
+    enforce_locked_or_raise(agent, label)
+    return agent
 
 
 def _within_budget(costs: dict[str, int], budget: dict[str, int]) -> bool:
@@ -223,8 +227,10 @@ def _load_opponents(suite_config: dict[str, Any], side: str) -> list[dict[str, A
     opponent_suite = suite_config.get("opponent_suite")
     if opponent_suite is None:
         return [_synthesized_opponent(side)]
-    if side == "defense":
+    if side == "defense" and opponent_suite == "garage_defense_v1":
         opponent_suite = "garage_offense_v1"
+    if side == "defense" and opponent_suite == "exploit_probe_v1":
+        opponent_suite = "exploit_probe_offense_v1"
     payload = _read_json(OPPONENT_SUITE_DIR / f"{opponent_suite}.json")
     return [dict(opponent) for opponent in payload["opponents"]]
 
@@ -247,8 +253,10 @@ def _effective_config(args: argparse.Namespace) -> dict[str, Any]:
             "side": "defense",
             "locked": True,
         }
-        if config.get("opponent_suite") is not None:
+        if config.get("opponent_suite") == "garage_defense_v1":
             config["opponent_suite"] = "garage_offense_v1"
+        if config.get("opponent_suite") == "exploit_probe_v1":
+            config["opponent_suite"] = "exploit_probe_offense_v1"
     if args.candidate:
         config["candidate"]["agent_path"] = args.candidate
         config["candidate"]["name"] = _agent_display_name(args.candidate)
@@ -311,12 +319,22 @@ def _per_opponent_metrics(
     }
 
 
-def _agent_for_run(spec: dict[str, Any], guard: bool, strict: bool = False) -> Any:
-    agent = _instantiate_agent(spec)
+def _agent_for_run(spec: dict[str, Any], guard: bool, label: str, strict: bool = False) -> Any:
+    agent = _instantiate_agent(spec, label)
     return ResourceGuard(agent, spec["side"], strict=strict) if guard else agent
 
 
+def _prepare_locked_mode(locked: bool) -> None:
+    if locked:
+        set_locked_env(True)
+        removed = scrub_llm_env_vars()
+        print(f"locked mode: scrubbed {len(removed)} LLM env vars")
+        return
+    set_locked_env(False)
+
+
 def build_report(args: argparse.Namespace) -> dict[str, Any]:
+    _prepare_locked_mode(args.locked)
     config = _effective_config(args)
     side = config["candidate"]["side"]
     seed_pack = _load_seed_pack(config["seed_pack"])
@@ -338,16 +356,16 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         opponent_paired_records: list[dict[str, Any]] = []
         for seed in seed_pack["seeds"]:
             candidate_replay, candidate_failures = run_validated_drive(
-                agent=_agent_for_run(config["candidate"], args.candidate is None),
+                agent=_agent_for_run(config["candidate"], args.candidate is None, "candidate"),
                 side=side,
-                opponent=ResourceGuard(_instantiate_agent(opponent), opponent["side"]),
+                opponent=ResourceGuard(_instantiate_agent(opponent, f"opponent {slug}"), opponent["side"]),
                 seed=int(seed),
                 max_plays=int(config["max_plays"]),
             )
             baseline_replay, baseline_failures = run_validated_drive(
-                agent=_agent_for_run(config["baseline"], args.baseline is None, strict=True),
+                agent=_agent_for_run(config["baseline"], args.baseline is None, "baseline", strict=True),
                 side=side,
-                opponent=ResourceGuard(_instantiate_agent(opponent), opponent["side"]),
+                opponent=ResourceGuard(_instantiate_agent(opponent, f"opponent {slug}"), opponent["side"]),
                 seed=int(seed),
                 max_plays=int(config["max_plays"]),
             )
@@ -382,11 +400,12 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         )
 
     report = {
-        "schema_version": "eval_suite_report.v2",
+        "schema_version": "eval_suite_report.v3",
         "suite_id": args.suite,
         "suite_config_hash": suite_config_hash(config),
         "report_hash": "",
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "locked": bool(args.locked),
         "candidates": [candidate_meta],
         "baseline": baseline_meta,
         "opponents": opponents,
@@ -398,7 +417,8 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "warnings": [],
         "errors": errors,
     }
-    report["gates"] = evaluate_gates(report, args.suite, thresholds=config.get("gates"))
+    gate_suite_id = "smoke" if args.suite == "exploit" else args.suite
+    report["gates"] = evaluate_gates(report, gate_suite_id, thresholds=config.get("gates"))
     report["report_hash"] = canonical_report_hash(report)
     validate_eval_suite_report(report)
     return report
@@ -417,12 +437,13 @@ def _exit_for_fail_on(report: dict[str, Any], mode: str) -> int:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run CoachBench eval suite.")
-    parser.add_argument("--suite", choices=("smoke", "standard", "extended"), required=True)
+    parser.add_argument("--suite", choices=("smoke", "standard", "extended", "exploit"), required=True)
     parser.add_argument("--side", choices=("offense", "defense"), default="offense")
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--candidate")
     parser.add_argument("--baseline")
     parser.add_argument("--fail-on", choices=("never", "warning", "error"), default="error")
+    parser.add_argument("--locked", action=argparse.BooleanOptionalAction, default=True)
     args = parser.parse_args()
 
     try:
@@ -433,7 +454,7 @@ def main() -> None:
     gates = report["gates"]
     print(
         f"{args.suite} ok report_hash={report['report_hash'][:12]} "
-        f"lift={gates['lift_strength']} passed={len(gates['passed'])} "
+        f"lift={gates['lift_strength']} locked={report['locked']} passed={len(gates['passed'])} "
         f"warnings={len(gates['warnings'])} failed={len(gates['failed'])}"
     )
     raise SystemExit(_exit_for_fail_on(report, args.fail_on))
