@@ -1,0 +1,13 @@
+{
+  "schema_version": "eval_opponent_suite.v1",
+  "name": "garage_defense_v1",
+  "description": "Static defense baseline plus all four defense archetypes from agent_garage/profiles.json.",
+  "side": "defense",
+  "opponents": [
+    {"name": "Static Defense (baseline opponent)", "agent_path": "agents.static_defense.StaticDefense", "side": "defense", "profile_id": null},
+    {"name": "Coverage Shell Conservative", "agent_path": "agents.adaptive_defense.AdaptiveDefense", "side": "defense", "profile_id": "coverage_shell_conservative"},
+    {"name": "Pressure-Look Defender", "agent_path": "agents.adaptive_defense.AdaptiveDefense", "side": "defense", "profile_id": "pressure_look_defender"},
+    {"name": "Disguise Specialist", "agent_path": "agents.adaptive_defense.AdaptiveDefense", "side": "defense", "profile_id": "disguise_specialist"},
+    {"name": "Man-Coverage Bully", "agent_path": "agents.adaptive_defense.AdaptiveDefense", "side": "defense", "profile_id": "man_coverage_bully"}
+  ]
+}

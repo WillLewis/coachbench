@@ -759,14 +759,17 @@ def validate_eval_suite_report(report: Dict[str, Any]) -> None:
             "seed_pack",
             "paired_runs",
             "metrics",
+            "per_opponent_metrics",
+            "gates",
             "warnings",
             "errors",
         },
         "eval suite report",
     )
-    if report["schema_version"] != "eval_suite_report.v1":
+    if report["schema_version"] != "eval_suite_report.v2":
         raise ContractValidationError(
-            f"eval suite report schema_version must be eval_suite_report.v1, got {report['schema_version']}"
+            f"eval suite report schema_version must be eval_suite_report.v2; got {report['schema_version']}. "
+            "Phase 1 reports are no longer accepted; regenerate with run_eval_suite.py."
         )
     if report["suite_id"] not in {"smoke", "standard", "extended"}:
         raise ContractValidationError(
@@ -803,6 +806,9 @@ def validate_eval_suite_report(report: Dict[str, Any]) -> None:
         _require_fields(opponent, {"name", "agent_path", "side"}, "eval suite opponent")
         if opponent["side"] not in {"offense", "defense"}:
             raise ContractValidationError(f"eval suite opponent side must be offense or defense, got {opponent['side']}")
+        profile_id = opponent.get("profile_id")
+        if profile_id is not None and (not isinstance(profile_id, str) or not profile_id):
+            raise ContractValidationError("eval suite opponent profile_id must be non-empty string or null")
 
     seed_pack = report["seed_pack"]
     if not isinstance(seed_pack, dict):
@@ -818,9 +824,11 @@ def validate_eval_suite_report(report: Dict[str, Any]) -> None:
     if not isinstance(report["paired_runs"], list):
         raise ContractValidationError("eval suite report paired_runs must be list")
     for run in report["paired_runs"]:
-        _require_fields(run, {"seed", "candidate_replay_summary", "baseline_replay_summary", "lift"}, "eval suite paired run")
+        _require_fields(run, {"seed", "opponent", "candidate_replay_summary", "baseline_replay_summary", "lift"}, "eval suite paired run")
         if not isinstance(run["seed"], int):
             raise ContractValidationError("eval suite paired run seed must be integer")
+        if not isinstance(run["opponent"], str) or not run["opponent"]:
+            raise ContractValidationError("eval suite paired run opponent must be non-empty string")
         for key in ("candidate_replay_summary", "baseline_replay_summary"):
             summary = run[key]
             if not isinstance(summary, dict):
@@ -870,6 +878,69 @@ def validate_eval_suite_report(report: Dict[str, Any]) -> None:
             {"offense_mae", "defense_mae", "per_trait_offense_mae", "per_trait_defense_mae"},
             "eval suite metrics calibration_summary",
         )
+
+    per_opponent_metrics = report["per_opponent_metrics"]
+    if not isinstance(per_opponent_metrics, dict):
+        raise ContractValidationError("eval suite report per_opponent_metrics must be object")
+    for slug, item in per_opponent_metrics.items():
+        if not isinstance(slug, str) or not slug:
+            raise ContractValidationError("eval suite per_opponent_metrics keys must be non-empty strings")
+        if not isinstance(item, dict):
+            raise ContractValidationError("eval suite per_opponent_metrics values must be objects")
+        _require_fields(
+            item,
+            {
+                "opponent_name",
+                "n_replays_candidate",
+                "n_replays_baseline",
+                "fallback_rate_candidate",
+                "fallback_rate_baseline",
+                "points_per_drive_candidate",
+                "points_per_drive_baseline",
+                "touchdown_rate_candidate",
+                "touchdown_rate_baseline",
+                "paired_seed_lift_mean",
+                "paired_seed_win_rate",
+                "bootstrap_ci_95",
+                "concept_frequency_candidate",
+                "concept_entropy_candidate",
+            },
+            "eval suite per-opponent metrics",
+        )
+        if not isinstance(item["opponent_name"], str) or not item["opponent_name"]:
+            raise ContractValidationError("eval suite per-opponent metrics opponent_name must be non-empty string")
+        for key in ("n_replays_candidate", "n_replays_baseline"):
+            if not isinstance(item[key], int):
+                raise ContractValidationError(f"eval suite per-opponent metrics {key} must be integer")
+        for key in (
+            "fallback_rate_candidate",
+            "fallback_rate_baseline",
+            "points_per_drive_candidate",
+            "points_per_drive_baseline",
+            "touchdown_rate_candidate",
+            "touchdown_rate_baseline",
+            "paired_seed_lift_mean",
+            "paired_seed_win_rate",
+            "concept_entropy_candidate",
+        ):
+            if not isinstance(item[key], (int, float)):
+                raise ContractValidationError(f"eval suite per-opponent metrics {key} must be numeric")
+        if not isinstance(item["bootstrap_ci_95"], list) or len(item["bootstrap_ci_95"]) != 2:
+            raise ContractValidationError("eval suite per-opponent metrics bootstrap_ci_95 must be two-number list")
+        if any(not isinstance(value, (int, float)) for value in item["bootstrap_ci_95"]):
+            raise ContractValidationError("eval suite per-opponent metrics bootstrap_ci_95 must be two-number list")
+        if not isinstance(item["concept_frequency_candidate"], dict):
+            raise ContractValidationError("eval suite per-opponent metrics concept_frequency_candidate must be object")
+
+    gates = report["gates"]
+    if not isinstance(gates, dict):
+        raise ContractValidationError("eval suite report gates must be object")
+    _require_fields(gates, {"passed", "failed", "warnings", "lift_strength"}, "eval suite gates")
+    for key in ("passed", "failed", "warnings"):
+        if not isinstance(gates[key], list) or any(not isinstance(item, str) for item in gates[key]):
+            raise ContractValidationError(f"eval suite gates {key} must be list[str]")
+    if gates["lift_strength"] not in {"none", "confirmed", "strong"}:
+        raise ContractValidationError(f"eval suite gates lift_strength is invalid: {gates['lift_strength']}")
 
     if not isinstance(report["warnings"], list) or any(not isinstance(item, str) for item in report["warnings"]):
         raise ContractValidationError("eval suite report warnings must be list[str]")

@@ -1,0 +1,26 @@
+{
+  "schema_version": "eval_suite_config.v1",
+  "name": "smoke",
+  "description": "5-seed paired comparison against a synthesized static baseline opponent.",
+  "seed_pack": "smoke",
+  "opponent_suite": null,
+  "max_plays": 8,
+  "candidate": {
+    "name": "AdaptiveOffense",
+    "agent_path": "agents.adaptive_offense.AdaptiveOffense",
+    "side": "offense",
+    "locked": false
+  },
+  "baseline": {
+    "name": "StaticOffense",
+    "agent_path": "agents.static_offense.StaticOffense",
+    "side": "offense",
+    "locked": true
+  },
+  "gates": {
+    "fallback_rate_max": 0.0,
+    "concept_top1_warn_above": 0.40,
+    "concept_entropy_warn_below": 1.5,
+    "resource_exhaustion_warn_above": 0.20
+  }
+}

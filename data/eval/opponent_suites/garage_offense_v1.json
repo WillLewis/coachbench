@@ -1,0 +1,13 @@
+{
+  "schema_version": "eval_opponent_suite.v1",
+  "name": "garage_offense_v1",
+  "description": "Static offense baseline plus all four offense archetypes from agent_garage/profiles.json.",
+  "side": "offense",
+  "opponents": [
+    {"name": "Static Offense (baseline opponent)", "agent_path": "agents.static_offense.StaticOffense", "side": "offense", "profile_id": null},
+    {"name": "Efficiency Optimizer", "agent_path": "agents.adaptive_offense.AdaptiveOffense", "side": "offense", "profile_id": "efficiency_optimizer"},
+    {"name": "Aggressive Shot-Taker", "agent_path": "agents.adaptive_offense.AdaptiveOffense", "side": "offense", "profile_id": "aggressive_shot_taker"},
+    {"name": "Misdirection Artist", "agent_path": "agents.adaptive_offense.AdaptiveOffense", "side": "offense", "profile_id": "misdirection_artist"},
+    {"name": "Run-Game Builder", "agent_path": "agents.adaptive_offense.AdaptiveOffense", "side": "offense", "profile_id": "run_game_builder"}
+  ]
+}

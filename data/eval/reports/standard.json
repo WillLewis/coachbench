@@ -1,0 +1,7660 @@
+{
+  "schema_version": "eval_suite_report.v2",
+  "suite_id": "standard",
+  "suite_config_hash": "8c1b38c87832d665acd344f4b544c4314a1cf453c6aeaad3576ed2570f7858c1",
+  "report_hash": "c37419f1408bbe6c649921dff62c484c3f7e234b474417aa350c81b10560d7e4",
+  "generated_at": "2026-05-10T22:07:40.542506+00:00",
+  "candidates": [
+    {
+      "name": "AdaptiveOffense",
+      "agent_path": "agents.adaptive_offense.AdaptiveOffense",
+      "side": "offense",
+      "locked": false
+    }
+  ],
+  "baseline": {
+    "name": "StaticOffense",
+    "agent_path": "agents.static_offense.StaticOffense",
+    "side": "offense",
+    "locked": true
+  },
+  "opponents": [
+    {
+      "name": "Static Defense (baseline opponent)",
+      "agent_path": "agents.static_defense.StaticDefense",
+      "side": "defense",
+      "profile_id": null
+    },
+    {
+      "name": "Coverage Shell Conservative",
+      "agent_path": "agents.adaptive_defense.AdaptiveDefense",
+      "side": "defense",
+      "profile_id": "coverage_shell_conservative"
+    },
+    {
+      "name": "Pressure-Look Defender",
+      "agent_path": "agents.adaptive_defense.AdaptiveDefense",
+      "side": "defense",
+      "profile_id": "pressure_look_defender"
+    },
+    {
+      "name": "Disguise Specialist",
+      "agent_path": "agents.adaptive_defense.AdaptiveDefense",
+      "side": "defense",
+      "profile_id": "disguise_specialist"
+    },
+    {
+      "name": "Man-Coverage Bully",
+      "agent_path": "agents.adaptive_defense.AdaptiveDefense",
+      "side": "defense",
+      "profile_id": "man_coverage_bully"
+    }
+  ],
+  "seed_pack": {
+    "name": "standard",
+    "description": "64 fixed seeds generated as [(i * 1009 + 17) % 100003 for i in range(64)].",
+    "seeds": [
+      17,
+      1026,
+      2035,
+      3044,
+      4053,
+      5062,
+      6071,
+      7080,
+      8089,
+      9098,
+      10107,
+      11116,
+      12125,
+      13134,
+      14143,
+      15152,
+      16161,
+      17170,
+      18179,
+      19188,
+      20197,
+      21206,
+      22215,
+      23224,
+      24233,
+      25242,
+      26251,
+      27260,
+      28269,
+      29278,
+      30287,
+      31296,
+      32305,
+      33314,
+      34323,
+      35332,
+      36341,
+      37350,
+      38359,
+      39368,
+      40377,
+      41386,
+      42395,
+      43404,
+      44413,
+      45422,
+      46431,
+      47440,
+      48449,
+      49458,
+      50467,
+      51476,
+      52485,
+      53494,
+      54503,
+      55512,
+      56521,
+      57530,
+      58539,
+      59548,
+      60557,
+      61566,
+      62575,
+      63584
+    ]
+  },
+  "paired_runs": [
+    {
+      "seed": 17,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 1026,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 2035,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 3044,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 4053,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 5062,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 6071,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 7080,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 8089,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 9098,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 10107,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 11116,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 12125,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 13134,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 14143,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 15152,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 16161,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17170,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 4
+    },
+    {
+      "seed": 18179,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 19188,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 20197,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 21206,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 22215,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 23224,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 24233,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 25242,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 26251,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 27260,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 28269,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 29278,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -3
+    },
+    {
+      "seed": 30287,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 31296,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 32305,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 33314,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 34323,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 35332,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 36341,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 37350,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 38359,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 39368,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 40377,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 41386,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 42395,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 43404,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 44413,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 45422,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 46431,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 47440,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 48449,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 49458,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 50467,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 51476,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 52485,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 53494,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 54503,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 55512,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 56521,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 57530,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 58539,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 59548,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 60557,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 61566,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 62575,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 63584,
+      "opponent": "static_defense_baseline",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 1026,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 2035,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 3044,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 4053,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 5062,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 6071,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 7080,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 8089,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 9098,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 10107,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 11116,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 12125,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 13134,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 14143,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 15152,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 16161,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17170,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 4
+    },
+    {
+      "seed": 18179,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 19188,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 20197,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 21206,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 22215,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 23224,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 24233,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 25242,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 26251,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 27260,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 28269,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 29278,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 4
+    },
+    {
+      "seed": 30287,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 31296,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 32305,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 33314,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 34323,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 35332,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 36341,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 37350,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 38359,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 39368,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 40377,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 41386,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -7
+    },
+    {
+      "seed": 42395,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 43404,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 44413,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 45422,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 46431,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 47440,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 48449,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 49458,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 50467,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 51476,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 52485,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 53494,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 54503,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 55512,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 56521,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 57530,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 58539,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 59548,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 60557,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 61566,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 62575,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 63584,
+      "opponent": "coverage_shell_conservative",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 17,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 1026,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 2035,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 3044,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 4053,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 5062,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 6071,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 7080,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 8089,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 9098,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 10107,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 11116,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 12125,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 13134,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 14143,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 15152,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 16161,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17170,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 4
+    },
+    {
+      "seed": 18179,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 19188,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 20197,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 21206,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 22215,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 23224,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 24233,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 25242,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 26251,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 27260,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 28269,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 29278,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -3
+    },
+    {
+      "seed": 30287,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 31296,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 32305,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 33314,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 34323,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 35332,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 36341,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 37350,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 38359,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 39368,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 40377,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 41386,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 42395,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 43404,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 44413,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 45422,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 46431,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 47440,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 48449,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 49458,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 50467,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 51476,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 52485,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 53494,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 54503,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 55512,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 56521,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 57530,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 58539,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 59548,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 60557,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 61566,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 62575,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 63584,
+      "opponent": "pressure_look_defender",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 1026,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 2035,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 3044,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 4053,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 5062,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 6071,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 7080,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 8089,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 9098,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 10107,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 11116,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 12125,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 13134,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 14143,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 15152,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 16161,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17170,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 4
+    },
+    {
+      "seed": 18179,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 19188,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 20197,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 21206,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 22215,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 23224,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 24233,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 25242,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 26251,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 27260,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 28269,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 29278,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -3
+    },
+    {
+      "seed": 30287,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 31296,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 32305,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 33314,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 34323,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 35332,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 36341,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 37350,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 38359,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 39368,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 40377,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 41386,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 42395,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 43404,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 44413,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 45422,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 46431,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 47440,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 48449,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 49458,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 50467,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 51476,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 52485,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 53494,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 54503,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 55512,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 56521,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 57530,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 58539,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 59548,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 60557,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 61566,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 62575,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 63584,
+      "opponent": "disguise_specialist",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 2,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 1026,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 2035,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 3044,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 4053,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 5062,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 6071,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 7080,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 8089,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 9098,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 10107,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 11116,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 12125,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 13134,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 14143,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 15152,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 16161,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 17170,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 4
+    },
+    {
+      "seed": 18179,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 19188,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 20197,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 21206,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 22215,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 23224,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 24233,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 25242,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 26251,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 27260,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 28269,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 29278,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 4
+    },
+    {
+      "seed": 30287,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 31296,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 32305,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 33314,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 34323,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 35332,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 36341,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 37350,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 38359,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    },
+    {
+      "seed": 39368,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 40377,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 41386,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -7
+    },
+    {
+      "seed": 42395,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 43404,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 44413,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 45422,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 46431,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 47440,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 48449,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 49458,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 50467,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 51476,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 52485,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 53494,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 54503,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 55512,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 56521,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 57530,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 58539,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 59548,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 60557,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 61566,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 62575,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 7
+    },
+    {
+      "seed": 63584,
+      "opponent": "man_coverage_bully",
+      "candidate_replay_summary": {
+        "points": 3,
+        "result": "field_goal",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 3
+    }
+  ],
+  "metrics": {
+    "fallback_rate_candidate": 0.0,
+    "fallback_rate_baseline": 0.0,
+    "points_per_drive_candidate": 2.3031,
+    "points_per_drive_baseline": 1.0156,
+    "touchdown_rate_candidate": 0.296875,
+    "touchdown_rate_baseline": 0.125,
+    "paired_seed_lift_mean": 1.2875,
+    "paired_seed_win_rate": 0.2375,
+    "bootstrap_ci_95": [
+      0.9906,
+      1.5625
+    ],
+    "concept_frequency_candidate": {
+      "bunch_mesh": 0.14259485924112608,
+      "outside_zone": 0.24541003671970624,
+      "play_action_flood": 0.16401468788249693,
+      "quick_game": 0.1664626682986536,
+      "rpo_glance": 0.28151774785801714
+    },
+    "concept_entropy_candidate": 2.2712,
+    "resource_exhaustion_rate_candidate": 0.0,
+    "calibration_summary": null
+  },
+  "per_opponent_metrics": {
+    "static_defense_baseline": {
+      "opponent_name": "Static Defense (baseline opponent)",
+      "n_replays_candidate": 64,
+      "n_replays_baseline": 64,
+      "fallback_rate_candidate": 0.0,
+      "fallback_rate_baseline": 0.0,
+      "points_per_drive_candidate": 1.6562,
+      "points_per_drive_baseline": 1.0156,
+      "touchdown_rate_candidate": 0.203125,
+      "touchdown_rate_baseline": 0.125,
+      "paired_seed_lift_mean": 0.6406,
+      "paired_seed_win_rate": 0.140625,
+      "bootstrap_ci_95": [
+        0.2188,
+        1.1719
+      ],
+      "concept_frequency_candidate": {
+        "bunch_mesh": 0.2422360248447205,
+        "outside_zone": 0.2826086956521739,
+        "rpo_glance": 0.4751552795031056
+      },
+      "concept_entropy_candidate": 1.5208
+    },
+    "coverage_shell_conservative": {
+      "opponent_name": "Coverage Shell Conservative",
+      "n_replays_candidate": 64,
+      "n_replays_baseline": 64,
+      "fallback_rate_candidate": 0.0,
+      "fallback_rate_baseline": 0.0,
+      "points_per_drive_candidate": 3.2969,
+      "points_per_drive_baseline": 1.0156,
+      "touchdown_rate_candidate": 0.4375,
+      "touchdown_rate_baseline": 0.125,
+      "paired_seed_lift_mean": 2.2812,
+      "paired_seed_win_rate": 0.390625,
+      "bootstrap_ci_95": [
+        1.4844,
+        3.0938
+      ],
+      "concept_frequency_candidate": {
+        "outside_zone": 0.19161676646706588,
+        "play_action_flood": 0.40119760479041916,
+        "quick_game": 0.40718562874251496
+      },
+      "concept_entropy_candidate": 1.5132
+    },
+    "pressure_look_defender": {
+      "opponent_name": "Pressure-Look Defender",
+      "n_replays_candidate": 64,
+      "n_replays_baseline": 64,
+      "fallback_rate_candidate": 0.0,
+      "fallback_rate_baseline": 0.0,
+      "points_per_drive_candidate": 1.6562,
+      "points_per_drive_baseline": 1.0156,
+      "touchdown_rate_candidate": 0.203125,
+      "touchdown_rate_baseline": 0.125,
+      "paired_seed_lift_mean": 0.6406,
+      "paired_seed_win_rate": 0.140625,
+      "bootstrap_ci_95": [
+        0.2188,
+        1.1719
+      ],
+      "concept_frequency_candidate": {
+        "bunch_mesh": 0.2422360248447205,
+        "outside_zone": 0.2826086956521739,
+        "rpo_glance": 0.4751552795031056
+      },
+      "concept_entropy_candidate": 1.5208
+    },
+    "disguise_specialist": {
+      "opponent_name": "Disguise Specialist",
+      "n_replays_candidate": 64,
+      "n_replays_baseline": 64,
+      "fallback_rate_candidate": 0.0,
+      "fallback_rate_baseline": 0.0,
+      "points_per_drive_candidate": 1.6562,
+      "points_per_drive_baseline": 1.0156,
+      "touchdown_rate_candidate": 0.203125,
+      "touchdown_rate_baseline": 0.125,
+      "paired_seed_lift_mean": 0.6406,
+      "paired_seed_win_rate": 0.140625,
+      "bootstrap_ci_95": [
+        0.2188,
+        1.1719
+      ],
+      "concept_frequency_candidate": {
+        "bunch_mesh": 0.2391304347826087,
+        "outside_zone": 0.2826086956521739,
+        "rpo_glance": 0.4782608695652174
+      },
+      "concept_entropy_candidate": 1.5178
+    },
+    "man_coverage_bully": {
+      "opponent_name": "Man-Coverage Bully",
+      "n_replays_candidate": 64,
+      "n_replays_baseline": 64,
+      "fallback_rate_candidate": 0.0,
+      "fallback_rate_baseline": 0.0,
+      "points_per_drive_candidate": 3.25,
+      "points_per_drive_baseline": 1.0156,
+      "touchdown_rate_candidate": 0.4375,
+      "touchdown_rate_baseline": 0.125,
+      "paired_seed_lift_mean": 2.2344,
+      "paired_seed_win_rate": 0.375,
+      "bootstrap_ci_95": [
+        1.4688,
+        3.0469
+      ],
+      "concept_frequency_candidate": {
+        "outside_zone": 0.19161676646706588,
+        "play_action_flood": 0.40119760479041916,
+        "quick_game": 0.40718562874251496
+      },
+      "concept_entropy_candidate": 1.5132
+    }
+  },
+  "gates": {
+    "passed": [
+      "fallback_rate_candidate=0.0 <= 0.01",
+      "fallback_rate_baseline=0.0 <= 0.01",
+      "fallback_rate_candidate=0.0 <= 0.01 (opponent=coverage_shell_conservative)",
+      "fallback_rate_baseline=0.0 <= 0.01 (opponent=coverage_shell_conservative)",
+      "concept_entropy_candidate=1.5132 >= 1.5 (candidate, opponent=coverage_shell_conservative)",
+      "fallback_rate_candidate=0.0 <= 0.01 (opponent=disguise_specialist)",
+      "fallback_rate_baseline=0.0 <= 0.01 (opponent=disguise_specialist)",
+      "concept_entropy_candidate=1.5178 >= 1.5 (candidate, opponent=disguise_specialist)",
+      "fallback_rate_candidate=0.0 <= 0.01 (opponent=man_coverage_bully)",
+      "fallback_rate_baseline=0.0 <= 0.01 (opponent=man_coverage_bully)",
+      "concept_entropy_candidate=1.5132 >= 1.5 (candidate, opponent=man_coverage_bully)",
+      "fallback_rate_candidate=0.0 <= 0.01 (opponent=pressure_look_defender)",
+      "fallback_rate_baseline=0.0 <= 0.01 (opponent=pressure_look_defender)",
+      "concept_entropy_candidate=1.5208 >= 1.5 (candidate, opponent=pressure_look_defender)",
+      "fallback_rate_candidate=0.0 <= 0.01 (opponent=static_defense_baseline)",
+      "fallback_rate_baseline=0.0 <= 0.01 (opponent=static_defense_baseline)",
+      "concept_entropy_candidate=1.5208 >= 1.5 (candidate, opponent=static_defense_baseline)",
+      "resource_exhaustion_rate_candidate=0.0 <= 0.1",
+      "errors=0"
+    ],
+    "failed": [],
+    "warnings": [
+      "concept_top1=0.4072 > 0.4 (quick_game, candidate, opponent=coverage_shell_conservative)",
+      "concept_top1=0.4783 > 0.4 (rpo_glance, candidate, opponent=disguise_specialist)",
+      "concept_top1=0.4072 > 0.4 (quick_game, candidate, opponent=man_coverage_bully)",
+      "concept_top1=0.4752 > 0.4 (rpo_glance, candidate, opponent=pressure_look_defender)",
+      "concept_top1=0.4752 > 0.4 (rpo_glance, candidate, opponent=static_defense_baseline)"
+    ],
+    "lift_strength": "none"
+  },
+  "warnings": [],
+  "errors": []
+}

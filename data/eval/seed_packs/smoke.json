@@ -1,0 +1,5 @@
+{
+  "name": "smoke",
+  "description": "5 fixed seeds matching tests/fixtures/garage_knob_seeds.json for fast CI.",
+  "seeds": [6, 10, 42, 72, 99]
+}
