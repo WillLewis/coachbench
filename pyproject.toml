@@ -7,7 +7,7 @@ name = "coachbench"
 version = "0.1.0"
 description = "Football-inspired red-zone adversarial-agent benchmark starter."
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["anthropic>=0.45.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
