@@ -1,9 +1,10 @@
 {
-  "schema_version": "eval_suite_report.v2",
+  "schema_version": "eval_suite_report.v3",
   "suite_id": "smoke",
   "suite_config_hash": "9d145221993e808610ff4c3b29943c4f2f1ee1cb7f026354cf6102514bc8e896",
-  "report_hash": "44e6aeedadff340ac7c1585a54eac734b5c94e288f95adb3c7255034344f63fb",
-  "generated_at": "2026-05-10T22:07:31.767123+00:00",
+  "report_hash": "0b86148654e6b22303b0da7458c94adc2dc81f85fac25cd7e40774b488f73d41",
+  "generated_at": "2026-05-10T22:30:25.831511+00:00",
+  "locked": true,
   "candidates": [
     {
       "name": "AdaptiveOffense",
