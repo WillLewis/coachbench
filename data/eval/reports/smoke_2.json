@@ -1,0 +1,168 @@
+{
+  "schema_version": "eval_suite_report.v1",
+  "suite_id": "smoke",
+  "suite_config_hash": "6ccc92d2bdba30bd23d79e2cec49a1ee583ff3426df7bb5ab482401db4cc3040",
+  "report_hash": "15d1f49486f7a5c4a87d2170ddac5b28b62e47897ee359c23b01908384c75718",
+  "generated_at": "2026-05-10T19:55:23.778130+00:00",
+  "candidates": [
+    {
+      "name": "Team B Adaptive Offense",
+      "agent_path": "agents.adaptive_offense.AdaptiveOffense",
+      "side": "offense",
+      "locked": false
+    }
+  ],
+  "baseline": {
+    "name": "Team A Static Offense",
+    "agent_path": "agents.static_offense.StaticOffense",
+    "side": "offense",
+    "locked": true
+  },
+  "opponents": [],
+  "seed_pack": {
+    "name": "smoke",
+    "seeds": [
+      6,
+      10,
+      42,
+      72,
+      99
+    ]
+  },
+  "paired_runs": [
+    {
+      "seed": 6,
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 8,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -7
+    },
+    {
+      "seed": 10,
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 3,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -7
+    },
+    {
+      "seed": 42,
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 4,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -7
+    },
+    {
+      "seed": 72,
+      "candidate_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 5,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 3,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": 0
+    },
+    {
+      "seed": 99,
+      "candidate_replay_summary": {
+        "points": 0,
+        "result": "stopped",
+        "plays": 7,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "baseline_replay_summary": {
+        "points": 7,
+        "result": "touchdown",
+        "plays": 6,
+        "validation_failures": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "lift": -7
+    }
+  ],
+  "metrics": {
+    "fallback_rate_candidate": 0.0,
+    "fallback_rate_baseline": 0.0,
+    "points_per_drive_candidate": 1.4,
+    "points_per_drive_baseline": 7.0,
+    "touchdown_rate_candidate": 0.2,
+    "touchdown_rate_baseline": 1.0,
+    "paired_seed_lift_mean": -5.6,
+    "paired_seed_win_rate": 0.0,
+    "bootstrap_ci_95": [
+      -7.0,
+      -2.8
+    ],
+    "concept_frequency_candidate": {
+      "bunch_mesh": 0.2962962962962963,
+      "outside_zone": 0.2962962962962963,
+      "rpo_glance": 0.4074074074074074
+    },
+    "concept_entropy_candidate": 1.5677,
+    "resource_exhaustion_rate_candidate": 0.2,
+    "calibration_summary": null
+  },
+  "warnings": [],
+  "errors": []
+}

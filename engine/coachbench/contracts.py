@@ -744,6 +744,139 @@ def validate_comparison_report(report: Dict[str, Any]) -> None:
     )
 
 
+def validate_eval_suite_report(report: Dict[str, Any]) -> None:
+    """Validate eval suite report shape. Raises ContractValidationError."""
+    _require_fields(
+        report,
+        {
+            "schema_version",
+            "suite_id",
+            "suite_config_hash",
+            "report_hash",
+            "candidates",
+            "baseline",
+            "opponents",
+            "seed_pack",
+            "paired_runs",
+            "metrics",
+            "warnings",
+            "errors",
+        },
+        "eval suite report",
+    )
+    if report["schema_version"] != "eval_suite_report.v1":
+        raise ContractValidationError(
+            f"eval suite report schema_version must be eval_suite_report.v1, got {report['schema_version']}"
+        )
+    if report["suite_id"] not in {"smoke", "standard", "extended"}:
+        raise ContractValidationError(
+            f"eval suite report suite_id must be one of smoke|standard|extended, got {report['suite_id']}"
+        )
+    for hash_field in ("suite_config_hash", "report_hash"):
+        value = report[hash_field]
+        if not isinstance(value, str) or len(value) != 64 or not all(c in "0123456789abcdef" for c in value):
+            raise ContractValidationError(
+                f"eval suite report {hash_field} must be 64-char lowercase hex sha256"
+            )
+
+    if not isinstance(report["candidates"], list) or not report["candidates"]:
+        raise ContractValidationError("eval suite report candidates must be non-empty list")
+    for candidate in report["candidates"]:
+        _require_fields(candidate, {"name", "agent_path", "side", "locked"}, "eval suite candidate")
+        if candidate["side"] not in {"offense", "defense"}:
+            raise ContractValidationError(f"eval suite candidate side must be offense or defense, got {candidate['side']}")
+        if not isinstance(candidate["locked"], bool):
+            raise ContractValidationError("eval suite candidate locked must be boolean")
+
+    baseline = report["baseline"]
+    if not isinstance(baseline, dict):
+        raise ContractValidationError("eval suite report baseline must be object")
+    _require_fields(baseline, {"name", "agent_path", "side", "locked"}, "eval suite baseline")
+    if baseline["side"] not in {"offense", "defense"}:
+        raise ContractValidationError(f"eval suite baseline side must be offense or defense, got {baseline['side']}")
+    if not isinstance(baseline["locked"], bool):
+        raise ContractValidationError("eval suite baseline locked must be boolean")
+
+    if not isinstance(report["opponents"], list):
+        raise ContractValidationError("eval suite report opponents must be list")
+    for opponent in report["opponents"]:
+        _require_fields(opponent, {"name", "agent_path", "side"}, "eval suite opponent")
+        if opponent["side"] not in {"offense", "defense"}:
+            raise ContractValidationError(f"eval suite opponent side must be offense or defense, got {opponent['side']}")
+
+    seed_pack = report["seed_pack"]
+    if not isinstance(seed_pack, dict):
+        raise ContractValidationError("eval suite report seed_pack must be object")
+    _require_fields(seed_pack, {"name", "seeds"}, "eval suite seed_pack")
+    if not isinstance(seed_pack["name"], str) or not seed_pack["name"]:
+        raise ContractValidationError("eval suite seed_pack name must be non-empty string")
+    if not isinstance(seed_pack["seeds"], list) or not seed_pack["seeds"]:
+        raise ContractValidationError("eval suite seed_pack seeds must be non-empty list")
+    if any(not isinstance(seed, int) for seed in seed_pack["seeds"]):
+        raise ContractValidationError("eval suite seed_pack seeds must be integers")
+
+    if not isinstance(report["paired_runs"], list):
+        raise ContractValidationError("eval suite report paired_runs must be list")
+    for run in report["paired_runs"]:
+        _require_fields(run, {"seed", "candidate_replay_summary", "baseline_replay_summary", "lift"}, "eval suite paired run")
+        if not isinstance(run["seed"], int):
+            raise ContractValidationError("eval suite paired run seed must be integer")
+        for key in ("candidate_replay_summary", "baseline_replay_summary"):
+            summary = run[key]
+            if not isinstance(summary, dict):
+                raise ContractValidationError(f"eval suite paired run {key} must be object")
+            _require_fields(summary, {"points", "result", "plays", "validation_failures"}, f"eval suite paired run {key}")
+            if summary["result"] not in {"touchdown", "field_goal", "stopped"}:
+                raise ContractValidationError(f"eval suite paired run result is invalid: {summary['result']}")
+            failures = summary["validation_failures"]
+            if not isinstance(failures, dict):
+                raise ContractValidationError(f"eval suite paired run {key} validation_failures must be object")
+            _require_fields(failures, {"offense", "defense"}, f"eval suite paired run {key} validation_failures")
+
+    metrics = report["metrics"]
+    if not isinstance(metrics, dict):
+        raise ContractValidationError("eval suite report metrics must be object")
+    _require_fields(
+        metrics,
+        {
+            "fallback_rate_candidate",
+            "fallback_rate_baseline",
+            "points_per_drive_candidate",
+            "points_per_drive_baseline",
+            "touchdown_rate_candidate",
+            "touchdown_rate_baseline",
+            "paired_seed_lift_mean",
+            "paired_seed_win_rate",
+            "bootstrap_ci_95",
+            "concept_frequency_candidate",
+            "concept_entropy_candidate",
+            "resource_exhaustion_rate_candidate",
+            "calibration_summary",
+        },
+        "eval suite metrics",
+    )
+    if not isinstance(metrics["bootstrap_ci_95"], list) or len(metrics["bootstrap_ci_95"]) != 2:
+        raise ContractValidationError("eval suite metrics bootstrap_ci_95 must be two-number list")
+    if any(not isinstance(value, (int, float)) for value in metrics["bootstrap_ci_95"]):
+        raise ContractValidationError("eval suite metrics bootstrap_ci_95 must be two-number list")
+    if not isinstance(metrics["concept_frequency_candidate"], dict):
+        raise ContractValidationError("eval suite metrics concept_frequency_candidate must be object")
+    calibration = metrics["calibration_summary"]
+    if calibration is not None:
+        if not isinstance(calibration, dict):
+            raise ContractValidationError("eval suite metrics calibration_summary must be object or null")
+        _require_fields(
+            calibration,
+            {"offense_mae", "defense_mae", "per_trait_offense_mae", "per_trait_defense_mae"},
+            "eval suite metrics calibration_summary",
+        )
+
+    if not isinstance(report["warnings"], list) or any(not isinstance(item, str) for item in report["warnings"]):
+        raise ContractValidationError("eval suite report warnings must be list[str]")
+    if not isinstance(report["errors"], list) or any(not isinstance(item, str) for item in report["errors"]):
+        raise ContractValidationError("eval suite report errors must be list[str]")
+
+
 def validate_calibration_report(report: Dict[str, Any]) -> None:
     _require_fields(report, {"seeds", "matchup", "ranges"}, "calibration report")
     _require_fields(report["matchup"], {"offense", "defense"}, "calibration matchup")
