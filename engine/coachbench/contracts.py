@@ -951,6 +951,71 @@ def validate_eval_suite_report(report: Dict[str, Any]) -> None:
         raise ContractValidationError("eval suite report errors must be list[str]")
 
 
+def validate_eval_delta_report(report: Dict[str, Any]) -> None:
+    """Validate eval delta report shape. Raises ContractValidationError."""
+    _require_fields(
+        report,
+        {
+            "schema_version",
+            "delta_hash",
+            "generated_at",
+            "before",
+            "after",
+            "comparability",
+            "metric_deltas",
+            "per_opponent_metric_deltas",
+            "gate_transitions",
+            "regression",
+        },
+        "eval delta report",
+    )
+    if report["schema_version"] != "eval_delta_report.v1":
+        raise ContractValidationError(
+            f"eval delta report schema_version must be eval_delta_report.v1; got {report['schema_version']}"
+        )
+    value = report["delta_hash"]
+    if not isinstance(value, str) or len(value) != 64 or not all(c in "0123456789abcdef" for c in value):
+        raise ContractValidationError("eval delta report delta_hash must be 64-char lowercase hex sha256")
+    for label in ("before", "after"):
+        stub = report[label]
+        if not isinstance(stub, dict):
+            raise ContractValidationError(f"eval delta report {label} must be object")
+        _require_fields(
+            stub,
+            {"report_hash", "suite_id", "candidate_name", "baseline_name", "seed_pack_name", "opponent_suite_name", "locked"},
+            f"eval delta report {label}",
+        )
+    comp = report["comparability"]
+    if not isinstance(comp, dict):
+        raise ContractValidationError("eval delta report comparability must be object")
+    _require_fields(
+        comp,
+        {
+            "same_schema_version",
+            "same_suite_id",
+            "same_seed_pack",
+            "same_candidate",
+            "same_baseline",
+            "same_opponent_suite",
+            "same_locked_mode",
+            "warnings",
+            "errors",
+        },
+        "eval delta comparability",
+    )
+    regression = report["regression"]
+    if not isinstance(regression, dict):
+        raise ContractValidationError("eval delta report regression must be object")
+    _require_fields(regression, {"is_regression", "reasons"}, "eval delta regression")
+    if not isinstance(regression["is_regression"], bool):
+        raise ContractValidationError("eval delta regression.is_regression must be bool")
+    if not isinstance(regression["reasons"], list):
+        raise ContractValidationError("eval delta regression.reasons must be list")
+    for key in ("metric_deltas", "per_opponent_metric_deltas", "gate_transitions"):
+        if not isinstance(report[key], dict):
+            raise ContractValidationError(f"eval delta report {key} must be object")
+
+
 def validate_calibration_report(report: Dict[str, Any]) -> None:
     _require_fields(report, {"seeds", "matchup", "ranges"}, "calibration report")
     _require_fields(report["matchup"], {"offense", "defense"}, "calibration matchup")

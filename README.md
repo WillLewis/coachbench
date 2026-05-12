@@ -40,9 +40,13 @@ python -m http.server 8000
 
 Local backend env defaults live in `.env.example`. Live Assistant model calls require `LLM_VIRAL_SPIKE_COST_CEILING_USD` to be set to a real launch ceiling, plus session, IP-window, concurrency, kill-switch, model, timeout, and server-side API-key settings. The deterministic Assistant stub remains the fallback when the model path is killed, over budget, unavailable, or invalid.
 
-## Screenshot Placeholder
+## Demo Preview
 
-Add a screenshot or short local capture of `http://localhost:8000/ui/` here after the UI is opened in a browser.
+<p align="center">
+  <img src="docs/assets/coachbench-seed-956.gif" alt="CoachBench seed 956 replay preview" width="900">
+</p>
+
+Seed 956 shows an eight-play red-zone drive from the home-page field view, sped up for a short README loop.
 
 ## Included Pieces
 
