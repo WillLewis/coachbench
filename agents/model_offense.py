@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from coachbench.action_legality import ActionValidationError, LegalActionFacade
+from coachbench.model_debug import log_model_decision
 from coachbench.model_observation import render_observation_for_offense
 from coachbench.providers import make_provider
 from coachbench.schema import AgentMemory, OffenseAction
@@ -38,9 +39,24 @@ class ModelOffense:
         self.memory["turn_count"] = int(self.memory.get("turn_count", 0)) + 1
         user_prompt = render_observation_for_offense(observation)
         response = self.provider.query(system=self._system_prompt, user=user_prompt)
+        legal_set = legal.legal_offense_concepts()
+
+        def _log(outcome: str) -> None:
+            log_model_decision(
+                agent_name=self.name,
+                side="offense",
+                turn_count=int(self.memory["turn_count"]),
+                user_prompt=user_prompt,
+                raw_text=response.raw_text,
+                parsed_json=response.parsed_json,
+                error=response.error,
+                outcome=outcome,
+                legal_set=list(legal_set),
+            )
 
         if response.parsed_json is None:
             self._internal_fallback_count += 1
+            _log("fallback:no_valid_json")
             raise ActionValidationError([
                 f"model_offense: provider returned no valid JSON (error={response.error!r}, raw={response.raw_text[:120]!r})"
             ])
@@ -48,16 +64,18 @@ class ModelOffense:
         concept = response.parsed_json.get("concept_family")
         if not isinstance(concept, str) or not concept:
             self._internal_fallback_count += 1
+            _log("fallback:missing_concept_family")
             raise ActionValidationError([
                 f"model_offense: response missing or invalid concept_family: {response.parsed_json}"
             ])
 
-        legal_concepts = legal.legal_offense_concepts()
-        if concept not in legal_concepts:
+        if concept not in legal_set:
             self._internal_fallback_count += 1
+            _log(f"fallback:concept_not_legal:{concept}")
             raise ActionValidationError([
-                f"model_offense: picked concept {concept!r} not in legal set: {legal_concepts}"
+                f"model_offense: picked concept {concept!r} not in legal set: {legal_set}"
             ])
 
         self.memory["last_pick"] = concept
+        _log(f"picked:{concept}")
         return legal.build_offense_action(concept, "balanced")
