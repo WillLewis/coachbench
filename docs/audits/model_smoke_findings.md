@@ -98,3 +98,19 @@ B. Tighten prompt before another live run. The blocking issue is `fallback_rate_
 - smoke.json: `0b86148654e6b22303b0da7458c94adc2dc81f85fac25cd7e40774b488f73d41`
 
 These hashes anchor the findings to specific report files. If either report is regenerated, the findings should be regenerated.
+
+## 2026-05-15 Follow-up
+
+**New report:** `data/eval/reports/model_smoke_debug.json` (sha256: `a2622b3089b9232730c5bb45e92c564b822a92a42656b30f4ca83ab36286090b`)
+
+**Diagnosed dominant failure mode:** none
+
+**Prompt change:** Added a literal correct JSON response and a fenced-code negative example. This hardens the JSON-only response contract against markdown/code-fence drift while preserving the same legal concept selection contract.
+
+**Outcome:**
+
+| Metric | Before (2026-05-12) | After (2026-05-15) |
+|---|---:|---:|
+| fallback_rate_candidate | 1.0 | 0.0 |
+| concept_entropy_candidate | 0.0 | 1.8725 |
+| distinct concepts | 1 | 5 |

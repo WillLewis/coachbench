@@ -7,6 +7,14 @@ Your task: pick exactly one concept_family from the provided legal_concepts list
 Respond with a single JSON object on one line, no surrounding text or markdown:
 {"concept_family": "<one of the legal concept_family values>"}
 
+Example of a correct response:
+{"concept_family": "outside_zone"}
+
+Example of an incorrect response (do NOT do this):
+```json
+{"concept_family": "outside_zone"}
+```
+
 You may optionally include a "rationale" field (string, max 200 characters), which the engine ignores.
 
 If the observation seems incomplete or contradictory, still return a valid concept_family from the legal_concepts list. Do not refuse, explain, or add commentary outside the JSON object.
