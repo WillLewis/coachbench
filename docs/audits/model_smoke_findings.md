@@ -103,7 +103,7 @@ These hashes anchor the findings to specific report files. If either report is r
 
 **New report:** `data/eval/reports/model_smoke_debug.json` (sha256: `a2622b3089b9232730c5bb45e92c564b822a92a42656b30f4ca83ab36286090b`)
 
-**Diagnosed dominant failure mode:** none
+**Diagnosed dominant failure mode:** not directly measured — the diagnostic capture step was skipped on the May 15 pass; the JSON-only contract countermeasure was inferred from the original audit's "Surprises and Risks" section and validated by the resulting `fallback_rate_candidate=0.0`. The post-fix JSONL at `data/eval/debug/modeloffense_raw.jsonl` (54 entries, all `picked`) does not preserve the original failure tally.
 
 **Prompt change:** Added a literal correct JSON response and a fenced-code negative example. This hardens the JSON-only response contract against markdown/code-fence drift while preserving the same legal concept selection contract.
 
@@ -112,5 +112,13 @@ These hashes anchor the findings to specific report files. If either report is r
 | Metric | Before (2026-05-12) | After (2026-05-15) |
 |---|---:|---:|
 | fallback_rate_candidate | 1.0 | 0.0 |
+| points_per_drive_candidate | 1.4 | 6.2 |
+| touchdown_rate_candidate | 0.2 | 0.8 |
+| paired_seed_lift_mean | 0.0 | 4.8 |
+| paired_seed_win_rate | 0.0 | 0.8 |
+| bootstrap_ci_95 | [0.0, 0.0] | [2.0, 7.0] |
+| lift_strength | none | strong |
 | concept_entropy_candidate | 0.0 | 1.8725 |
 | distinct concepts | 1 | 5 |
+
+**Delta artifact:** `data/eval/reports/model_vs_adaptive_delta.json` (sha256: `4323da74094d29c27ba62502155d4ff605bf004636807721310cf5ebd2927938`) — formalizes ModelOffense vs AdaptiveOffense over the same smoke seed pack (6, 10, 42, 72, 99) and same Static defense opponent.

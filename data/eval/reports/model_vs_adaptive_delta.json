@@ -1,0 +1,272 @@
+{
+  "schema_version": "eval_delta_report.v1",
+  "delta_hash": "ef5500c9f38b6b372ca286f693c31e22f0bcceead2a28b201bcf483098ff8901",
+  "generated_at": "2026-05-16T18:05:21.260365+00:00",
+  "before": {
+    "report_hash": "0b86148654e6b22303b0da7458c94adc2dc81f85fac25cd7e40774b488f73d41",
+    "suite_id": "smoke",
+    "candidate_name": "AdaptiveOffense",
+    "baseline_name": "StaticOffense",
+    "seed_pack_name": "smoke",
+    "opponent_suite_name": "static_defense_baseline",
+    "locked": true
+  },
+  "after": {
+    "report_hash": "529c93ea9f3cab12c528aeca0fb7482a562b19b4756fb0d357a7469ce5b8f49d",
+    "suite_id": "smoke",
+    "candidate_name": "ModelOffense",
+    "baseline_name": "StaticOffense",
+    "seed_pack_name": "smoke",
+    "opponent_suite_name": "static_defense_baseline",
+    "locked": false
+  },
+  "comparability": {
+    "same_schema_version": true,
+    "same_suite_id": true,
+    "same_seed_pack": true,
+    "same_candidate": false,
+    "same_baseline": true,
+    "same_opponent_suite": true,
+    "same_locked_mode": false,
+    "warnings": [
+      "candidate_name changed: AdaptiveOffense -> ModelOffense",
+      "locked mode changed: True -> False"
+    ],
+    "errors": []
+  },
+  "metric_deltas": {
+    "bootstrap_ci_95": {
+      "before": [
+        0.0,
+        0.0
+      ],
+      "after": [
+        2.0,
+        7.0
+      ],
+      "delta_low": 2.0,
+      "delta_high": 7.0
+    },
+    "calibration_summary": {
+      "before": null,
+      "after": null,
+      "delta": null
+    },
+    "concept_entropy_candidate": {
+      "before": 1.5677,
+      "after": 1.8725,
+      "delta": 0.30479999999999996
+    },
+    "concept_frequency_candidate": {
+      "before": {
+        "bunch_mesh": 0.2962962962962963,
+        "outside_zone": 0.2962962962962963,
+        "rpo_glance": 0.4074074074074074
+      },
+      "after": {
+        "bunch_mesh": 0.5172413793103449,
+        "outside_zone": 0.1724137931034483,
+        "play_action_flood": 0.1724137931034483,
+        "power_counter": 0.10344827586206896,
+        "rpo_glance": 0.034482758620689655
+      },
+      "added_concepts": [
+        "play_action_flood",
+        "power_counter"
+      ],
+      "removed_concepts": [],
+      "changed_concepts": {
+        "bunch_mesh": {
+          "before": 0.2962962962962963,
+          "after": 0.5172413793103449,
+          "delta": 0.22094508301404858
+        },
+        "outside_zone": {
+          "before": 0.2962962962962963,
+          "after": 0.1724137931034483,
+          "delta": -0.12388250319284799
+        },
+        "rpo_glance": {
+          "before": 0.4074074074074074,
+          "after": 0.034482758620689655,
+          "delta": -0.3729246487867177
+        }
+      }
+    },
+    "fallback_rate_baseline": {
+      "before": 0.0,
+      "after": 0.0,
+      "delta": 0.0
+    },
+    "fallback_rate_candidate": {
+      "before": 0.0,
+      "after": 0.0,
+      "delta": 0.0
+    },
+    "paired_seed_lift_mean": {
+      "before": 0.0,
+      "after": 4.8,
+      "delta": 4.8
+    },
+    "paired_seed_win_rate": {
+      "before": 0.0,
+      "after": 0.8,
+      "delta": 0.8
+    },
+    "points_per_drive_baseline": {
+      "before": 1.4,
+      "after": 1.4,
+      "delta": 0.0
+    },
+    "points_per_drive_candidate": {
+      "before": 1.4,
+      "after": 6.2,
+      "delta": 4.800000000000001
+    },
+    "resource_exhaustion_rate_candidate": {
+      "before": 0.2,
+      "after": 0.2,
+      "delta": 0.0
+    },
+    "touchdown_rate_baseline": {
+      "before": 0.2,
+      "after": 0.2,
+      "delta": 0.0
+    },
+    "touchdown_rate_candidate": {
+      "before": 0.2,
+      "after": 0.8,
+      "delta": 0.6000000000000001
+    }
+  },
+  "per_opponent_metric_deltas": {
+    "added_opponents": [],
+    "removed_opponents": [],
+    "opponents": {
+      "static_defense_baseline": {
+        "bootstrap_ci_95": {
+          "before": [
+            0.0,
+            0.0
+          ],
+          "after": [
+            2.0,
+            7.0
+          ],
+          "delta_low": 2.0,
+          "delta_high": 7.0
+        },
+        "concept_entropy_candidate": {
+          "before": 1.5677,
+          "after": 1.8725,
+          "delta": 0.30479999999999996
+        },
+        "concept_frequency_candidate": {
+          "before": {
+            "bunch_mesh": 0.2962962962962963,
+            "outside_zone": 0.2962962962962963,
+            "rpo_glance": 0.4074074074074074
+          },
+          "after": {
+            "bunch_mesh": 0.5172413793103449,
+            "outside_zone": 0.1724137931034483,
+            "play_action_flood": 0.1724137931034483,
+            "power_counter": 0.10344827586206896,
+            "rpo_glance": 0.034482758620689655
+          },
+          "added_concepts": [
+            "play_action_flood",
+            "power_counter"
+          ],
+          "removed_concepts": [],
+          "changed_concepts": {
+            "bunch_mesh": {
+              "before": 0.2962962962962963,
+              "after": 0.5172413793103449,
+              "delta": 0.22094508301404858
+            },
+            "outside_zone": {
+              "before": 0.2962962962962963,
+              "after": 0.1724137931034483,
+              "delta": -0.12388250319284799
+            },
+            "rpo_glance": {
+              "before": 0.4074074074074074,
+              "after": 0.034482758620689655,
+              "delta": -0.3729246487867177
+            }
+          }
+        },
+        "fallback_rate_baseline": {
+          "before": 0.0,
+          "after": 0.0,
+          "delta": 0.0
+        },
+        "fallback_rate_candidate": {
+          "before": 0.0,
+          "after": 0.0,
+          "delta": 0.0
+        },
+        "n_replays_baseline": {
+          "before": 5.0,
+          "after": 5.0,
+          "delta": 0.0
+        },
+        "n_replays_candidate": {
+          "before": 5.0,
+          "after": 5.0,
+          "delta": 0.0
+        },
+        "paired_seed_lift_mean": {
+          "before": 0.0,
+          "after": 4.8,
+          "delta": 4.8
+        },
+        "paired_seed_win_rate": {
+          "before": 0.0,
+          "after": 0.8,
+          "delta": 0.8
+        },
+        "points_per_drive_baseline": {
+          "before": 1.4,
+          "after": 1.4,
+          "delta": 0.0
+        },
+        "points_per_drive_candidate": {
+          "before": 1.4,
+          "after": 6.2,
+          "delta": 4.800000000000001
+        },
+        "touchdown_rate_baseline": {
+          "before": 0.2,
+          "after": 0.2,
+          "delta": 0.0
+        },
+        "touchdown_rate_candidate": {
+          "before": 0.2,
+          "after": 0.8,
+          "delta": 0.6000000000000001
+        }
+      }
+    }
+  },
+  "gate_transitions": {
+    "lift_strength": {
+      "before": "none",
+      "after": "strong",
+      "direction": "improvement"
+    },
+    "passed_now_failed": [],
+    "failed_now_passed": [],
+    "warning_now_clear": [
+      "concept_top1=0.4074 > 0.4 (rpo_glance, candidate, opponent=static_defense_baseline)"
+    ],
+    "newly_warning": [
+      "concept_top1=0.5172 > 0.4 (bunch_mesh, candidate, opponent=static_defense_baseline)"
+    ]
+  },
+  "regression": {
+    "is_regression": false,
+    "reasons": []
+  }
+}
